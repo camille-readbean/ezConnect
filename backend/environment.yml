@@ -1,0 +1,9 @@
+name: ezConnect
+channels:
+  - conda-forge
+dependencies:
+  - flask
+  - sqlalchemy
+  - requests
+  - flask-restful
+prefix: /home/rb/mambaforge/envs/ezConnect
