@@ -1,28 +1,48 @@
-aniso8601 @ file:///home/conda/feedstock_root/build_artifacts/aniso8601_1618789466884/work
-blinker @ file:///home/conda/feedstock_root/build_artifacts/blinker_1681349778161/work
-brotlipy @ file:///home/conda/feedstock_root/build_artifacts/brotlipy_1666764686339/work
+alembic==1.11.1
+aniso8601==9.0.1
+attrs==23.1.0
+blinker==1.6.2
+brotlipy==0.7.0
 certifi==2023.5.7
-cffi @ file:///home/conda/feedstock_root/build_artifacts/cffi_1671179355965/work
-charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1678108872112/work
-click @ file:///home/conda/feedstock_root/build_artifacts/click_1666798198223/work
-cryptography @ file:///home/conda/feedstock_root/build_artifacts/cryptography-split_1681508576793/work
-Flask @ file:///home/conda/feedstock_root/build_artifacts/flask_1682966527207/work
-Flask-RESTful @ file:///home/conda/feedstock_root/build_artifacts/flask-restful_1622406740831/work
-greenlet @ file:///home/conda/feedstock_root/build_artifacts/greenlet_1684082930824/work
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
-importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1682176699712/work
-itsdangerous @ file:///home/conda/feedstock_root/build_artifacts/itsdangerous_1648147185463/work
-Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1654302431367/work
-MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1674135794919/work
-pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
-pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1680037383858/work
-PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
-pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1680088766131/work
-requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1682535435083/work
-six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
-SQLAlchemy @ file:///home/conda/feedstock_root/build_artifacts/sqlalchemy_1684447955091/work
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1678559861143/work
-urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1678635778344/work
-Werkzeug @ file:///home/conda/feedstock_root/build_artifacts/werkzeug_1683636301408/work
-zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1677313463193/work
+cffi==1.15.1
+charset-normalizer==3.1.0
+click==8.1.3
+clickclick==20.10.2
+connexion==2.14.2
+cryptography==40.0.2
+Flask==2.2.5
+flask-marshmallow==0.15.0
+Flask-Migrate==4.0.4
+Flask-SQLAlchemy==3.0.3
+greenlet==2.0.2
+idna==3.4
+importlib-metadata==6.6.0
+inflection==0.5.1
+itsdangerous==2.1.2
+Jinja2==3.1.2
+jsonschema==4.17.3
+Mako==1.2.4
+MarkupSafe==2.1.2
+marshmallow==3.19.0
+marshmallow-sqlalchemy==0.29.0
+packaging==23.1
+pip==23.1.2
+psycopg2==2.9.6
+pycparser==2.21
+pycryptodome==3.18.0
+pyOpenSSL==23.1.1
+pyrsistent==0.19.3
+PySocks==1.7.1
+python-dateutil==2.8.2
+pytz==2023.3
+PyYAML==6.0
+requests==2.29.0
+setuptools==67.7.2
+six==1.16.0
+SQLAlchemy==2.0.14
+swagger-ui-bundle==0.0.9
+typing_extensions==4.5.0
+urllib3==1.26.15
+Werkzeug==2.2.3
+wheel==0.40.0
+zipp==3.15.0

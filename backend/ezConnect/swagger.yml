@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+  title: "EzCopnnect REST API"
+  description: "An API about people and notes"
+  version: "0.0.1"
+
+servers:
+  - url: "/api"
+
+components:
+  schemas:
+    SignUpRequest:
+      type: "object"
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    SignUpNewUser:
+      type: "object"
+      required:
+        - name
+        - year
+        - password
+        - course
+      properties:
+        name:
+          type: string
+        year:
+          type: integer
+          maximum: 6
+          minimum: 1
+        course:
+          type: string
+        password:
+          type: string
+          format: password
+        
+  parameters:
+    emailToken:
+      in: path
+      name: emailToken
+      required: true
+      schema:
+        type: string
+        minLength: 32
+        maxLength: 32
+        format: byte
+      description: "Verification token embedded in the url given by the email"
+    emailQueryString:
+      in: query
+      name: emailQueryString
+      required: true
+      schema:
+        type: string
+        format: email
+      description: "Email address of the sign up request this token is associated with"
+        
+paths: 
+  /auth/signup/:
+    post: 
+      operationId: "ezConnect.auth.signup.request"
+      tags: 
+        - "Auth"
+        - "Sign Up"
+      summary: "Send an email with the verification link for signing up"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "200":
+          description: "Verification email sent"
+  /auth/signup/{emailToken}:
+    put:
+      operationId: "ezConnect.auth.signup.verify"
+      tags:
+        - "Auth"
+        - "Sign Up"
+      summary: "Verify email token and email to grant token for onboarding api"
+      parameters:
+        - $ref: "#/components/parameters/emailToken"
+        - $ref: "#/components/parameters/emailQueryString"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpNewUser"
+            example:
+              name: "John Doe"
+              year: 2
+              course: "Double major in Social Work and Psychology"
+              password: "VeryStrongPassword"
+      responses:
+        "200":
+          description: "API Token for access to start onboarding"

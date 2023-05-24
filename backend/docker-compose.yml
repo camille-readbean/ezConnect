@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: ezConnect
+    ports:
+      - "5432:5432"
+  in_memory_store:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
