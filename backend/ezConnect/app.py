@@ -2,6 +2,7 @@ import connexion
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS
 from ezConnect.models import db
 
 # db = SQLAlchemy()
@@ -17,7 +18,7 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
     mm = Marshmallow(app)
-
+    cors = CORS(app)
     # application = app
 
     @app.route("/")

@@ -16,9 +16,9 @@ def request(body):
     # first validate email
     email: str = body['email']
     if email.find('@') == -1:
-        return 'Not an email', 400
+        return {"error": "Not an email"}, 400
     if email.split('@')[-1] not in DOMAINS:
-        return 'Invalid domain', 401
+        return {"error": "Invalid domain"}, 401
     
     try: 
         sign_up_request = SignUpRequest(datetime.utcnow(), email)
