@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Open Sans";
+  }
+
+  .createaccountinputbox {
+    @apply border-2 border-slate-200 rounded-md px-1 m-1 ml-2;
+  }
+
+  .aboutussection {
+    @apply p-16 flex gap-8 justify-center;
+  }
+
+  .aboutusdescription {
+    @apply p-4 flex flex-col gap-3;
+  }
+
+  .aboutusbutton {
+    @apply bg-sky-500 px-5 py-4 rounded-3xl font-semibold text-white text-center w-48 hover:bg-sky-600 transition;
+  }
+}
