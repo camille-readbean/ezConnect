@@ -17,7 +17,7 @@ def request(body):
         return {"error": "Invalid domain"}, 401
     # Check duplicate, do not send request if the email is already being used
     user = _get_user(email)
-    success_msg = f"Verification email sent to {req['email']} if account can be created"
+    success_msg = f"Verification email sent to {email} if account can be created"
     if user is not None:
         # Do not disclose if account / email exist to the requester
         # See: Account Enumeration
