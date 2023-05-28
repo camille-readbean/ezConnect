@@ -36,7 +36,6 @@ components:
         password:
           type: string
           format: password
-        
   parameters:
     emailToken:
       in: path
@@ -56,6 +55,12 @@ components:
         type: string
         format: email
       description: "Email address of the sign up request this token is associated with"
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: "ezConnect.auth.login.decode_token"
         
 paths: 
   /auth/signup/:
@@ -97,4 +102,71 @@ paths:
               password: "VeryStrongPassword"
       responses:
         "200":
-          description: "API Token for access to start onboarding"
+          description: "JSON with user id and JWT token"
+  /auth/login:
+    post:
+      operationId: "ezConnect.auth.login.login_user"
+      tags:
+        - "Auth"
+      summary: "Logs in a user by checking their email and password and returns a JWT token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+            example:
+              email: "hello@u.nus.edu"
+              password: "VeryStrongPassword"
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+                  JWT:
+                    type: string
+        '401':
+          description: Unauthorized, wrong password or email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /auth/login/who-am-i:
+    get:
+      operationId: "ezConnect.auth.login.who_am_i"
+      tags:
+        - "Auth"
+      summary: "Returns the user ID of the authenticated user"
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: User ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+        '401':
+          description: Unauthorized
+
+

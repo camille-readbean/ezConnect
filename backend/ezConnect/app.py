@@ -1,4 +1,5 @@
 import connexion
+import os, time
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
@@ -8,6 +9,10 @@ from ezConnect.models import db
 # db = SQLAlchemy()
 
 def create_app():
+    # Time stamps all generated in UTC, python-jose need this to decode exp
+    os.environ["TZ"] = "Etc/UTC"
+    time.tzset()
+    print("time set to UTC")
     connexion_app = connexion.App(__name__, specification_dir="./")
     connexion_app.add_api("swagger.yml")
 

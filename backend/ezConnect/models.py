@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, LargeBinary
 from flask_sqlalchemy import SQLAlchemy
-from Crypto.Protocol.KDF import scrypt
 from Crypto.Random import get_random_bytes
 from base64 import urlsafe_b64encode
 
@@ -18,16 +17,16 @@ class User(db.Model):
     year = Column(Integer)
     course = Column(String(120))
 
-    def __init__(self, name: String, email: String, 
-                 password: String, year: Integer, course: String):
+    def __init__(self, name: String, email: String, salt: bytes,
+                 password: bytes, year: Integer, course: String):
         self.name = name
         if email.split("@")[-1] not in DOMAINS:
             raise ValueError("Invalid domain")
         if len(password) < 12:
             raise ValueError("Password too short")
         self.email = email
-        self.salt = get_random_bytes(16)
-        self.password_hash = scrypt(password, self.salt, 16, 2**16, r=8, p=1)
+        self.salt = salt
+        self.password_hash = password
         self.year = year
         self.course = course
 
@@ -36,7 +35,7 @@ class User(db.Model):
     
 class SignUpRequest(db.Model):
     id = Column(String(32), primary_key=True)
-    email = Column(String(120), unique=True)
+    email = Column(String(120))
     creation_time = Column(DateTime)
 
     def __init__(self, creation_time, email):
