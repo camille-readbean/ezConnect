@@ -10,7 +10,7 @@ function CreateAccount() {
 
   const handleCreateAccount = (event) => {
     event.preventDefault();
-
+    setResponseMessage('⌛');
     const password = event.target.password.value;
     const confirmPassword = event.target.confirmpassword.value;
     if (password !== confirmPassword) {
@@ -136,7 +136,7 @@ function CreateAccount() {
           </button>
         </form>
 
-        {responseMessage && <p>{responseMessage}</p>}
+        {responseMessage && <p className="text-gray-600">{responseMessage}</p>}
 
         <Link to="/login" className="underline">
           Already have an account? Log in

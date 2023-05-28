@@ -5,6 +5,8 @@ function Navigation(props) {
     const setLogin = props.setLogin;
 
     const handleLogout = () => {
+        localStorage.removeItem('JWT')
+        localStorage.removeItem('user_id')
         setLogin(false);
     }
 

@@ -7,6 +7,7 @@ function CreateAccount() {
   const handleCreateAccount = (event) => {
     event.preventDefault();
     console.log(event.target.email.value);
+    setResponseMessage('⌛');
     fetch("http://localhost:5000/api/auth/signup", {
       method: "POST",
       headers: {
@@ -46,6 +47,8 @@ function CreateAccount() {
             />
           </p>
 
+          {responseMessage && <p className="text-gray-600">{responseMessage}</p>}
+
           <button
             type="submit"
             className="w-full my-2 bg-blue-500 px-2 py-1 rounded-lg text-white shadow-md"
@@ -53,8 +56,6 @@ function CreateAccount() {
             Submit
           </button>
         </form>
-
-        {responseMessage && <p>{responseMessage}</p>}
 
         <Link to="/login" className="underline">
           Already have an account? Log in
