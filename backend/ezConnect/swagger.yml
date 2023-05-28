@@ -63,7 +63,7 @@ components:
       x-bearerInfoFunc: "ezConnect.auth.login.decode_token"
         
 paths: 
-  /auth/signup/:
+  /auth/signup:
     post: 
       operationId: "ezConnect.auth.signup.request"
       tags: 

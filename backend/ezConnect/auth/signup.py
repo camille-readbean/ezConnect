@@ -9,11 +9,6 @@ import traceback
 
 # "/api/auth/signup"
 def request(body):
-    req = {
-        "creation_time" : datetime.now(),
-        "email" : body['email'],
-        "name" : "john doe"
-    }
     # first validate email
     email: str = body['email']
     if email.find('@') == -1:
@@ -45,7 +40,7 @@ def request(body):
         )
     except Exception as e:
         traceback.print_exc()
-        return {"error": f"str(e)"}, 500
+        return {"error": f"{str(e)}"}, 500
 
     return {"message" : success_msg}, 200
 
