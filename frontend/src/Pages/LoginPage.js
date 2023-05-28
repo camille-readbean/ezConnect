@@ -59,7 +59,7 @@ export default function LoginPage(props) {
           </button>
         </form>
 
-        <Link to="/createaccount" className="underline">
+        <Link to="/signup/create-account" className="underline">
           {" "}
           Don't have an account? Create one here!{" "}
         </Link>
