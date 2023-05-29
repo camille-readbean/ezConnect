@@ -9,7 +9,7 @@ export default function LoginPage(props) {
   const handleLogin = (event) => {
     event.preventDefault();
     setResponseMessage('⌛');;
-    fetch("http://localhost:5000/api/auth/login", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

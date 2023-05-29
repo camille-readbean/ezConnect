@@ -18,7 +18,7 @@ function CreateAccount() {
       return;
     }
     console.log(event.target.email.value);
-    fetch(`http://localhost:5000/api/auth/signup/${signUpRequestToken}?emailQueryString=${email}`, {
+    fetch(`http://${process.env.REACT_APP_API_ENDPOINT}/api/auth/signup/${signUpRequestToken}?emailQueryString=${email}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
