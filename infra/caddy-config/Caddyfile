@@ -1,0 +1,6 @@
+http://ezconnect.ruibin.me {
+	root * /usr/share/caddy
+	reverse_proxy /api/* ezconnectflask:5000
+	file_server
+	try_files {path} /index.html
+}

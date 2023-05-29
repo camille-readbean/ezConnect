@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  db:
+    hostname: 'postgresql-server'
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: ezConnect
+    ports:
+      - "5432:5432"
+  in_memory_store:
+    hostname: 'in-mem-store'
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+  ez_connect_flask:
+    restart: unless-stopped
+    hostname: 'ezconnectflask'
+    depends_on:
+      - db
+    build: 
+      context: backend/
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    entrypoint: "/usr/src/app/ezConnect/init_ezconnectflask.sh"
+  caddy:
+    image: 'caddy:2.6.4'
+    hostname: 'caddy-proxy'
+    restart: unless-stopped
+    volumes:
+      - ../frontend/build:/usr/share/caddy
+      - ./caddy-config/Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - "443:443"
+      - "80:80"
+  cloudflared:
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    hostname: cloudflared
+    entrypoint: "/usr/local/bin/cloudflared tunnel --url http://caddy-proxy --no-autoupdate run --token [fill in]"
+secrets:
+  cloudflared_token:
+    file: ./infra/.env.cloudflared.secret

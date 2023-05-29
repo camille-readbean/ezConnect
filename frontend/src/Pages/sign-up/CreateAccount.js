@@ -8,7 +8,7 @@ function CreateAccount() {
     event.preventDefault();
     console.log(event.target.email.value);
     setResponseMessage('⌛');
-    fetch("http://localhost:5000/api/auth/signup", {
+    fetch(process.env.REACT_APP_API_ENDPOINT + "/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

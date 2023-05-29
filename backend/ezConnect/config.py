@@ -5,7 +5,8 @@ DOMAINS = ["u.nus.edu"]
 
 DATABASE_USER = "postgres"
 DATABASE_PASSWORD = "test"
-SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@localhost:5432/ezConnect"
+DATABASE_HOSTNAME = 'postgresql-server'
+SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOSTNAME}:5432/ezConnect"
 
 # FORMAT '{hostname}:{port}'
 REDIS_URL = "localhost:6379"
