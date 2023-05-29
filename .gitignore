@@ -13,3 +13,6 @@ dist/
 build/
 *.egg-info
 backend/ezConnect/.env
+backend/ezConnect/prodconfig.py
+infra/.env.cloudflared.secret
+infra/docker-compose.prod.yml
