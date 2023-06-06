@@ -15,23 +15,27 @@ function App() {
   const [isLoggedIn, setLogin] = useState(false);
 
   return (
-    <div>
-      <Navigation isLoggedIn={isLoggedIn} setLogin={setLogin} />
-      <Routes>
-        <Route
-          path="/"
-          element={<AboutUs isLoggedIn={isLoggedIn} setLogin={setLogin} />}
-        />
-        <Route path="/homepage" element={<Homepage isLoggedIn={isLoggedIn} />} />
-        <Route path="/login" element={<LoginPage setLogin={setLogin} />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/signup/create-account" element={<CreateAccount />} />
-        <Route path="/signup/verify" element={<Verify />} />
-        <Route path="/mentormenteematcher" element={<MentorMenteeMatcher />} />
-        <Route path="/studyplan" element={<StudyPlan />} />
-        <Route path="/resourcerespository" element={<ResourceRespository />} />
-      </Routes>
-    </div>
+    <>
+      <header>
+        <Navigation isLoggedIn={isLoggedIn} setLogin={setLogin} />
+      </header>
+      <body>
+        <Routes>
+          <Route
+            path="/"
+            element={<AboutUs isLoggedIn={isLoggedIn} setLogin={setLogin} />}
+          />
+          <Route path="/homepage" element={<Homepage isLoggedIn={isLoggedIn} />} />
+          <Route path="/login" element={<LoginPage setLogin={setLogin} />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/signup/create-account" element={<CreateAccount />} />
+          <Route path="/signup/verify" element={<Verify />} />
+          <Route path="/mentormenteematcher" element={<MentorMenteeMatcher />} />
+          <Route path="/studyplan" element={<StudyPlan />} />
+          <Route path="/resourcerespository" element={<ResourceRespository />} />
+        </Routes>
+      </body>
+    </>
   );
 }
 
