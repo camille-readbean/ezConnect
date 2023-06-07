@@ -1,14 +1,43 @@
 import { Link } from "react-router-dom";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useIsAuthenticated } from '@azure/msal-react';
+import { InteractionStatus } from "@azure/msal-browser"; 
+// import { loginRequest, b2cPolicies } from '../authConfig';
+import { b2cPolicies } from '../authConfig';
 
 function Navigation(props) {
-    const isLoggedIn = props.isLoggedIn;
+    // const isLoggedIn = props.isLoggedIn;
     const setLogin = props.setLogin;
+    
+    const { instance, inProgress } = useMsal();
+    let activeAccount;
+    const isLoggedIn = useIsAuthenticated();
 
-    const handleLogout = () => {
-        localStorage.removeItem('JWT')
-        localStorage.removeItem('user_id')
-        setLogin(false);
+    if (instance) {
+        activeAccount = instance.getActiveAccount();
     }
+
+    const handleLoginPopup = () => {
+        instance
+            // .loginPopup({
+            //     // scopes: ['openid', 'profile', 'email'],
+            //     // redirectUri: '/homepage',
+            // })
+            .loginPopup()
+            .catch((error) => console.log(error));
+    };
+    
+
+    // const handleLogout = () => {
+    //     localStorage.removeItem('JWT')
+    //     localStorage.removeItem('user_id')
+    //     setLogin(false);
+    // }
+
+    const handleLogoutPopup = () => {
+        instance.logoutPopup({
+            mainWindowRedirectUri: '/', // redirects the top level app after logout
+        });
+    };
 
     return (
         <header className="sticky top-0 w-screen bg-blue-500 text-white p-3">
@@ -19,7 +48,13 @@ function Navigation(props) {
                     <Link to="/mentormenteematcher">Mentor-Mentee Matcher</Link>
                     <Link to="/studyplan">Study Plan</Link>
                     <Link to="/resourcerespository">Resource Respository</Link>
-                    {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : <Link to="/login">Login</Link>}
+                    <AuthenticatedTemplate>
+                        <Link onClick={handleLogoutPopup}>Logout</Link>
+                    </AuthenticatedTemplate>
+                    <UnauthenticatedTemplate>
+                        <Link onClick={handleLoginPopup}>Login</Link>
+                    </UnauthenticatedTemplate>
+                    {/* {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : <Link to="/login">Login</Link>} */}
                 </nav>
             </div>
         </header>
