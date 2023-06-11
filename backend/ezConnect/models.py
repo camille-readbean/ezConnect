@@ -1,7 +1,10 @@
-from sqlalchemy import Column, Integer, String, DateTime, LargeBinary
+from sqlalchemy import Column, Integer, String, DateTime, LargeBinary, Boolean, Text
 from flask_sqlalchemy import SQLAlchemy
 from Crypto.Random import get_random_bytes
 from base64 import urlsafe_b64encode
+from sqlalchemy.dialects.postgresql import UUID
+from datetime import datetime
+import uuid
 
 from ezConnect.config import DOMAINS
 
@@ -16,6 +19,8 @@ class User(db.Model):
     salt = Column(LargeBinary())
     year = Column(Integer)
     course = Column(String(120))
+
+    study_plans = db.relationship('StudyPlan', backref='creator')
 
     def __init__(self, name: String, email: String, salt: bytes,
                  password: bytes, year: Integer, course: String):
@@ -48,3 +53,40 @@ class SignUpRequest(db.Model):
 
     def __repr__(self):
         return f'<{self.name!r} ({self.email}) at {self.creation_time}>'
+    
+class StudyPlan(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    is_published = Column(Boolean, nullable=False, default=False)
+    title = Column(String(150))
+    description = Column(Text)
+    num_of_likes = Column(Integer, default = 0)
+    creater_id = Column(Integer, db.ForeignKey('creator.id'), nullable=False)
+    semesters = db.relationship('StudyPlanSemester', backref='study_plan')
+
+    def __repr__(self):
+        return f'<Study plan created by {self.creator.name} last updated at {self.date_updated}>'
+
+semester_course = db.Table('semester_course',
+    Column('semester_id', Integer, db.ForeignKey('user.id')),
+    Column('course_id', Integer, db.ForeignKey('course.id'))
+)
+
+class StudyPlanSemester(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    total_units = Column(Integer, nullable=False, default=0)
+    study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
+    courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
+
+class Course(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    course_code = Column(String(8), unique=True, nullable=False)
+    course_name = Column(String(100))
+    number_of_units = Column(Integer, nullable=False)
+    is_offered_in_sem1 = Column(Boolean, nullable=False)
+    is_offered_in_sem2 = Column(Boolean, nullable=False)
+    prerequisites = db.relationship('Prerequisite', backref='prerequisite_for')
+
+class Programme(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title = Column(String(150), nullable=False)

@@ -6,8 +6,10 @@ import Navigation from "./Components/Navigation";
 import CreateAccount from "./Pages/sign-up/CreateAccount";
 import Verify from "./Pages/sign-up/Verify";
 import MentorMenteeMatcher from "./Pages/MentorMenteeMatcher";
-import StudyPlan from "./Pages/StudyPlan";
+import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
+import Footer from "./Components/Footer";
 import ResourceRespository from "./Pages/ResourceRespository";
+import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
 
@@ -25,16 +27,29 @@ function App() {
             path="/"
             element={<AboutUs isLoggedIn={isLoggedIn} setLogin={setLogin} />}
           />
-          <Route path="/homepage" element={<Homepage isLoggedIn={isLoggedIn} />} />
+          <Route
+            path="/homepage"
+            element={<Homepage isLoggedIn={isLoggedIn} />}
+          />
           <Route path="/login" element={<LoginPage setLogin={setLogin} />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/signup/create-account" element={<CreateAccount />} />
           <Route path="/signup/verify" element={<Verify />} />
-          <Route path="/mentormenteematcher" element={<MentorMenteeMatcher />} />
-          <Route path="/studyplan" element={<StudyPlan />} />
-          <Route path="/resourcerespository" element={<ResourceRespository />} />
+          <Route
+            path="/mentormenteematcher"
+            element={<MentorMenteeMatcher />}
+          />
+          <Route path="/studyplan" element={<StudyPlanMainPage />} />
+          <Route
+            path="/resourcerespository"
+            element={<ResourceRespository />}
+          />
+          <Route path="/studyplan/editor" element={<StudyPlanEditor />} />
         </Routes>
       </body>
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 }
