@@ -1,13 +1,17 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { InteractionStatus } from "@azure/msal-browser"; 
 // import { loginRequest, b2cPolicies } from '../authConfig';
 import { b2cPolicies } from '../authConfig';
+import LoginModal from "./LoginModal";
 
 function Navigation(props) {
     // const isLoggedIn = props.isLoggedIn;
     const setLogin = props.setLogin;
     
+    const [showLoginModal, setLoginModal] = useState(false);
+
     const { instance, inProgress } = useMsal();
     let activeAccount;
     const isLoggedIn = useIsAuthenticated();
@@ -16,13 +20,13 @@ function Navigation(props) {
         activeAccount = instance.getActiveAccount();
     }
 
-    const handleLoginPopup = () => {
+    const handleLoginRedirect = () => {
         instance
-            // .loginPopup({
-            //     // scopes: ['openid', 'profile', 'email'],
-            //     // redirectUri: '/homepage',
-            // })
-            .loginPopup()
+            .loginRedirect({
+                // scopes: ['openid', 'profile', 'email'],
+                // redirectUri: '/homepage',
+            })
+            // .loginRedirect()
             .catch((error) => console.log(error));
     };
     
@@ -33,13 +37,19 @@ function Navigation(props) {
     //     setLogin(false);
     // }
 
-    const handleLogoutPopup = () => {
-        instance.logoutPopup({
+    const handleLogoutRedirect = () => {
+        instance.logoutRedirect({
             mainWindowRedirectUri: '/', // redirects the top level app after logout
         });
     };
 
+    const handleLoginPress = () => {
+        setLoginModal(true)
+    }
+
     return (
+        <>
+        {showLoginModal && <LoginModal setLoginModal={setLoginModal} />}
         <header className="sticky top-0 w-screen bg-blue-500 text-white p-3">
             <div className="flex justify-between">
                 <Link to="/" className="font-bold">ezConnect</Link>
@@ -49,15 +59,16 @@ function Navigation(props) {
                     <Link to="/studyplan">Study Plan</Link>
                     <Link to="/resourcerespository">Resource Respository</Link>
                     <AuthenticatedTemplate>
-                        <Link onClick={handleLogoutPopup}>Logout</Link>
+                        <Link onClick={handleLogoutRedirect}>Logout</Link>
                     </AuthenticatedTemplate>
                     <UnauthenticatedTemplate>
-                        <Link onClick={handleLoginPopup}>Login</Link>
+                        <Link onClick={handleLoginPress}>Login</Link>
                     </UnauthenticatedTemplate>
                     {/* {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : <Link to="/login">Login</Link>} */}
                 </nav>
             </div>
         </header>
+        </>
     );
 }
 
