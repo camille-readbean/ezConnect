@@ -22,7 +22,7 @@ function AboutUs() {
           different purposes. Learn more below!
         </p>
         <button
-          className="m-2 aboutusbutton"
+          className="m-2 bluebutton"
           onClick={handleFindOutMoreButtonClick}
         >
           FIND OUT MORE
@@ -45,7 +45,7 @@ function AboutUs() {
             can find a student who meets their requirements or make a post
             looking for one.
           </p>
-          <Link to="/mentormenteematcher" className="aboutusbutton">
+          <Link to="/mentormenteematcher" className="bluebutton">
             Find a match
           </Link>
         </div>
@@ -60,7 +60,7 @@ function AboutUs() {
             one anoher by consulting other's study plans or working on other's
             feedback.
           </p>
-          <Link to="/studyplan" className="aboutusbutton">
+          <Link to="/studyplan" className="bluebutton">
             Look at study plans
           </Link>
         </div>
@@ -76,7 +76,7 @@ function AboutUs() {
             with one another! Easily upload, download and share materials in the
             Resource Respository!
           </p>
-          <Link to="/resourcerespository" className="aboutusbutton">
+          <Link to="/resourcerespository" className="bluebutton">
             Find resources
           </Link>
         </div>

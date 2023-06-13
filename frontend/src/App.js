@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { MsalProvider, useIsAuthenticated } from '@azure/msal-react';
 import { EventType } from '@azure/msal-browser';
-
 import { Route, Routes } from "react-router-dom";
-
 import LoginPage from "./Pages/LoginPage";
 import AboutUs from "./Pages/AboutUs";
 import Homepage from "./Pages/Homepage";
@@ -12,8 +10,10 @@ import Navigation from "./Components/Navigation";
 import CreateAccount from "./Pages/sign-up/CreateAccount";
 import Verify from "./Pages/sign-up/Verify";
 import MentorMenteeMatcher from "./Pages/MentorMenteeMatcher";
-import StudyPlan from "./Pages/StudyPlan";
+import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
+import Footer from "./Components/Footer";
 import ResourceRespository from "./Pages/ResourceRespository";
+import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
 
 import { b2cPolicies } from './authConfig';
 // import { compareIssuingPolicy } from './utils/claimUtils';
@@ -24,23 +24,40 @@ const Pages = () => {
   const isLoggedIn = useIsAuthenticated();
 
   return (
-    <div>
-      <Navigation isLoggedIn={isLoggedIn}/>
-      <Routes>
-        <Route
-          path="/"
-          element={<AboutUs isLoggedIn={isLoggedIn}/>}
-        />
-        <Route path="/homepage" element={<Homepage isLoggedIn={isLoggedIn} />} />
-        <Route path="/login" element={<LoginPage/>} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/signup/create-account" element={<CreateAccount />} />
-        <Route path="/signup/verify" element={<Verify />} />
-        <Route path="/mentormenteematcher" element={<MentorMenteeMatcher />} />
-        <Route path="/studyplan" element={<StudyPlan />} />
-        <Route path="/resourcerespository" element={<ResourceRespository />} />
-      </Routes>
-    </div>
+    <>
+      <header>
+        <Navigation isLoggedIn={isLoggedIn}/>
+      </header>
+      <body>
+        <Routes>
+          <Route
+            path="/"
+            element={<AboutUs isLoggedIn={isLoggedIn}/>}
+          />
+          <Route
+            path="/homepage"
+            element={<Homepage isLoggedIn={isLoggedIn} />}
+          />
+          <Route path="/login" element={<LoginPage/>} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/signup/create-account" element={<CreateAccount />} />
+          <Route path="/signup/verify" element={<Verify />} />
+          <Route
+            path="/mentormenteematcher"
+            element={<MentorMenteeMatcher />}
+          />
+          <Route path="/studyplan" element={<StudyPlanMainPage />} />
+          <Route
+            path="/resourcerespository"
+            element={<ResourceRespository />}
+          />
+          <Route path="/studyplan/editor" element={<StudyPlanEditor />} />
+        </Routes>
+      </body>
+      <footer>
+        <Footer />
+      </footer>
+    </>
   );
 };
 

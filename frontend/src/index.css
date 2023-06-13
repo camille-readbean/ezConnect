@@ -4,7 +4,11 @@
 
 @layer base {
   html {
-    font-family: sans-serif
+    font-family: sans-serif;
+  }
+
+  body {
+    padding-top: 24px;
   }
 
   .createaccountinputbox {
@@ -19,7 +23,11 @@
     @apply p-4 flex flex-col gap-3;
   }
 
-  .aboutusbutton {
-    @apply bg-sky-500 px-5 py-4 rounded-3xl font-semibold text-white text-center w-48 hover:bg-sky-600 transition;
+  .bluebutton {
+    @apply bg-sky-500 px-5 py-4 rounded-full font-semibold text-white text-center w-48 hover:bg-sky-600 transition;
+  }
+
+  .navBarLink {
+    @apply hover:text-gray-100 transition;
   }
 }
