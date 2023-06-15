@@ -12,7 +12,7 @@ function LoginModal({setLoginModal}) {
     const handleLoginRedirect = () => {
         instance
             .loginRedirect({
-                // scopes: ['openid', 'profile', 'email'],
+                scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"]
                 // redirectUri: '/homepage',
             })
             // .loginRedirect()

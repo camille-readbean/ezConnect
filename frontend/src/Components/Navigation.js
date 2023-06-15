@@ -25,7 +25,7 @@ function Navigation(props) {
     const handleLoginRedirect = () => {
         instance
             .loginRedirect({
-                // scopes: ['openid', 'profile', 'email'],
+                scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"],
                 // redirectUri: '/homepage',
             })
             // .loginRedirect()
@@ -58,7 +58,7 @@ function Navigation(props) {
     >
       <div className="flex items-center justify-between">
         <Link to="/" className="flex gap-2">
-          <img src="ezConnect_logo.png" alt="Logo" className="h-6 w-auto" />
+          <img src="apple-touch-icon.png" alt="Logo" className="h-6 w-auto" />
           <p className="font-bold hover:text-gray-100 transition">ezConnect</p>
         </Link>
 
