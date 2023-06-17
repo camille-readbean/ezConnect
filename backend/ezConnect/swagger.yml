@@ -1,94 +1,73 @@
 openapi: 3.0.0
 info:
   title: "EzCopnnect REST API"
-  description: "An API about people and notes"
-  version: "0.0.1"
+  description: "An API about people and courses"
+  version: "0.0.2"
 
 servers:
   - url: "/api"
 
 components:
   schemas:
-    SignUpRequest:
-      type: "object"
-      required:
-        - email
-      properties:
-        email:
-          type: string
-          format: email
     SignUpNewUser:
       type: "object"
       required:
         - name
+        - email
         - year
-        - password
-        - course
+        - degree
       properties:
         name:
           type: string
+        email:
+          type: string
+          format: email
         year:
           type: integer
           maximum: 6
           minimum: 1
-        course:
+        degree:
           type: string
-        password:
+        programme:
           type: string
-          format: password
   parameters:
-    emailToken:
+    user_id:
       in: path
-      name: emailToken
+      name: user_id
       required: true
       schema:
         type: string
-        minLength: 32
-        maxLength: 32
-        format: byte
-      description: "Verification token embedded in the url given by the email"
-    emailQueryString:
-      in: query
-      name: emailQueryString
-      required: true
-      schema:
-        type: string
-        format: email
-      description: "Email address of the sign up request this token is associated with"
+        minLength: 36
+        maxLength: 36
+        format: uuid
+      description: "User ID"
   securitySchemes:
+    # Keeping it as JWT to faciliate debugging
+    # Get the token manually from frontend and input it to authorise...
+    # Swagger does not see mto support 
+    # Also help in debugging as we can use a custom dev only jwt to skip
+    # Azure B2C login, which is hard to do in CI/CD in the future...
     jwt:
       type: http
+      description: |
+        This actually relies on Azure AD B2C in the frontend for login
+        Kept as JWT to enable manual input of the access token in Swagger UI
+        for testing purposes. Swagger does not seem to work with Auth Code Flow 
       scheme: bearer
       bearerFormat: JWT
       x-bearerInfoFunc: "ezConnect.auth.login.decode_token"
+
         
 paths: 
-  /auth/signup:
-    post: 
-      operationId: "ezConnect.auth.signup.request"
-      tags: 
-        - "Auth"
-        - "Sign Up"
-      summary: "Send an email with the verification link for signing up"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignUpRequest"
-      responses:
-        "200":
-          description: "Verification email sent"
-  /auth/signup/{emailToken}:
-    put:
-      operationId: "ezConnect.auth.signup.verify"
+  /user/create-user:
+    put: 
+      operationId: "ezConnect.auth.signup.create_user"
       tags:
-        - "Auth"
         - "Sign Up"
-      summary: "Verify email token and email to grant token for onboarding api"
-      parameters:
-        - $ref: "#/components/parameters/emailToken"
-        - $ref: "#/components/parameters/emailQueryString"
+      summary: |
+        Create account for user after logging in with Azure AD B2C.
+        User ID comes from Azure B2C, will be used as primary key.
+        UserId will come from token.
       requestBody:
         required: true
         content:
@@ -97,57 +76,27 @@ paths:
               $ref: "#/components/schemas/SignUpNewUser"
             example:
               name: "John Doe"
+              email: "EXXXXXXX@u.nus.edu"
               year: 2
-              course: "Double major in Social Work and Psychology"
-              password: "VeryStrongPassword"
+              degree: "Double major in Social Work and Psychology"
+              programme: "College of Alice and Peter Tan"
+              azure_ad_oid: 12345678-1234-1234-1234-1234abvdefgh
+      security:
+        - jwt: []
       responses:
         "200":
-          description: "JSON with user id and JWT token"
-  /auth/login:
-    post:
-      operationId: "ezConnect.auth.login.login_user"
-      tags:
-        - "Auth"
-      summary: "Logs in a user by checking their email and password and returns a JWT token"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-              required:
-                - email
-                - password
-            example:
-              email: "hello@u.nus.edu"
-              password: "VeryStrongPassword"
-      responses:
-        '200':
-          description: JWT token
+          description: User ID
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   user:
-                    type: string
-                  JWT:
-                    type: string
-        '401':
-          description: Unauthorized, wrong password or email
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                    type: integer
+        "409":
+          description: "Invalid request: user already exist in database"
   /auth/login/who-am-i:
     get:
       operationId: "ezConnect.auth.login.who_am_i"
@@ -164,7 +113,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  user:
+                  azure_ad_oid:
+                    type: string
+                  user_id:
+                    type: string
+                  name:
                     type: string
         '401':
           description: Unauthorized

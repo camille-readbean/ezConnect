@@ -24,8 +24,6 @@ export default function LoginPage(props) {
           setResponseMessage(data.message);
           localStorage.setItem('JWT', data.JWT)
           localStorage.setItem('user_id', data.user)
-          const setLogin = props.setLogin;
-          setLogin(true);
           navigate("/");
         } else if (data.error) {
           setResponseMessage(data.error);
