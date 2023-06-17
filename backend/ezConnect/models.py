@@ -58,35 +58,80 @@ class StudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
     is_published = Column(Boolean, nullable=False, default=False)
-    title = Column(String(150))
+    title = Column(String(150), default="Blank study plan")
     description = Column(Text)
-    num_of_likes = Column(Integer, default = 0)
-    creater_id = Column(Integer, db.ForeignKey('creator.id'), nullable=False)
+    num_of_likes = Column(Integer, db.CheckConstraint('num_of_likes>=0'), default = 0)
+    creator_id = Column(Integer, db.ForeignKey('users.id'), nullable=False)
     semesters = db.relationship('StudyPlanSemester', backref='study_plan')
 
     def __repr__(self):
         return f'<Study plan created by {self.creator.name} last updated at {self.date_updated}>'
 
+    def toJSON(self):
+        semester_ids = {}
+        for semester in self.semesters:
+            semester_ids[semester.semester_number] = semester.id
+
+        return {
+            "id": self.id,
+            "date_updated": self.date_updated,
+            "is_published": self.is_published,
+            "title": self.title,
+            "description": self.description,
+            "num_of_likes": self.num_of_likes,
+            "creator_id": self.creator_id,
+            "semester_ids": semester_ids
+        }
+
 semester_course = db.Table('semester_course',
-    Column('semester_id', Integer, db.ForeignKey('user.id')),
-    Column('course_id', Integer, db.ForeignKey('course.id'))
+    Column('study_plan_semester_id', UUID(as_uuid=True), db.ForeignKey('study_plan_semester.id')),
+    Column('course_code', String(8), db.ForeignKey('course.course_code'))
 )
 
 class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    semester_number = Column(Integer, nullable=False, unique=True)
     total_units = Column(Integer, nullable=False, default=0)
     study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
 
+    def __repr__(self):
+        return f'<Semester for study plan with id: {self.study_plan_id}>'
+    
+    def toJSON(self):
+        course_codes = []
+        for course in self.courses:
+            course_codes.append(course.course_code)
+
+        return {
+            "id": self.id,
+            "semester_number": self.semester_number,
+            "total_units": self.total_units,
+            "course_codes": course_codes
+        }
+
+prerequisite = db.Table('prerequisites',
+    Column('prerequisite_id', String(8), db.ForeignKey('course.course_code')),
+    Column('course_id', String(8), db.ForeignKey('course.course_code'))
+)
+
 class Course(db.Model):
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    course_code = Column(String(8), unique=True, nullable=False)
+    course_code = Column(String(8), primary_key=True, nullable=False)
     course_name = Column(String(100))
     number_of_units = Column(Integer, nullable=False)
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
-    prerequisites = db.relationship('Prerequisite', backref='prerequisite_for')
+    prerequisites = db.relationship(
+        'Course', 
+        secondary=prerequisite, 
+        primaryjoin=course_code == prerequisite.c.course_id,
+        secondaryjoin=course_code == prerequisite.c.prerequisite_id,
+        backref='required_by'
+    )
 
-class Programme(db.Model):
+    def __repr__(self):
+        return f'<Course: {self.course_code} {self.course_name} ({self.number_of_units} units)>'
+
+class AcademicPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(150), nullable=False)
