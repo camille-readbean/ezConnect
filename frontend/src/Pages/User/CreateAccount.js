@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
+import { secureApiRequest } from "../../ApiRequest";
 
 function CreateAccount() {
   const [responseMessage, setResponseMessage] = useState("");
@@ -43,21 +44,8 @@ function CreateAccount() {
       request_body.programme = event.target.programme.value;
     }
     
-    instance.acquireTokenSilent(
-      {
-        scopes: ["email", "profile", "openid", "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"],
-        account: activeAccount
-      }
-    ).then( (response) => {
-      fetch(process.env.REACT_APP_API_ENDPOINT + `/api/user/create-user`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer "+ response.accessToken
-        },
-        body: JSON.stringify(request_body),
-      }).then((res) => res.json())
-        .then((data) => {
+    secureApiRequest(instance, "PUT", '/api/user/create-user', request_body)
+      .then((data) => {
           if (data.message) {
             localStorage.removeItem(`${activeAccount.username} ezConnect_new_user`);
             localStorage.setItem(`${activeAccount.username} ezConnect_new_user`, 'false');
@@ -69,8 +57,8 @@ function CreateAccount() {
           } else if (data.detail) {
             setResponseMessage(data.detail);
           }
-      })}
-    );
+      })
+
     
   };
 

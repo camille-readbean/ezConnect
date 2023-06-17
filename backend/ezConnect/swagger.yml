@@ -113,7 +113,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  user:
+                  azure_ad_oid:
+                    type: string
+                  user_id:
+                    type: string
+                  name:
                     type: string
         '401':
           description: Unauthorized

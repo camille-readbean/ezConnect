@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { MsalProvider, useIsAuthenticated } from '@azure/msal-react';
-import { EventType } from '@azure/msal-browser';
+// import { useEffect, useState } from "react";
+import { MsalProvider } from '@azure/msal-react';
 import { Route, Routes } from "react-router-dom";
 import LoginPage from "./Pages/LoginPage";
 import AboutUs from "./Pages/AboutUs";
@@ -13,28 +12,23 @@ import Footer from "./Components/Footer";
 import ResourceRespository from "./Pages/ResourceRespository";
 import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
 
-import { b2cPolicies } from './authConfig';
-// import { compareIssuingPolicy } from './utils/claimUtils';
 
 
 const Pages = () => {
-  // const [isLoggedIn, setLogin] = useState(false);
-  const isLoggedIn = useIsAuthenticated();
-
   return (
     <>
       <header>
-        <Navigation isLoggedIn={isLoggedIn}/>
+        <Navigation/>
       </header>
       <body>
         <Routes>
           <Route
             path="/"
-            element={<AboutUs isLoggedIn={isLoggedIn}/>}
+            element={<AboutUs />}
           />
           <Route
             path="/homepage"
-            element={<Homepage isLoggedIn={isLoggedIn} />}
+            element={<Homepage />}
           />
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/user/create-account" element={<CreateAccount />} />

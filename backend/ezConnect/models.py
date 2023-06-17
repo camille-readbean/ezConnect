@@ -15,10 +15,7 @@ class User(db.Model):
     azure_ad_oid = Column(UUID(as_uuid=True), unique=True)
     name = Column(String(50))
     email = Column(String(120), unique=True)
-    # password_hash = Column(LargeBinary())
-    # salt = Column(LargeBinary())
     year = Column(Integer)
-    # course = Column(String(120))
     programmes = db.relationship('Programme', backref='users', secondary='programme_user')
     degrees = db.relationship('Degree', backref='users', secondary='degree_user')
 

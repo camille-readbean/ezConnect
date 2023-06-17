@@ -1,10 +1,8 @@
 # from flask import Config
-from datetime import datetime, timedelta
 from ezConnect.config import DOMAINS, FRONTEND_HOSTNAME
 from ezConnect.utils.emailer import send_email
 from ezConnect.models import User, db
 import uuid
-# from ezConnect.auth.login import _hash_password, _get_user
 
 import traceback
 

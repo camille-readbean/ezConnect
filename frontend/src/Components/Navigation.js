@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useIsAuthenticated } from '@azure/msal-react';
-import { InteractionStatus } from "@azure/msal-browser"; 
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import LoginModal from "./LoginModal";
 
 function Navigation(props) {
@@ -11,13 +10,7 @@ function Navigation(props) {
     const [showLoginModal, setLoginModal] = useState(false);
     const [isShowingNavbar, setShowNavbar] = useState(false);
 
-    const { instance, inProgress } = useMsal();
-    let activeAccount;
-    const isLoggedIn = useIsAuthenticated();
-
-    if (instance) {
-        activeAccount = instance.getActiveAccount();
-    }
+    const { instance} = useMsal();
 
     const handleLogoutRedirect = () => {
       instance.logoutRedirect({
@@ -39,7 +32,7 @@ function Navigation(props) {
     >
       <div className="flex items-center justify-between">
         <Link to="/" className="flex gap-2">
-          <img src="apple-touch-icon.png" alt="Logo" className="h-6 w-auto" />
+          <img src="/apple-touch-icon.png" alt="Logo" className="h-6 w-auto" />
           <p className="font-bold hover:text-gray-100 transition">ezConnect</p>
         </Link>
 
@@ -94,15 +87,6 @@ function Navigation(props) {
         <UnauthenticatedTemplate>
           <Link onClick={handleLoginPress} className="navBarLink">Login</Link>
         </UnauthenticatedTemplate>
-        {/* {isLoggedIn ? (
-          <button onClick={handleLogout} className="navBarLink">
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="navBarLink">
-            Login
-          </Link>
-        )} */}
       </div>
     </nav>
     </>

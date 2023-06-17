@@ -6,7 +6,6 @@ import { useEffect } from "react";
 function Homepage(props) {
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
-  // console.log(props.isLoggedIn)
   
   const navigate = useNavigate();
   const isAuthenicated = useIsAuthenticated();

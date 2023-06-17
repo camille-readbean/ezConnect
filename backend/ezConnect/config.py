@@ -5,7 +5,7 @@ DOMAINS = ["u.nus.edu"]
 
 DATABASE_USER = "postgres"
 DATABASE_PASSWORD = "test"
-DATABASE_HOSTNAME = 'postgresql-server'
+DATABASE_HOSTNAME = 'localhost'
 SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOSTNAME}:5432/ezConnect"
 
 # FORMAT '{hostname}:{port}'

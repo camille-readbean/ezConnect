@@ -64,7 +64,10 @@ def decode_token(token):
         raise Unauthorized(description=str(e)) from e
 
 
-# user from subject_field
+# user from "sub" property of token_info
+# see: https://connexion.readthedocs.io/en/stable/security.html
 def who_am_i(token_info, user):
     # return {"user": token_info['oid']}, 200
-    return {"user": user}, 200
+    return {"azure_ad_oid": user, 
+            "user_id": 'not implemented',
+            "name": token_info['name']}, 200
