@@ -1,19 +1,13 @@
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useIsAuthenticated } from '@azure/msal-react';
+import { useMsal } from '@azure/msal-react';
 
 function LoginModal({setLoginModal}) {
-    const { instance, inProgress } = useMsal();
-    let activeAccount;
-    const isLoggedIn = useIsAuthenticated();
-
-    if (instance) {
-        activeAccount = instance.getActiveAccount();
-    }
+    const { instance} = useMsal();
 
     const handleLoginRedirect = () => {
         instance
             .loginRedirect({
-                scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"]
-                // redirectUri: '/homepage',
+                scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"],
+                redirectUri: '/homepage',
             })
             // .loginRedirect()
             .catch((error) => console.log(error));
@@ -22,18 +16,6 @@ function LoginModal({setLoginModal}) {
     const closeModal = () => {
         setLoginModal(false);
     }
-
-    // const handleLogout = () => {
-    //     localStorage.removeItem('JWT')
-    //     localStorage.removeItem('user_id')
-    //     setLogin(false);
-    // }
-
-    const handleLogoutRedirect = () => {
-        instance.logoutRedirect({
-            mainWindowRedirectUri: '/', // redirects the top level app after logout
-        });
-    };
 
     return (
     <div>
@@ -44,9 +26,9 @@ function LoginModal({setLoginModal}) {
             </div>
             <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
               <div className="p-4">
-                <h2 className="text-xl mb-4">Login / Create an account using your school Microsoft account</h2>
+                <h2 className="text-xl mb-4">Login / Create an account</h2>
                 <p className="text-sm mb-4">
-                  Press the button below to be redirected for login.
+                  Press the button below to be redirected for login using school Microsoft account.
                 </p>
                 <button
                   onClick={handleLoginRedirect}

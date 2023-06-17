@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { InteractionStatus } from "@azure/msal-browser"; 
-// import { loginRequest, b2cPolicies } from '../authConfig';
-import { b2cPolicies } from '../authConfig';
 import LoginModal from "./LoginModal";
 
 function Navigation(props) {
     // const isLoggedIn = props.isLoggedIn;
-    const setLogin = props.setLogin;
     
     const [showLoginModal, setLoginModal] = useState(false);
     const [isShowingNavbar, setShowNavbar] = useState(false);
@@ -22,27 +19,11 @@ function Navigation(props) {
         activeAccount = instance.getActiveAccount();
     }
 
-    const handleLoginRedirect = () => {
-        instance
-            .loginRedirect({
-                scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"],
-                // redirectUri: '/homepage',
-            })
-            // .loginRedirect()
-            .catch((error) => console.log(error));
-    };
-    
-
-    // const handleLogout = () => {
-    //     localStorage.removeItem('JWT')
-    //     localStorage.removeItem('user_id')
-    //     setLogin(false);
-    // }
-
     const handleLogoutRedirect = () => {
-        instance.logoutRedirect({
-            mainWindowRedirectUri: '/', // redirects the top level app after logout
-        });
+      instance.logoutRedirect({
+        mainWindowRedirectUri: '/', // redirects the top level app after logout
+      });
+      // sessionStorage.clear();
     };
 
     const handleLoginPress = () => {
