@@ -5,7 +5,7 @@ DOMAINS = ["u.nus.edu"]
 
 DATABASE_USER = "postgres"
 DATABASE_PASSWORD = "test"
-DATABASE_HOSTNAME = 'postgresql-server'
+DATABASE_HOSTNAME = 'localhost'
 SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOSTNAME}:5432/ezConnect"
 
 # FORMAT '{hostname}:{port}'
@@ -15,9 +15,14 @@ MAILERCFW_API_KEY = os.environ.get("MAILERCFW_API_KEY")
 MAILERCFW_API_URL = "https://mailercfw.readbean.workers.dev/mailercfw/EzConnectMailerr"
 
 ## JWT Token authentication
-JWT_ISSUER = "me.ruibin.ezconnect"
+JWT_ISSUER = "https://ezconnecttesting.b2clogin.com/e0305e3f-2b8a-4415-a1e8-0fb47ce870a7/v2.0/"
 # Dont use this in production please
 JWT_SECRET = "12345678910"
 # 1 Hour
 JWT_LIFETIME_SECONDS = 60 * 60 * 6
-JWT_ALGORITHM = "HS256"
+JWT_ALGORITHMS = "HS256"
+
+## OAuth and OpenID connect stuff
+JWT_KEY_URL = "https://ezconnecttesting.b2clogin.com/" + \
+    "ezconnecttesting.onmicrosoft.com/b2c_1_ezconnectdev_susi/discovery/v2.0/keys"
+JWT_AUD = "31e1fcdd-460b-4509-af8b-64fdbd68440a"

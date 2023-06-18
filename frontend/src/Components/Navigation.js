@@ -1,27 +1,38 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useState } from "react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import LoginModal from "./LoginModal";
 
 function Navigation(props) {
-  const isLoggedIn = props.isLoggedIn;
-  const setLogin = props.setLogin;
+    // const isLoggedIn = props.isLoggedIn;
+    
+    const [showLoginModal, setLoginModal] = useState(false);
+    const [isShowingNavbar, setShowNavbar] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("JWT");
-    localStorage.removeItem("user_id");
-    setLogin(false);
-  };
+    const { instance} = useMsal();
 
-  const [isShowingNavbar, setShowNavbar] = useState(false);
+    const handleLogoutRedirect = () => {
+      instance.logoutRedirect({
+        mainWindowRedirectUri: '/', // redirects the top level app after logout
+      });
+      // sessionStorage.clear();
+    };
+
+    const handleLoginPress = () => {
+        setLoginModal(true)
+    }
 
   return (
+    <>
+    {showLoginModal && <LoginModal setLoginModal={setLoginModal} />}
     <nav
       id="navbar"
       className="bg-sky-500 text-white fixed w-full z-10 top-0 p-3 shadow-md"
     >
       <div className="flex items-center justify-between">
         <Link to="/" className="flex gap-2">
-          <img src="ezConnect_logo.png" alt="Logo" className="h-6 w-auto" />
+          <img src="/apple-touch-icon.png" alt="Logo" className="h-6 w-auto" />
           <p className="font-bold hover:text-gray-100 transition">ezConnect</p>
         </Link>
 
@@ -38,15 +49,12 @@ function Navigation(props) {
           <Link to="/resourcerespository" className="navBarLink">
             Resources
           </Link>
-          {isLoggedIn ? (
-            <button onClick={handleLogout} className="navBarLink">
-              Logout
-            </button>
-          ) : (
-            <Link to="/login" className="navBarLink">
-              Login
-            </Link>
-          )}
+          <AuthenticatedTemplate>
+            <Link onClick={handleLogoutRedirect} className="navBarLink">Logout</Link>
+          </AuthenticatedTemplate>
+          <UnauthenticatedTemplate>
+            <Link onClick={handleLoginPress} className="navBarLink">Login</Link>
+          </UnauthenticatedTemplate>
         </div>
 
         <GiHamburgerMenu
@@ -73,17 +81,15 @@ function Navigation(props) {
         <Link to="/resourcerespository" className="navBarLink">
           Resources
         </Link>
-        {isLoggedIn ? (
-          <button onClick={handleLogout} className="navBarLink">
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="navBarLink">
-            Login
-          </Link>
-        )}
+        <AuthenticatedTemplate>
+          <Link onClick={handleLogoutRedirect} className="navBarLink">Logout</Link>
+        </AuthenticatedTemplate>
+        <UnauthenticatedTemplate>
+          <Link onClick={handleLoginPress} className="navBarLink">Login</Link>
+        </UnauthenticatedTemplate>
       </div>
     </nav>
+    </>
   );
 }
 
