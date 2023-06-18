@@ -254,7 +254,11 @@ paths:
       operationId: "ezConnect.study_plan.studyplan.get_personal_study_plans"
       summary: "Read a collection of personal study plans"
       parameters:
-        - $ref: "#/components/parameters/user_id"
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
       responses:
         '200': 
           description: Read a collection of personal study plans

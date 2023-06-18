@@ -74,7 +74,7 @@ class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     semester_number = Column(Integer, nullable=False, unique=True)
     total_units = Column(Integer, nullable=False, default=0)
-    study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plans.id'))
+    study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
 
     def __repr__(self):
@@ -93,8 +93,8 @@ class StudyPlanSemester(db.Model):
         }
 
 prerequisite = db.Table('prerequisites',
-    Column('prerequisite_id', String(8), db.ForeignKey('course.course_code')),
-    Column('course_id', String(8), db.ForeignKey('course.course_code'))
+    Column('prerequisite_code', String(8), db.ForeignKey('course.course_code')),
+    Column('course_code', String(8), db.ForeignKey('course.course_code'))
 )
 
 class Course(db.Model):
@@ -106,8 +106,8 @@ class Course(db.Model):
     prerequisites = db.relationship(
         'Course', 
         secondary=prerequisite, 
-        primaryjoin=course_code == prerequisite.c.course_id,
-        secondaryjoin=course_code == prerequisite.c.prerequisite_id,
+        primaryjoin=course_code == prerequisite.c.course_code,
+        secondaryjoin=course_code == prerequisite.c.prerequisite_code,
         backref='required_by'
     )
 
@@ -115,7 +115,7 @@ class Course(db.Model):
         return f'<Course: {self.course_code} {self.course_name} ({self.number_of_units} units)>'
 
 course_user = db.Table('course_user',
-    Column('course_id', UUID(as_uuid=True), db.ForeignKey('course.id')),
+    Column('course_code', String(8), db.ForeignKey('course.course_code')),
     Column('user_id', Integer, db.ForeignKey('users.id'))
 )
 
@@ -134,5 +134,5 @@ class Degree(db.Model):
 
 degree_user = db.Table('degree_user',
     Column('degree_id', UUID(as_uuid=True), db.ForeignKey('degree.id')),
-    Column('course_id', Integer, db.ForeignKey('users.id'))
+    Column('user_id', Integer, db.ForeignKey('users.id'))
 )
