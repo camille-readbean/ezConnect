@@ -23,8 +23,7 @@ def create_user(body):
         db.session.commit()
         return {"message": f"User {new_user.name}" + \
                 f" {new_user.azure_ad_oid} Year {new_user.year} created" + \
-                f"\nYou will be redirected shortly",
-                "userid": new_user.id}, 200
+                f"\nYou will be redirected shortly"}, 200
         # return {"message": "test"}
     except Exception as e:
         db.session.rollback()
