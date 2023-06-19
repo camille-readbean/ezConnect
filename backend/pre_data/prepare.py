@@ -31,7 +31,7 @@ def check_semester(course: dict, sem: int):
             return True
     return False
 
-if not pathlib.Path('courses.csv').exists() or True:
+if not pathlib.Path('courses.csv').exists():
     print("Creating UUIDs for courses.csv")
     max_len = 0;
     with open('moduleInfo.json', 'r') as input_file, open('courses.csv', 'w') as output_file:

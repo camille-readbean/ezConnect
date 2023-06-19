@@ -18,7 +18,7 @@ class User(db.Model):
     study_plans = db.relationship('StudyPlan', backref='creator')
 
     def __init__(self, azure_ad_oid: uuid, name: String, email: String,
-                 year: Integer, degree: String, programme: String):
+                 year: Integer):
         self.azure_ad_oid = azure_ad_oid
         self.name = name
         self.email = email
@@ -26,11 +26,10 @@ class User(db.Model):
         # TO DO Implement degree and programme
         # self.degrees = degree
         # self.programme
-        print(f"User progamme: {programme} - not yet implemented")
-        print(f"User degree: {degree} - not yet implemented")
+        print(f"User {name} created")
 
     def __repr__(self):
-        return f'<User {self.name!r}>'
+        return f'<User {self.name!r} - Year {self.year} {self.degrees}, {self.programmes}>'
     
 class StudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
