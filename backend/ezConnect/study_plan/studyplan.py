@@ -1,6 +1,7 @@
 from flask import abort
 from datetime import datetime
 from ezConnect.models import StudyPlan, db
+from .study_plan_semester import create_semester
 
 # Create a new study plan
 def create_study_plan(body):
@@ -9,6 +10,8 @@ def create_study_plan(body):
     )
     db.session.add(new_study_plan)
     db.session.commit()
+    for i in range(8):
+        create_semester(new_study_plan.id)
     return {"message": f"Study plan <Title: {new_study_plan.title}> created at <Datetime: {new_study_plan.date_updated}> by <User: {new_study_plan.creator_id}>"}, 200
 
 # Read a collection of published study plans
