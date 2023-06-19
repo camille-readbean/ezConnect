@@ -9,7 +9,6 @@ import traceback
 # /api/user/create-account
 def create_user(body):
     try:
-        # # TODO: Update the course to reflect new structure after data normalisation
         programme = None
         if 'programme' in body.keys():
             programme = body['programme']
