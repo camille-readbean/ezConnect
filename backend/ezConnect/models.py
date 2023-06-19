@@ -1,18 +1,14 @@
-from sqlalchemy import Column, Integer, String, DateTime, LargeBinary, Boolean, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint
 from flask_sqlalchemy import SQLAlchemy
-from Crypto.Random import get_random_bytes
-from base64 import urlsafe_b64encode
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
-
 
 db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    azure_ad_oid = Column(UUID(as_uuid=True), unique=True)
+    azure_ad_oid = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String(50))
     email = Column(String(120), unique=True)
     year = Column(Integer)
@@ -43,7 +39,7 @@ class StudyPlan(db.Model):
     title = Column(String(150), default="Blank study plan")
     description = Column(Text)
     num_of_likes = Column(Integer, db.CheckConstraint('num_of_likes>=0'), default = 0)
-    creator_id = Column(Integer, db.ForeignKey('users.id'), nullable=False)
+    creator_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
     semesters = db.relationship('StudyPlanSemester', backref='study_plan')
 
     def __repr__(self):
@@ -67,15 +63,16 @@ class StudyPlan(db.Model):
 
 semester_course = db.Table('semester_course',
     Column('study_plan_semester_id', UUID(as_uuid=True), db.ForeignKey('study_plan_semester.id')),
-    Column('course_code', String(8), db.ForeignKey('course.course_code'))
+    Column('course_code', String(10), db.ForeignKey('course.course_code'))
 )
 
 class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    semester_number = Column(Integer, nullable=False, unique=True)
+    semester_number = Column(Integer, nullable=False)
     total_units = Column(Integer, nullable=False, default=0)
     study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
+    __table_args__ = (UniqueConstraint('study_plan_id', 'semester_number', name='semesters_in_study_plan_unique'),)
 
     def __repr__(self):
         return f'<Semester for study plan with id: {self.study_plan_id}>'
@@ -93,12 +90,12 @@ class StudyPlanSemester(db.Model):
         }
 
 prerequisite = db.Table('prerequisites',
-    Column('prerequisite_code', String(8), db.ForeignKey('course.course_code')),
-    Column('course_code', String(8), db.ForeignKey('course.course_code'))
+    Column('prerequisite_code', String(10), db.ForeignKey('course.course_code')),
+    Column('course_code', String(10), db.ForeignKey('course.course_code'))
 )
 
 class Course(db.Model):
-    course_code = Column(String(8), primary_key=True, nullable=False)
+    course_code = Column(String(10), primary_key=True, nullable=False)
     course_name = Column(String(100))
     number_of_units = Column(Integer, nullable=False)
     is_offered_in_sem1 = Column(Boolean, nullable=False)
@@ -115,8 +112,8 @@ class Course(db.Model):
         return f'<Course: {self.course_code} {self.course_name} ({self.number_of_units} units)>'
 
 course_user = db.Table('course_user',
-    Column('course_code', String(8), db.ForeignKey('course.course_code')),
-    Column('user_id', Integer, db.ForeignKey('users.id'))
+    Column('course_code', String(10), db.ForeignKey('course.course_code')),
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'))
 )
 
 class Programme(db.Model):
@@ -125,7 +122,7 @@ class Programme(db.Model):
 
 programme_user = db.Table('programme_user',
     Column('programme_id', UUID(as_uuid=True), db.ForeignKey('programme.id')),
-    Column('user_id', Integer, db.ForeignKey('users.id'))
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'))
 )
 
 class Degree(db.Model):
@@ -134,5 +131,5 @@ class Degree(db.Model):
 
 degree_user = db.Table('degree_user',
     Column('degree_id', UUID(as_uuid=True), db.ForeignKey('degree.id')),
-    Column('user_id', Integer, db.ForeignKey('users.id'))
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'))
 )

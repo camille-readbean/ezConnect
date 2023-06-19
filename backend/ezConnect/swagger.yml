@@ -139,35 +139,8 @@ paths:
                 properties:
                   message:
                     type: string
-                  user:
-                    type: integer
         "409":
           description: "Invalid request: user already exist in database"
-  /auth/login/who-am-i:
-    get:
-      operationId: "ezConnect.auth.login.who_am_i"
-      tags:
-        - "Auth"
-      summary: "Returns the user ID of the authenticated user"
-      security:
-        - jwt: []
-      responses:
-        '200':
-          description: User ID
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  azure_ad_oid:
-                    type: string
-                  user_id:
-                    type: string
-                  name:
-                    type: string
-        '401':
-          description: Unauthorized
-
 
 
   /studyplan:
@@ -199,11 +172,12 @@ paths:
               type: object
               properties:
                 creator_id:
-                  type: integer
+                  type: string
+                  format: uuid
               required:
                 - creator_id
             example:
-              creator_id: 3
+              creator_id: 12a3b456-c7de-44ce-bde9-a123bc00237d
       responses:
         '200':
           description: Study plan successfully created
@@ -286,11 +260,7 @@ paths:
         - Study Plan
       summary: "Read a collection of personal study plans"
       parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: integer
+        - $ref: "#/components/parameters/user_id"
       responses:
         '200': 
           description: Read a collection of personal study plans
