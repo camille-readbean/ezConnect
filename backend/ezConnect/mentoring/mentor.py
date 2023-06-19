@@ -1,9 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Unauthorized
-import json
 import traceback
-import uuid
 
 from ezConnect.models import db, User, Course, MentorPosting
 

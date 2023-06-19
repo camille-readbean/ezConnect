@@ -188,7 +188,7 @@ class MentorRequest(db.Model):
         self.is_published = True
 
     def __repr__(self):
-        return f'<User {self.user_mentor} mentoring {self.course_code}>'
+        return f'<User {self.user_id} Looking for mentor in {self.course_code}>'
     
 class MentorMenteeMatch(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -200,6 +200,12 @@ class MentorMenteeMatch(db.Model):
 
     # mentor = db.relationship("User", foreign_keys=[mentor_id], backref='mentored_courses')
     # mentee = db.relationship("User", foreign_keys=[mentee_id], backref='mentee_courses')
+
+    def __init__(self, mentor_id, mentee_id, course_code, status):
+        self.mentor_id = mentor_id
+        self.mentee_id = mentee_id
+        self.course_code = course_code
+        self.status = status
 
     def __repr__(self):
         return f'<MentorMenteeCourse: Mentor {self.mentor_id}, Mentee {self.mentee_id}, Course {self.course_code}>'

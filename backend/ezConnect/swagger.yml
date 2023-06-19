@@ -191,11 +191,30 @@ paths:
                     type: string
         "409":
           description: "Invalid request: user already exist in database"
-  /mentoring/new-mentor:
+  /mentoring/mentors/new-mentor:
     put:
       tags: 
         - Mentoring
       operationId: "ezConnect.mentoring.mentor.create_mentor"
+      summary: Create a mentoring post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentoringPost'
+      security:
+        - jwt: []
+      responses:
+        '201':
+          description: Mentoring post created successfully
+        '400':
+          description: Invalid request body
+  /mentoring/mentee/new-mentee:
+    put:
+      tags: 
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.create_request"
       summary: Create a mentoring post
       requestBody:
         required: true
