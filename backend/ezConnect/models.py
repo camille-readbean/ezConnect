@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint, Float
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
@@ -69,7 +69,7 @@ semester_course = db.Table('semester_course',
 class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     semester_number = Column(Integer, nullable=False)
-    total_units = Column(Integer, nullable=False, default=0)
+    total_units = Column(Float, nullable=False, default=0)
     study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
     __table_args__ = (UniqueConstraint('study_plan_id', 'semester_number', name='semesters_in_study_plan_unique'),)
@@ -95,9 +95,9 @@ prerequisite = db.Table('prerequisites',
 )
 
 class Course(db.Model):
-    course_code = Column(String(10), primary_key=True, nullable=False)
+    course_code = Column(String(12), primary_key=True, nullable=False)
     course_name = Column(String(100))
-    number_of_units = Column(Integer, nullable=False)
+    number_of_units = Column(Float, nullable=False)
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
     prerequisites = db.relationship(

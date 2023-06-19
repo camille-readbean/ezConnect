@@ -31,8 +31,9 @@ def check_semester(course: dict, sem: int):
             return True
     return False
 
-if not pathlib.Path('courses.csv').exists():
+if not pathlib.Path('courses.csv').exists() or True:
     print("Creating UUIDs for courses.csv")
+    max_len = 0;
     with open('moduleInfo.json', 'r') as input_file, open('courses.csv', 'w') as output_file:
         courses = json.load(input_file)
         writer = csv.writer(output_file)
@@ -40,6 +41,7 @@ if not pathlib.Path('courses.csv').exists():
                          'is_offered_in_sem1', 'is_offered_in_sem1'])
         print(f"{len(courses)} courses found")
         for course in courses:
+            max_len = len(course['moduleCode']) if len(course['moduleCode']) > max_len else max_len
             offered_sem_1, offered_sem_2 = check_semester(course, 1), check_semester(course, 2)
             row = [
                 course['moduleCode'],
@@ -49,5 +51,6 @@ if not pathlib.Path('courses.csv').exists():
                 offered_sem_2
             ]
             writer.writerow(row)
+        print(f'max length of course_code {max_len}')
 else:
     print("skipping creating UUID for programmes_raw.csv")
