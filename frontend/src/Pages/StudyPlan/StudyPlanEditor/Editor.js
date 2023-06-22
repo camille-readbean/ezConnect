@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import html2canvas from "html2canvas";
 
 function Editor({ studyPlanId }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState({});
@@ -36,7 +37,7 @@ function Editor({ studyPlanId }) {
       .catch((err) => {
         console.error(err);
       });
-  }, [isFetchAgain]);
+  }, [studyPlanId, isFetchAgain]);
 
   const updateTitle = (event) => {
     const newTitle = event.target.value;
@@ -105,6 +106,19 @@ function Editor({ studyPlanId }) {
     });
   };
 
+  const downloadStudyPlan = () => {
+    console.log("trying to print study plan");
+    const studyPlan = document.getElementById("studyPlan");
+    html2canvas(studyPlan).then((canvas) => {
+      const image = canvas.toDataURL("image/png");
+      var anchor = document.createElement('a');
+      anchor.setAttribute("href", image);
+      anchor.setAttribute("download", `${title.replace(/ /g,"_")}.png`);
+      anchor.click();
+      anchor.remove();
+    })
+  }
+
   return (
     <>
       <input
@@ -113,7 +127,7 @@ function Editor({ studyPlanId }) {
         onChange={updateTitle}
         className="w-full text-2xl font-semibold px-1 my-2"
       />
-      <div className="container mx-auto px-10 mb-2">
+      <div id="studyPlan" className="container mx-auto px-10 mb-2">
         <DragDropContext
           onDragEnd={(result) =>
             onDragEnd(result, semesterInformation, setSemesterInformation)
@@ -127,7 +141,7 @@ function Editor({ studyPlanId }) {
 
               return (
                 <div className="w-56 p-1">
-                  <h2 className="font-semibold text-lg">
+                  <h2 className="font-semibold text-lg pb-2">
                     Y{Math.ceil(semesterNumber / 2)}S
                     {((semesterNumber + 1) % 2) + 1}
                   </h2>
@@ -185,6 +199,7 @@ function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
+      <button onClick={downloadStudyPlan} className="bg-sky-500 text-white rounded-lg p-2 m-3">Download</button>
     </>
   );
 }
