@@ -12,7 +12,7 @@ def create_study_plan(body):
     db.session.commit()
     for i in range(8):
         create_semester(new_study_plan.id)
-    return {"message": f"Study plan <Title: {new_study_plan.title}> created at <Datetime: {new_study_plan.date_updated}> by <User: {new_study_plan.creator_id}>"}, 200
+    return {"study_plan_id": new_study_plan.id}, 200
 
 # Read a collection of published study plans
 def get_published_study_plans():
@@ -72,4 +72,4 @@ def delete_study_plan(study_plan_id):
 def get_personal_study_plans(user_id):
     personal_study_plans = StudyPlan.query.filter_by(creator_id=user_id).all()
     personal_study_plans = list(map(lambda study_plan: study_plan.toJSON(), personal_study_plans))
-    return personal_study_plans, 200
+    return {"personal_study_plan_data": personal_study_plans}, 200

@@ -49,7 +49,6 @@ function CreateAccount() {
           if (data.message) {
             localStorage.removeItem(`${activeAccount.username} ezConnect_new_user`);
             localStorage.setItem(`${activeAccount.username} ezConnect_new_user`, 'false');
-            sessionStorage.setItem('ezConnect_user_id', data.userid);
             setResponseMessage(data.message);
             navigate('/homepage');
           } else if (data.error) {
