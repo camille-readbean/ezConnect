@@ -93,6 +93,8 @@ def get_mentees(token_info):
 def request_mentee(token_info, mentor_posting_id, body):
     try:
         mentor_request: MentorRequest = MentorRequest.query.get(mentor_posting_id)
+        if mentor_request is None:
+            return {'error' : 'mentor request not found'}, 404
         # Make sure mentor posting is published
         if mentor_request.is_published == False: return {'error': 'Mentee is not published'}, 400
 

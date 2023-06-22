@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: e33931174b06
+Revision ID: 22be9cc508e8
 Revises: 
-Create Date: 2023-06-19 06:04:45.109971
+Create Date: 2023-06-22 09:56:43.275716
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e33931174b06'
+revision = '22be9cc508e8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -55,6 +55,41 @@ def upgrade():
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['degree_id'], ['degree.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.azure_ad_oid'], )
+    )
+    op.create_table('mentor_mentee_match',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('mentor_id', sa.UUID(), nullable=False),
+    sa.Column('mentee_id', sa.UUID(), nullable=False),
+    sa.Column('course_code', sa.String(length=12), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.ForeignKeyConstraint(['course_code'], ['course.course_code'], ),
+    sa.ForeignKeyConstraint(['mentee_id'], ['users.azure_ad_oid'], ),
+    sa.ForeignKeyConstraint(['mentor_id'], ['users.azure_ad_oid'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('mentor_posting',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('date_updated', sa.DateTime(), nullable=False),
+    sa.Column('is_published', sa.Boolean(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('title', sa.String(length=50), nullable=True),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('course_code', sa.String(length=12), nullable=False),
+    sa.ForeignKeyConstraint(['course_code'], ['course.course_code'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.azure_ad_oid'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('mentor_request',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('date_updated', sa.DateTime(), nullable=False),
+    sa.Column('is_published', sa.Boolean(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('title', sa.String(length=50), nullable=True),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('course_code', sa.String(length=12), nullable=False),
+    sa.ForeignKeyConstraint(['course_code'], ['course.course_code'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.azure_ad_oid'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('prerequisites',
     sa.Column('prerequisite_code', sa.String(length=10), nullable=True),
@@ -104,6 +139,9 @@ def downgrade():
     op.drop_table('study_plan')
     op.drop_table('programme_user')
     op.drop_table('prerequisites')
+    op.drop_table('mentor_request')
+    op.drop_table('mentor_posting')
+    op.drop_table('mentor_mentee_match')
     op.drop_table('degree_user')
     op.drop_table('course_user')
     op.drop_table('users')

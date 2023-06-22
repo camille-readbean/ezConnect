@@ -94,6 +94,8 @@ def get_mentors(token_info):
 def request_mentor(token_info, mentor_posting_id, body):
     try:
         posting: MentorPosting = MentorPosting.query.get(mentor_posting_id)
+        if posting is None:
+            return {'error' : 'mentor posting not found'}, 404
         # Make sure mentor posting is published
         if posting.is_published == False: return {'error': 'Mentor is not published'}, 400
 

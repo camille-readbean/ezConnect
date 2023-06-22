@@ -466,7 +466,7 @@ paths:
                 properties:
                   error:
                     type: string
-  /mentoring/matches::
+  /mentoring/matches:
     get:
       summary: Get matches for a user
       tags:

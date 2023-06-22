@@ -11,9 +11,12 @@ from ezConnect.models import db, User, Course, MentorPosting, MentorRequest, Men
 def accept_mentee(token_info, mentoring_match_id, body):
     try:
         match: MentorMenteeMatch = MentorMenteeMatch.query.get(mentoring_match_id)
+        if match.status == 'Active':
+            return {'error' : 'Match is already active'}, 401
         # Set status active to reject
-        if body['accept'] == False: 
+        if body['accept'] == False and match.status == 'Pending mentor': 
             match.status = 'Rejected by mentor'
+            db.session.commit()
             # Send email to mentee
             msg = f'Your reqeusted mentor, {match.mentor_user.name} for {match.course_code}' + \
                 f'have rejected the request with the following message: <br>{body["message"]}'
@@ -24,10 +27,12 @@ def accept_mentee(token_info, mentoring_match_id, body):
                 name=match.mentee_user.name,
             )
             return {'message' : 'Rejected student'}, 200
-        # TODO: update check for if already rejected and that status is "Pending mentor"
-
+        if match.status == 'Rejected by mentor':
+            return {'error' : 'You have already rejected the student'}, 401
+        if match.status != 'Pending mentor':
+            return {'error' : f'Not a valid state: {match.status}'}, 401
         match.status = 'Active' 
-        msg = f'Your reqeusted mentor, {match.mentor_user.name} for {match.course_code}' + \
+        msg = f'Your reqeusted mentor, {match.mentor_user.name} for {match.course_code} ' + \
                 f'have accepted the request with the following message: <br>{body["message"]}'
         send_email(
                 subject='Mentoring request accept',
@@ -36,7 +41,7 @@ def accept_mentee(token_info, mentoring_match_id, body):
                 name=match.mentee_user.name,
             )
         mentor_req: MentorRequest = MentorRequest.query \
-            .filter(MentorRequest.user_id == uuid.UUID(token_info['sub'])) \
+            .filter(MentorRequest.user_id == match.mentee_id) \
             .filter(MentorRequest.course_code == match.course_code) \
             .one_or_none()
         # Mentor_request fulfilled, so unpublish it
@@ -51,15 +56,17 @@ def accept_mentee(token_info, mentoring_match_id, body):
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
 
-# TODO: Accept a mentor
 def accept_mentor(token_info, mentoring_match_id, body):
     try:
         match: MentorMenteeMatch = MentorMenteeMatch.query.get(mentoring_match_id)
+        if match.status == 'Active':
+            return {'error' : 'Match is already active'}, 401
         # Set status active to reject
-        if body['accept'] == False: 
+        if body['accept'] == False and match.status == 'Pending mentee': 
             match.status = 'Rejected by mentee'
+            db.session.commit()
             # Send email to mentee
-            msg = f'Your reqeusted mentee, {match.mentee_user.name} for {match.course_code}' + \
+            msg = f'Your reqeusted mentee, {match.mentee_user.name} for {match.course_code} ' + \
                 f'have rejected the request with the following message: <br>{body["message"]}'
             send_email(
                 subject='Mentoring request rejected',
@@ -68,8 +75,10 @@ def accept_mentor(token_info, mentoring_match_id, body):
                 name=match.mentor_user.name,
             )
             return {'message' : 'Rejected student'}, 200
-        # TODO: update check for if already rejected and that status is "Pending mentor"
-
+        if match.status == 'Rejected by mentee':
+            return {'error' : 'You have already rejected the student'}, 401
+        if match.status != 'Pending mentee':
+            return {'error' : f'Not a valid state: {match.status}'}, 401
         match.status = 'Active' 
         msg = f'Your reqeusted mentee, {match.mentee_user.name} for {match.course_code}' + \
                 f'have accepted the request with the following message: <br>{body["message"]}'
