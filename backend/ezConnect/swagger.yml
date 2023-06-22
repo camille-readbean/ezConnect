@@ -85,10 +85,6 @@ components:
         description:
           type: string
           description: Description of the mentoring post
-        user_id:
-          type: string
-          format: uuid
-          description: ID of the mentor creating the post
         course_code:
           type: string
           description: Code of the course user is mentoring
@@ -107,9 +103,9 @@ components:
     MentorPostingResponse:
       type: object
       properties:
-        mentor_posting_uuid:
+        posting_uuid:
           type: string
-          description: UUID of the mentor posting
+          description: UUID of the mentoring posting
         course:
           type: string
           description: Code of the course
@@ -123,6 +119,9 @@ components:
           type: string
           format: date
           description: Date of the last update of the mentor posting
+        name:
+          type: string
+          description: Name of the user behind this posting
     MentorPostingsResponse:
       type: object
       properties:
@@ -160,7 +159,7 @@ components:
     mentor_posting_id:
       in: path
       name: mentor_posting_id
-      description: UUID of the mentor posting to update
+      description: UUID of the mentoring posting to update
       required: true
       schema:
         type: string
@@ -264,6 +263,21 @@ paths:
           description: Mentoring post created successfully
         '400':
           description: Invalid request body
+  /mentoring/mentors:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.get_mentors"
+      summary: return a list of all published mentors
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/mentors/{mentor_posting_id}/update:
     put:
       tags:
@@ -305,21 +319,6 @@ paths:
                 properties:
                   error:
                     type: string
-  /mentoring/mentors:
-    get:
-      tags:
-        - Mentoring
-      operationId: "ezConnect.mentoring.mentor.get_mentors"
-      summary: return a list of all published mentors
-      security:
-        - jwt: []
-      responses:
-        '200':
-          description: Mentors retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/matches/{mentoring_match_id}/accept-mentee:
     post:
       tags:
@@ -356,7 +355,7 @@ paths:
                 properties:
                   error:
                     type: string
-  /mentoring/mentee/new-mentee:
+  /mentoring/mentees/new-mentee:
     put:
       tags: 
         - Mentoring
@@ -375,6 +374,150 @@ paths:
           description: Mentoring post created successfully
         '400':
           description: Invalid request body
+  /mentoring/mentees:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.get_mentees"
+      summary: return a list of all published mentees
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentees retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/mentees/{mentor_posting_id}/update:
+    put:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.update_mentee"
+      summary: Update mentor posting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMentoringPost'
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentor request posting updated successfully
+  /mentoring/mentees/{mentor_posting_id}/request:
+    post:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.request_mentee"
+      summary: Request a mentee for a mentee posting
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /mentoring/matches/{mentoring_match_id}/accept-mentor:
+    post:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.matches.accept_mentor"
+      summary: Accept or reject a mentor for a mentor match
+      parameters:
+        - $ref: '#/components/parameters/mentoring_match_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accept:
+                  type: boolean
+                message:
+                  type: string
+              required:
+                - accept
+                - message
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /mentoring/matches::
+    get:
+      summary: Get matches for a user
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.matches.get_matches"
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mentor_matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        posting_uuid:
+                          type: string
+                        course_code:
+                          type: string
+                        mentee_name:
+                          type: string
+                        status:
+                          type: string
+                  mentee_matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        posting_uuid:
+                          type: string
+                        course_code:
+                          type: string
+                        mentor_name:
+                          type: string
+                        status:
+                          type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /studyplan:
     get:
       operationId: "ezConnect.study_plan.studyplan.get_published_study_plans"

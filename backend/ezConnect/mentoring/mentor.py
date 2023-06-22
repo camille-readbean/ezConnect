@@ -8,11 +8,9 @@ from ezConnect.config import FRONTEND_HOSTNAME
 from ezConnect.models import db, User, Course, MentorPosting, MentorRequest, MentorMenteeMatch
 
 def create_mentor(token_info, body):
-    if body['user_id'] != token_info['sub']:
-        raise Unauthorized(description="User ID mismatch")
     try:
         course: Course = Course.query.get(body['course_code'])
-        user: User = User.query.get(body['user_id'])
+        user: User = User.query.get(token_info['sub'])
         if  course is None:
             return {"error" : f"Course {body['course_code']} not found"}, 404 
         if user is None:
@@ -75,11 +73,12 @@ def get_mentors(token_info):
         for posting in postings:
             rep['postings'].append(
                 {
-                    'mentor_posting_uuid' : posting.id,
+                    'posting_uuid' : posting.id,
                     'course' : posting.course_code,
                     'title' : posting.title,
                     'description' : posting.description,
-                    'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M")
+                    'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+                    'name' : posting.mentor.name
                 }
             )
         # db.session.commit()
@@ -89,6 +88,8 @@ def get_mentors(token_info):
         db.session.rollback()
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
+    
+# TODO: SPECIFIC GET mentor posting FOR A user
     
 def request_mentor(token_info, mentor_posting_id, body):
     try:
@@ -118,14 +119,14 @@ def request_mentor(token_info, mentor_posting_id, body):
             mentor_id=posting.user_id,
             mentee_id=mentor_request.user_id,
             course_code=mentor_request.course_code,
-            status="Pending"
+            status="Pending mentor"
         )
         # Send email to mentor
         mentee = mentor_request.mentee
         mentor = posting.mentor
         db.session.add(mentor_mentee_match)
         db.session.commit()
-        accept_url = f'{FRONTEND_HOSTNAME}/mentoring/mentors/accept?match={mentor_mentee_match.id}'
+        accept_url = f'{FRONTEND_HOSTNAME}/mentoring/matches/accept?match={mentor_mentee_match.id}'
 
         msg = f"<html>Hi {mentor.name}, {mentee.name} wopuld like to be your student in your mentor posting for {posting.course_code}" + \
             f"<center>Please visit <a href='{accept_url}'>{accept_url}</a> to accept or reject</center></html>"
