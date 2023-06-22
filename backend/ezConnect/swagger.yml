@@ -15,7 +15,7 @@ components:
         - name
         - email
         - year
-        - degree
+        - degrees
       properties:
         name:
           type: string
@@ -26,10 +26,26 @@ components:
           type: integer
           maximum: 6
           minimum: 1
-        degree:
-          type: string
-        programme:
-          type: string
+        degrees:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+        programmes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
     StudyPlan:
       type: object
       properties:
@@ -60,6 +76,22 @@ components:
           type: integer
         course_codes:
           type: array
+    MentoringPost:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the mentoring post
+        description:
+          type: string
+          description: Description of the mentoring post
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the mentor creating the post
+        course_code:
+          type: string
+          description: Code of the course user is mentoring
   parameters:
     user_id:
       in: path
@@ -122,11 +154,29 @@ paths:
               $ref: "#/components/schemas/SignUpNewUser"
             example:
               name: "John Doe"
-              email: "EXXXXXXX@u.nus.edu"
+              email: "testemail@ruibin.me"
               year: 2
-              degree: "Double major in Social Work and Psychology"
-              programme: "College of Alice and Peter Tan"
-              azure_ad_oid: 12345678-1234-1234-1234-1234abvdefgh
+              degrees: [
+                {
+                  "id": "fce92068-5d0d-400a-aeb4-2673370b84c5",
+                  "title": "Computer Science"
+                },
+                {
+                  "id": "4a18721c-2f9a-42fd-b3d3-820e2564d352",
+                  "title": "Medicine"
+                }
+              ]
+              programmes: [
+                {
+                  "id": "e219ca40-ed55-4976-ae2a-c46f2a77ae02",
+                  "title": "University Town College Programme"
+                },
+                {
+                  "id": "5102f572-920a-400a-ae2c-3575fb7e8acf",
+                  "title": "Minor in Meteorology and Climate Science"
+                }
+              ]
+              azure_ad_oid: 12345678-1234-1234-1234-1234abcdef00
       security:
         - jwt: []
       responses:
@@ -141,8 +191,44 @@ paths:
                     type: string
         "409":
           description: "Invalid request: user already exist in database"
-
-
+  /mentoring/mentors/new-mentor:
+    put:
+      tags: 
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.create_mentor"
+      summary: Create a mentoring post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentoringPost'
+      security:
+        - jwt: []
+      responses:
+        '201':
+          description: Mentoring post created successfully
+        '400':
+          description: Invalid request body
+  /mentoring/mentee/new-mentee:
+    put:
+      tags: 
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.create_request"
+      summary: Create a mentoring post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentoringPost'
+      security:
+        - jwt: []
+      responses:
+        '201':
+          description: Mentoring post created successfully
+        '400':
+          description: Invalid request body
   /studyplan:
     get:
       operationId: "ezConnect.study_plan.studyplan.get_published_study_plans"

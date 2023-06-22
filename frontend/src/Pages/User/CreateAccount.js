@@ -2,10 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { secureApiRequest } from "../../ApiRequest";
+import Select from "react-select";
+import programmesOptions from "../../programmes.json";
+import degreesOptions from "../../degrees.json";
 
 function CreateAccount() {
   const [responseMessage, setResponseMessage] = useState("");
-
+  const [programmes, setProgrammes] = useState([]);
+  const [degree, setDegree] = useState([]);
+  
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
   const navigate = useNavigate();
@@ -35,14 +40,15 @@ function CreateAccount() {
     const request_body = {
       email: email,
       azure_ad_oid: azure_ad_oid,
-      degree: event.target.degree.value,
+      degrees: degree,
       year: parseInt(event.target.yearofstudy.value),
-      name: name
+      name: name,
+      programmes : programmes
     }
 
-    if (event.target.programme.value) {
-      request_body.programme = event.target.programme.value;
-    }
+    // if (event.target.programme.value) {
+    //   request_body.programme = event.target.programme.value;
+    // }
     
     secureApiRequest(instance, "PUT", '/api/user/create-user', request_body)
       .then((data) => {
@@ -102,24 +108,28 @@ function CreateAccount() {
 
             <p>
               <label for="degree">Degree</label>
-              <input
-                type="text"
-                name="degree"
-                id="degree"
-                placeholder="Computer Science"
-                className="createaccountinputbox flex"
+              <Select 
+                options={degreesOptions}
+                getOptionLabel={option => option.title}
+                getOptionValue={option => option.id}
+                isMulti
                 required
+                onChange={setDegree}
+                name="degree"
+                placeholder="Degree"
               />
             </p>
 
             <p>
-              <label for="programme">Programme</label>
-              <input
-                type="text"
+              <label for="programme">Programme (Optional)</label>
+              <Select 
+                options={programmesOptions}
+                getOptionLabel={option => option.title}
+                getOptionValue={option => option.id}
+                isMulti
+                onChange={setProgrammes}
                 name="programme"
-                id="programme"
-                placeholder="College of Alice and Peter Tan"
-                className="createaccountinputbox"
+                placeholder="Programmes like minors or RCs"
               />
             </p>
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint, Float
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
@@ -14,11 +14,24 @@ class User(db.Model):
     year = Column(Integer)
     programmes = db.relationship('Programme', backref='users', secondary='programme_user')
     degrees = db.relationship('Degree', backref='users', secondary='degree_user')
-
+    
     study_plans = db.relationship('StudyPlan', backref='creator')
 
+    mentor_postings = db.relationship('MentorPosting', backref='mentor')
+    mentor_requests = db.relationship('MentorRequest', backref='mentee')
+    # mentor_mentee_match = db.relationship('MentorMenteeMatch', backref='user')
+    mentoring_match = db.relationship(
+        'MentorMenteeMatch', 
+        primaryjoin="User.azure_ad_oid == MentorMenteeMatch.mentor_id", 
+        backref='mentor_user')
+    mentee_match = db.relationship(
+        'MentorMenteeMatch', 
+        primaryjoin="User.azure_ad_oid == MentorMenteeMatch.mentee_id", 
+        backref='mentee_user')
+
+
     def __init__(self, azure_ad_oid: uuid, name: String, email: String,
-                 year: Integer, degree: String, programme: String):
+                 year: Integer):
         self.azure_ad_oid = azure_ad_oid
         self.name = name
         self.email = email
@@ -26,11 +39,10 @@ class User(db.Model):
         # TO DO Implement degree and programme
         # self.degrees = degree
         # self.programme
-        print(f"User progamme: {programme} - not yet implemented")
-        print(f"User degree: {degree} - not yet implemented")
+        print(f"User {name} created")
 
     def __repr__(self):
-        return f'<User {self.name!r}>'
+        return f'<User {self.name!r} - Year {self.year} {self.degrees}, {self.programmes}>'
     
 class StudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -69,7 +81,7 @@ semester_course = db.Table('semester_course',
 class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     semester_number = Column(Integer, nullable=False)
-    total_units = Column(Integer, nullable=False, default=0)
+    total_units = Column(Float, nullable=False, default=0)
     study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
     __table_args__ = (UniqueConstraint('study_plan_id', 'semester_number', name='semesters_in_study_plan_unique'),)
@@ -95,9 +107,9 @@ prerequisite = db.Table('prerequisites',
 )
 
 class Course(db.Model):
-    course_code = Column(String(10), primary_key=True, nullable=False)
+    course_code = Column(String(12), primary_key=True, nullable=False)
     course_name = Column(String(100))
-    number_of_units = Column(Integer, nullable=False)
+    number_of_units = Column(Float, nullable=False)
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
     prerequisites = db.relationship(
@@ -133,3 +145,67 @@ degree_user = db.Table('degree_user',
     Column('degree_id', UUID(as_uuid=True), db.ForeignKey('degree.id')),
     Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'))
 )
+
+class MentorPosting(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    is_published = Column(Boolean, nullable=False, default=False)
+    description = Column(Text)
+    title = Column(String(50), default="Mentoring!")
+    user_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
+    course_code = Column(String(12), db.ForeignKey('course.course_code'), nullable=False)
+
+    def __init__(self, user_id: uuid, 
+                 course_code: str, 
+                 title: str, 
+                 description: str):
+        self.user_id = user_id
+        self.course_code = course_code
+        self.title = title
+        self.description = description
+        self.is_published = True
+
+    def __repr__(self):
+        return f'<User {self.user_id} mentoring {self.course_code}>'
+
+class MentorRequest(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    is_published = Column(Boolean, nullable=False, default=False)
+    description = Column(Text)
+    title = Column(String(50), default="Looking for mentor")
+    user_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
+    course_code = Column(String(12), db.ForeignKey('course.course_code'), nullable=False)
+
+    def __init__(self, user_id: uuid, 
+                 course_code: str, 
+                 title: str, 
+                 description: str):
+        self.user_id = user_id
+        self.course_code = course_code
+        self.title = title
+        self.description = description
+        self.is_published = True
+
+    def __repr__(self):
+        return f'<User {self.user_id} Looking for mentor in {self.course_code}>'
+    
+class MentorMenteeMatch(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    mentor_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
+    mentee_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
+    course_code = Column(String(12), db.ForeignKey('course.course_code'), nullable=False)
+    status = Column(String(20))  
+    # Status of the mentor-mentee relationship (e.g., "Pending", "Reject", "Active", "Completed")
+
+    # mentor = db.relationship("User", foreign_keys=[mentor_id], backref='mentored_courses')
+    # mentee = db.relationship("User", foreign_keys=[mentee_id], backref='mentee_courses')
+
+    def __init__(self, mentor_id, mentee_id, course_code, status):
+        self.mentor_id = mentor_id
+        self.mentee_id = mentee_id
+        self.course_code = course_code
+        self.status = status
+
+    def __repr__(self):
+        return f'<MentorMenteeCourse: Mentor {self.mentor_id}, Mentee {self.mentee_id}, Course {self.course_code}>'
