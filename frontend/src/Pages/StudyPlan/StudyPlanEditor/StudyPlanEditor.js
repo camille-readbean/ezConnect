@@ -15,8 +15,8 @@ function StudyPlanEditor() {
       return;
     }
     // ! check before deploying for production, fixed id is used for internal testing!
-    const currUserId = activeAccount.idTokenClaims["oid"];
-    // const currUserId = '12a3b456-c7de-44ce-bde9-a123bc00237d';
+    // const currUserId = activeAccount.idTokenClaims["oid"];
+    const currUserId = "12a3b456-c7de-44ce-bde9-a123bc00237d";
     setIsAuthUser(currUserId === creatorId);
   };
 
@@ -36,9 +36,9 @@ function StudyPlanEditor() {
 
   if (isAuthUser) {
     return (
-      <>
+      <div className="container mx-auto">
         <Editor studyPlanId={studyPlanId} />
-      </>
+      </div>
     );
   } else {
     return (

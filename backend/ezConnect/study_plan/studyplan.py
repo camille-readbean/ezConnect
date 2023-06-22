@@ -1,12 +1,19 @@
 from flask import abort
 from datetime import datetime
-from ezConnect.models import StudyPlan, db
+from ezConnect.models import User, StudyPlan, db
 from .study_plan_semester import create_semester
 
 # Create a new study plan
 def create_study_plan(body):
+    creator_id=body['creator_id']
+
+    user = User.query.get(creator_id)
+
+    if not user:
+        abort(404, f"User with id {creator_id} not found")
+
     new_study_plan = StudyPlan(
-        creator_id=body['creator_id']
+        creator_id=creator_id
     )
     db.session.add(new_study_plan)
     db.session.commit()

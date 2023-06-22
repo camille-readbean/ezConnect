@@ -14,15 +14,22 @@ function PersonalStudyPlanList({
 
     // TODO: improve styling
     return (
-      <div className="group relative bg-white rounded-lg w-64 h-44 p-3 m-2 shadow-md">
-        <Link to={`/studyplan/editor/${id}`} className="font-semibold">
+      <div className="group relative bg-white rounded-lg w-64 h-44 p-3 m-2 shadow-md overflow-hidden">
+        <Link
+          to={`/studyplan/editor/${id}`}
+          className="font-semibold whitespace-normal break-words"
+        >
           {title}
         </Link>
-        <p className="text-sm italic">Last updated: {dateUpdated}</p>
-        <AiFillDelete
-          className="hidden cursor-pointer group-hover:block hover:bg-sky-500"
-          onClick={() => deleteStudyPlan(id)}
-        />
+        <div className="flex justify-between items-center">
+          <p className="text-sm italic whitespace-normal break-words">
+            Last updated: {dateUpdated}
+          </p>
+          <AiFillDelete
+            className="hidden cursor-pointer group-hover:block hover:bg-sky-500 p-1 h-6 w-6 rounded-md"
+            onClick={() => deleteStudyPlan(id)}
+          />
+        </div>
       </div>
     );
   };

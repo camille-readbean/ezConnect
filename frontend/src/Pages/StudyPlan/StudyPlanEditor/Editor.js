@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import html2canvas from "html2canvas";
+import CourseSelector from "./CourseSelector";
+import EditorMenu from "./EditorMenu";
+import { RxCross2 } from "react-icons/rx";
+import { AiFillDelete } from "react-icons/ai";
 
 function Editor({ studyPlanId }) {
-  const [studyPlanInformation, setStudyPlanInformation] = useState({});
+  const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [semesterInformation, setSemesterInformation] = useState([]);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
@@ -56,6 +59,17 @@ function Editor({ studyPlanId }) {
     );
   };
 
+  const deleteSemester = (semesterId) => {
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${semesterId}`,
+      {
+        method: "DELETE",
+      }
+    ).then(() => {
+      setIsFetchAgain((previous) => !previous);
+    });
+  };
+
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
     const { source, destination } = result;
@@ -106,28 +120,28 @@ function Editor({ studyPlanId }) {
     });
   };
 
-  const downloadStudyPlan = () => {
-    console.log("trying to print study plan");
-    const studyPlan = document.getElementById("studyPlan");
-    html2canvas(studyPlan).then((canvas) => {
-      const image = canvas.toDataURL("image/png");
-      var anchor = document.createElement('a');
-      anchor.setAttribute("href", image);
-      anchor.setAttribute("download", `${title.replace(/ /g,"_")}.png`);
-      anchor.click();
-      anchor.remove();
-    })
-  }
+  const deleteCourse = (semester, courseIndex) => {
+    const courses = semester["course_codes"];
+    courses.splice(courseIndex, 1);
+    updateSemester(semester);
+  };
 
   return (
     <>
-      <input
-        type="text"
-        value={title}
-        onChange={updateTitle}
-        className="w-full text-2xl font-semibold px-1 my-2"
-      />
-      <div id="studyPlan" className="container mx-auto px-10 mb-2">
+      <div className="flex items-center">
+        <input
+          type="text"
+          value={title}
+          onChange={updateTitle}
+          className="w-full text-2xl font-semibold px-1 my-2"
+        />
+        <EditorMenu
+          title={title}
+          studyPlanId={studyPlanId}
+          setIsFetchAgain={setIsFetchAgain}
+        />
+      </div>
+      <div id="studyPlan" className="px-3 mb-3">
         <DragDropContext
           onDragEnd={(result) =>
             onDragEnd(result, semesterInformation, setSemesterInformation)
@@ -138,13 +152,20 @@ function Editor({ studyPlanId }) {
               const semesterNumber = semester["semester_number"];
               const totalUnits = semester["total_units"];
               const courseCodeList = semester["course_codes"];
+              const semesterId = semester["id"];
 
               return (
-                <div className="w-56 p-1">
-                  <h2 className="font-semibold text-lg pb-2">
-                    Y{Math.ceil(semesterNumber / 2)}S
-                    {((semesterNumber + 1) % 2) + 1}
-                  </h2>
+                <div className="group w-56 p-1">
+                  <div className="flex justify-between items-center">
+                    <h2 className="font-semibold text-lg pb-2">
+                      Y{Math.ceil(semesterNumber / 2)}S
+                      {((semesterNumber + 1) % 2) + 1}
+                    </h2>
+                    <AiFillDelete
+                      className="invisible group-hover:visible hover:cursor-pointer"
+                      onClick={() => deleteSemester(semesterId)}
+                    />
+                  </div>
                   <div>
                     <Droppable droppableId={index.toString()}>
                       {(provided, snapshot) => {
@@ -175,18 +196,25 @@ function Editor({ studyPlanId }) {
                                             ? "SteelBlue"
                                             : "MidnightBlue",
                                           color: "white",
-                                          "border-radius": "5px",
                                           ...provided.draggableProps.style,
                                         }}
+                                        className="flex group rounded-md items-center"
                                       >
                                         {course}
+                                        <RxCross2
+                                          className="invisible ml-auto group-hover:visible hover:cursor-pointer"
+                                          onClick={() =>
+                                            deleteCourse(semester, index)
+                                          }
+                                        />
                                       </div>
                                     );
                                   }}
                                 </Draggable>
                               );
                             })}
-                            <p className="mt-auto">Total units: {totalUnits}</p>
+                            <hr className="mt-auto mb-2 border-slate-300"></hr>
+                            <p>Total units: {totalUnits}</p>
                             {provided.placeholder}
                           </div>
                         );
@@ -199,7 +227,10 @@ function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
-      <button onClick={downloadStudyPlan} className="bg-sky-500 text-white rounded-lg p-2 m-3">Download</button>
+      <CourseSelector
+        semesterInformation={semesterInformation}
+        updateSemester={updateSemester}
+      />
     </>
   );
 }
