@@ -92,6 +92,44 @@ components:
         course_code:
           type: string
           description: Code of the course user is mentoring
+    UpdateMentoringPost:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the mentoring post
+        description:
+          type: string
+          description: Description of the mentoring post
+        is_published:
+          type: boolean
+          description: Indicator if the mentoring post is published
+    MentorPostingResponse:
+      type: object
+      properties:
+        mentor_posting_uuid:
+          type: string
+          description: UUID of the mentor posting
+        course:
+          type: string
+          description: Code of the course
+        title:
+          type: string
+          description: Title of the mentor posting
+        description:
+          type: string
+          description: Description of the mentor posting
+        date_updated:
+          type: string
+          format: date
+          description: Date of the last update of the mentor posting
+    MentorPostingsResponse:
+      type: object
+      properties:
+        postings:
+          type: array
+          items:
+            $ref: '#/components/schemas/MentorPostingResponse'
   parameters:
     user_id:
       in: path
@@ -119,6 +157,22 @@ components:
         type: string
         format: uuid
         description: "Study plan semester id"
+    mentor_posting_id:
+      in: path
+      name: mentor_posting_id
+      description: UUID of the mentor posting to update
+      required: true
+      schema:
+        type: string
+        format: uuid
+    mentoring_match_id:
+      in: path
+      name: mentoring_match_id
+      description: UUID of the mentor-mentee match
+      required: true
+      schema:
+        type: string
+        format: uuid
   securitySchemes:
     # Keeping it as JWT to faciliate debugging
     # Get the token manually from frontend and input it to authorise...
@@ -206,10 +260,102 @@ paths:
       security:
         - jwt: []
       responses:
-        '201':
+        '200':
           description: Mentoring post created successfully
         '400':
           description: Invalid request body
+  /mentoring/mentors/{mentor_posting_id}/update:
+    put:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.update_mentor"
+      summary: Update mentor posting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMentoringPost'
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentor posting updated successfully
+  /mentoring/mentors/{mentor_posting_id}/request:
+    post:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.request_mentor"
+      summary: Request a mentor for a mentor posting
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /mentoring/mentors:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.get_mentors"
+      summary: return a list of all published mentors
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/matches/{mentoring_match_id}/accept-mentee:
+    post:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.matches.accept_mentee"
+      summary: Accept or reject a mentor for a mentor match
+      parameters:
+        - $ref: '#/components/parameters/mentoring_match_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accept:
+                  type: boolean
+                message:
+                  type: string
+              required:
+                - accept
+                - message
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /mentoring/mentee/new-mentee:
     put:
       tags: 

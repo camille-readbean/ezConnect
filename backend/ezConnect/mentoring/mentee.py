@@ -36,6 +36,7 @@ def create_request(token_info, body):
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
     
+# TODO: finish take on request
 def take_on_request(token_info, body):
     if body['user_id'] != token_info['sub']:
         raise Unauthorized(description="User ID mismatch")

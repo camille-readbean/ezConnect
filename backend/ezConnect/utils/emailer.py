@@ -6,7 +6,7 @@ def send_email(subject: str, message: str, email: str, name: str):
         "message": {
             "subject": f"{subject}",
             "content": [{
-                "type": "text/plain",
+                "type": "text/html",
                 "value": f"{message}"
             }]
         },
