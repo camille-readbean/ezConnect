@@ -2,7 +2,8 @@ from flask import abort
 from datetime import datetime
 from ..models import StudyPlan, StudyPlanSemester, Course, db
 
-# Read a collection of semester_ids from an existing study plan
+# TODO: Update this method in swagger
+# Read a collection of semester information from an existing study plan
 def get_all_semesters(study_plan_id):
     study_plan = StudyPlan.query.get(study_plan_id)
 
@@ -12,7 +13,12 @@ def get_all_semesters(study_plan_id):
     study_plan_info = study_plan.toJSON()
     semester_ids = study_plan_info["semester_ids"] # dictionary (key, value) = (semester_number, semester_id)
 
-    return semester_ids, 200
+    semester_info = {}
+    for key, value in semester_ids:
+        semester_info = get_a_semester(value)
+        semester_info[key] = semester_info
+
+    return semester_info, 200
 
 
 # Create a new semester in an existing study plan
@@ -59,7 +65,7 @@ def update_semester_courses(semester_id, body):
     course_code_list = body.get('course_codes', None)
 
     # if no information was inputted
-    if not course_code_list:
+    if course_code_list is None:
         abort(400, f"No information was passed in")
     else:
         semester.courses = []

@@ -1,18 +1,25 @@
 from flask import abort
 from datetime import datetime
-from ezConnect.models import StudyPlan, db
+from ezConnect.models import User, StudyPlan, db
 from .study_plan_semester import create_semester
 
 # Create a new study plan
 def create_study_plan(body):
+    creator_id=body['creator_id']
+
+    user = User.query.get(creator_id)
+
+    if not user:
+        abort(404, f"User with id {creator_id} not found")
+
     new_study_plan = StudyPlan(
-        creator_id=body['creator_id']
+        creator_id=creator_id
     )
     db.session.add(new_study_plan)
     db.session.commit()
     for i in range(8):
         create_semester(new_study_plan.id)
-    return {"message": f"Study plan <Title: {new_study_plan.title}> created at <Datetime: {new_study_plan.date_updated}> by <User: {new_study_plan.creator_id}>"}, 200
+    return {"study_plan_id": new_study_plan.id}, 200
 
 # Read a collection of published study plans
 def get_published_study_plans():
@@ -72,4 +79,4 @@ def delete_study_plan(study_plan_id):
 def get_personal_study_plans(user_id):
     personal_study_plans = StudyPlan.query.filter_by(creator_id=user_id).all()
     personal_study_plans = list(map(lambda study_plan: study_plan.toJSON(), personal_study_plans))
-    return personal_study_plans, 200
+    return {"personal_study_plan_data": personal_study_plans}, 200

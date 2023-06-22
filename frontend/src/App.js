@@ -41,7 +41,7 @@ const Pages = () => {
             path="/resourcerespository"
             element={<ResourceRespository />}
           />
-          <Route path="/studyplan/editor" element={<StudyPlanEditor />} />
+          <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
         </Routes>
       </body>
       <footer>

@@ -556,6 +556,16 @@ paths:
       responses:
         '200':
           description: Study plan successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  study_plan_id:
+                    type: string
+                    format: uuid
+                example:
+                  study_plan_id: 12a3b456-c7de-44ce-bde9-a123bc00237d
     
   /studyplan/{study_plan_id}:
     get:
@@ -680,7 +690,7 @@ paths:
         '404':
           description: Study plan does not exist
   
-  /api/study_plan_semester/{semester_id}:
+  /study_plan_semester/{semester_id}:
     get:
       operationId: ezConnect.study_plan.study_plan_semester.get_a_semester
       tags:
