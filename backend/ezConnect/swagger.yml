@@ -278,6 +278,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/mentors/get-user-mentor-postings:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.get_user_mentor_postings"
+      summary: return a list of all of a user's mentor postings
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/mentors/{mentor_posting_id}/update:
     put:
       tags:
@@ -302,7 +317,7 @@ paths:
       tags:
         - Mentoring
       operationId: "ezConnect.mentoring.mentor.request_mentor"
-      summary: Request a mentor for a mentor posting
+      summary: Request a mentor for a mentor request
       parameters:
         - $ref: '#/components/parameters/mentor_posting_id'
       security:
@@ -389,6 +404,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/mentees/get-user-mentor-requests:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.get_user_mentor_requests"
+      summary: return a list of all of a user's mentor requests
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/mentees/{mentor_posting_id}/update:
     put:
       tags:
@@ -413,7 +443,7 @@ paths:
       tags:
         - Mentoring
       operationId: "ezConnect.mentoring.mentee.request_mentee"
-      summary: Request a mentee for a mentee posting
+      summary: Request a mentee for a mentor posting
       parameters:
         - $ref: '#/components/parameters/mentor_posting_id'
       security:
@@ -495,6 +525,9 @@ paths:
                           type: string
                         status:
                           type: string
+                        email:
+                          type: string
+                          format: email
                   mentee_matches:
                     type: array
                     items:
@@ -508,6 +541,9 @@ paths:
                           type: string
                         status:
                           type: string
+                        email:
+                          type: string
+                          format: email
         '500':
           description: Internal Server Error
           content:

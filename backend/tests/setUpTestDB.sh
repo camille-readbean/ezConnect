@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")"
 # Inside backend/tests folder
 sudo docker compose --file test.docker-compose.yml stop
 sudo docker compose --file test.docker-compose.yml rm -f
@@ -7,7 +8,7 @@ sudo docker compose --file test.docker-compose.yml start
 # sudo docker compose cp pre_data/degrees.csv db:/degrees.csv
 # sudo docker compose cp pre_data/programmes.csv db:/programmes.csv
 # sudo docker compose cp pre_data/courses.csv db:/courses.csv
-echo "PLEASE WAIT AND DO 'flask db upgrade"
+echo "PLEASE WAIT while we do 'flask db upgrade'"
 sleep 1
 cd ../ezConnect
 export APP_ENV=testing

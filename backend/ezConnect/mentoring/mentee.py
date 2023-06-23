@@ -30,7 +30,8 @@ def create_request(token_info, body):
         user.mentor_requests.append(mentor_request)
 
         db.session.commit()
-        return {"message": f"{mentor_request} created"}, 200
+        return {"message": f"{mentor_request} created",
+                "mentoring_post_uuid" : mentor_request.id}, 200
         # return {"message": "test"}
     except Exception as e:
         db.session.rollback()
@@ -86,9 +87,34 @@ def get_mentees(token_info):
         db.session.rollback()
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
+
+
+def get_user_mentor_requests(token_info):
+    try:
+        postings: List[MentorRequest] = MentorRequest.query\
+            .filter(MentorRequest.user_id == uuid.UUID(token_info['sub'])) \
+            .order_by(desc(MentorRequest.date_updated)).all()
+        rep = {'postings' : []}
+        for posting in postings:
+            rep['postings'].append(
+                {
+                    'posting_uuid' : posting.id,
+                    'course' : posting.course_code,
+                    'title' : posting.title,
+                    'description' : posting.description,
+                    'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+                    'name' : posting.mentee.name
+                }
+            )
+        # db.session.commit()
+        return rep, 200
+        # return {"message": "test"}
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        return {"error": f"{str(e)}"}, 500
     
-# TODO: SPECIFIC GET MENTEE REQUEST FOR A USER
-    
+# Request FOR a MENTEE, i.e. mentor apply to mentee
 def request_mentee(token_info, mentor_posting_id, body):
     try:
         mentor_request: MentorRequest = MentorRequest.query.get(mentor_posting_id)
@@ -103,7 +129,7 @@ def request_mentee(token_info, mentor_posting_id, body):
             .filter(MentorPosting.course_code == mentor_request.course_code) \
             .one_or_none()
         if posting is None: return {'error' : 'Create a mentor posting in this course first'}, 400
-        if posting.is_published == False: return {'error' : 'Request not published'}, 400 
+        if posting.is_published == False: return {'error' : 'Posting is not published'}, 400 
 
         # Check no matches with current mentee in this course
         existing_match = MentorMenteeMatch.query \
@@ -112,7 +138,7 @@ def request_mentee(token_info, mentor_posting_id, body):
             .filter(MentorMenteeMatch.course_code == posting.course_code) \
             .all()
         if existing_match != []:
-            return {'error' : 'You have already matched with this mentee'}, 400
+            return {'error' : 'You have already requested for this mentee'}, 400
 
         # Create the mentor mentee match, and set status to pending
         mentor_mentee_match = MentorMenteeMatch(
@@ -128,7 +154,7 @@ def request_mentee(token_info, mentor_posting_id, body):
         db.session.commit()
         accept_url = f'{FRONTEND_HOSTNAME}/mentoring/matches/accept?match={mentor_mentee_match.id}'
 
-        msg = f"<html>Hi {mentee.name}, {mentor.name} wopuld like to be your mentor in your mentor request for {posting.course_code}" + \
+        msg = f"<html>Hi {mentee.name}, {mentor.name} would like to be your mentor in your mentor request for {posting.course_code}" + \
             f"<center>Please visit <a href='{accept_url}'>{accept_url}</a> to accept or reject</center></html>"
         send_email(
             subject=f'[ezConnect] A student would like to be your mentor for {posting.course_code}',
@@ -141,7 +167,7 @@ def request_mentee(token_info, mentor_posting_id, body):
         mentor.mentoring_match.append(mentor_mentee_match)
 
         db.session.commit()
-        return {"message" : "ok, email sent to mentor. Please wait for them to accept"}, 200
+        return {"message" : "ok, email sent to mentee. Please wait for them to accept"}, 200
     except Exception as e:
         db.session.rollback()
         traceback.print_exc()

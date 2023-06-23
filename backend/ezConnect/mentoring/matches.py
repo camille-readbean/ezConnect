@@ -13,6 +13,8 @@ def accept_mentee(token_info, mentoring_match_id, body):
         match: MentorMenteeMatch = MentorMenteeMatch.query.get(mentoring_match_id)
         if match.status == 'Active':
             return {'error' : 'Match is already active'}, 401
+        if token_info['sub'] != str(match.mentor_id):
+            return {'error' : 'You are not the mentor'}, 401
         # Set status active to reject
         if body['accept'] == False and match.status == 'Pending mentor': 
             match.status = 'Rejected by mentor'
@@ -59,6 +61,10 @@ def accept_mentee(token_info, mentoring_match_id, body):
 def accept_mentor(token_info, mentoring_match_id, body):
     try:
         match: MentorMenteeMatch = MentorMenteeMatch.query.get(mentoring_match_id)
+        if token_info['sub'] != str(match.mentee_id):
+            # print(token_info['sub'])
+            # print(match.mentee_id)
+            return {'error' : 'You are not the mentee'}, 401
         if match.status == 'Active':
             return {'error' : 'Match is already active'}, 401
         # Set status active to reject
@@ -74,9 +80,9 @@ def accept_mentor(token_info, mentoring_match_id, body):
                 email=match.mentor_user.email,
                 name=match.mentor_user.name,
             )
-            return {'message' : 'Rejected student'}, 200
+            return {'message' : 'Rejected the student mentor'}, 200
         if match.status == 'Rejected by mentee':
-            return {'error' : 'You have already rejected the student'}, 401
+            return {'error' : 'You have already rejected the student mentor'}, 401
         if match.status != 'Pending mentee':
             return {'error' : f'Not a valid state: {match.status}'}, 401
         match.status = 'Active' 
@@ -117,7 +123,8 @@ def get_matches(token_info):
                     'posting_uuid' : posting.id,
                     'course_code' : posting.course_code,
                     'mentee_name' : posting.mentee_user.name,
-                    'status' : posting.status
+                    'status' : posting.status,
+                    'email' : posting.mentee_user.email
                 }
             )
         for posting in mentee_matches:
@@ -126,7 +133,8 @@ def get_matches(token_info):
                     'posting_uuid' : posting.id,
                     'course_code' : posting.course_code,
                     'mentor_name' : posting.mentor_user.name,
-                    'status' : posting.status
+                    'status' : posting.status,
+                    'email' : posting.mentor_user.email
                 }
             )
         return rep, 200

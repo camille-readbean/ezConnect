@@ -87,9 +87,34 @@ def get_mentors(token_info):
         db.session.rollback()
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
+
+
+def get_user_mentor_postings(token_info):
+    try:
+        postings: List[MentorPosting] = MentorPosting.query\
+            .filter(MentorPosting.user_id == uuid.UUID(token_info['sub'])) \
+            .order_by(desc(MentorPosting.date_updated)).all()
+        rep = {'postings' : []}
+        for posting in postings:
+            rep['postings'].append(
+                {
+                    'posting_uuid' : posting.id,
+                    'course' : posting.course_code,
+                    'title' : posting.title,
+                    'description' : posting.description,
+                    'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+                    'name' : posting.mentor.name
+                }
+            )
+        # db.session.commit()
+        return rep, 200
+        # return {"message": "test"}
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        return {"error": f"{str(e)}"}, 500
     
-# TODO: SPECIFIC GET mentor posting FOR A user
-    
+# Request FOR a MENTOR, i.e. mentee apply to mentor
 def request_mentor(token_info, mentor_posting_id, body):
     try:
         posting: MentorPosting = MentorPosting.query.get(mentor_posting_id)
@@ -104,7 +129,7 @@ def request_mentor(token_info, mentor_posting_id, body):
             .filter(MentorRequest.course_code == posting.course_code) \
             .one_or_none()
         if mentor_request is None: return {'error' : 'Create a request for a mentor in this course first'}, 400
-        if mentor_request.is_published == False: return {'error' : 'Request not published'}, 400 
+        if mentor_request.is_published == False: return {'error' : 'Request is not published'}, 400 
 
         # Check no matches with current mentor in this course
         existing_match = MentorMenteeMatch.query \
@@ -113,7 +138,7 @@ def request_mentor(token_info, mentor_posting_id, body):
             .filter(MentorMenteeMatch.course_code == posting.course_code) \
             .all()
         if existing_match != []:
-            return {'error' : 'You already requested for this mentor'}, 400
+            return {'error' : 'You have already requested for this mentor'}, 400
 
         # Create the mentor mentee match, and set status to pending
         mentor_mentee_match = MentorMenteeMatch(
