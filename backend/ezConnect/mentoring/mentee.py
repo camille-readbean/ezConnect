@@ -1,5 +1,4 @@
 from datetime import datetime
-from werkzeug.exceptions import Unauthorized
 from sqlalchemy import desc
 from typing import List
 import uuid, traceback, json
@@ -46,7 +45,7 @@ def update_mentee(token_info, mentor_posting_id, body):
             return {"error" : f"Mentor request not found"}, 404
         if str(mentor_request.user_id) != token_info['sub']:
             print(f'{mentor_request.user_id} does not match {token_info["sub"]}')
-            raise Unauthorized(description="User ID mismatch")
+            return {'error' : "User ID mismatch"}, 401
 
         mentor_request.is_published = body['is_published']
         mentor_request.description = body["description"]
