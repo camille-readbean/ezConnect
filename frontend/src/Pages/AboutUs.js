@@ -56,7 +56,7 @@ function AboutUs() {
           <p>
             Share your study plans with one another. Share your experience going
             through your study plan and review other's study plans. Benefit from
-            one anoher by consulting other's study plans or working on other's
+            one another by consulting other's study plans or working on other's
             feedback.
           </p>
           <Link to="/studyplan" className="bluebutton">

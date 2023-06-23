@@ -15,8 +15,8 @@ function StudyPlanMainPage() {
   let azure_ad_oid = "";
   if (activeAccount != null) {
     // ! change before deploying for production, fixed id is meant for internal testing
-    // azure_ad_oid = activeAccount.idTokenClaims["oid"];
-    azure_ad_oid = "12a3b456-c7de-44ce-bde9-a123bc00237d";
+    azure_ad_oid = activeAccount.idTokenClaims["oid"];
+    // azure_ad_oid = "12a3b456-c7de-44ce-bde9-a123bc00237d";
   }
 
   return (
