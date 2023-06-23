@@ -8,7 +8,7 @@ from ezConnect.models import db
 
 # db = SQLAlchemy()
 
-def create_app():
+def create_app(config=None):
     # Time stamps all generated in UTC, python-jose need this to decode exp
     os.environ["TZ"] = "Etc/UTC"
     time.tzset()
@@ -17,6 +17,11 @@ def create_app():
     connexion_app.add_api("swagger.yml")
 
     connexion_app.app.config.from_pyfile(filename="config.py")
+
+    if os.environ.get('APP_ENV').lower() == 'testing':
+        connexion_app.app.config.update({
+            'SQLALCHEMY_DATABASE_URI' : "postgresql://postgres:test@localhost:5433/ezConnect",
+        })
 
     app = connexion_app.app
 

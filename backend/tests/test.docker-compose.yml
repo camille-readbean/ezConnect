@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: ezConnect
+    # App connects to 5433
+    ports:
+      - "5433:5432"
+    volumes:
+      - ../pre_data:/pre_data
