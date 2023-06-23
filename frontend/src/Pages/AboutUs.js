@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaSlideshare } from "react-icons/fa";
 import { FcPlanner } from "react-icons/fc";
-import { GrResources } from "react-icons/gr";
 
 function AboutUs() {
   const handleFindOutMoreButtonClick = () => {
@@ -65,21 +64,6 @@ function AboutUs() {
           </Link>
         </div>
         <FcPlanner className="w-64 h-64" />
-      </section>
-
-      <section className="bg-sky-50 aboutussection">
-        <GrResources className="w-64 h-64" />
-        <div className="aboutusdescription">
-          <h1 className="text-2xl font-bold">Resource Repository</h1>
-          <p>
-            Share notes, lecture materials, cheatsheets and past year papers
-            with one another! Easily upload, download and share materials in the
-            Resource Respository!
-          </p>
-          <Link to="/resourcerespository" className="bluebutton">
-            Find resources
-          </Link>
-        </div>
       </section>
     </>
   );
