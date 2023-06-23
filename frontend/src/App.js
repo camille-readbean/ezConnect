@@ -6,7 +6,7 @@ import AboutUs from "./Pages/AboutUs";
 import Homepage from "./Pages/Homepage";
 import Navigation from "./Components/Navigation";
 import CreateAccount from "./Pages/User/CreateAccount";
-import MentorMenteeMatcher from "./Pages/MentorMenteeMatcher";
+import MentoringMainPage from "./Pages/Mentoring/MentoringMainPage";
 import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
 import Footer from "./Components/Footer";
 import ResourceRespository from "./Pages/ResourceRespository";
@@ -33,8 +33,8 @@ const Pages = () => {
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/user/create-account" element={<CreateAccount />} />
           <Route
-            path="/mentormenteematcher"
-            element={<MentorMenteeMatcher />}
+            path="/mentoring"
+            element={<MentoringMainPage />}
           />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
           <Route
