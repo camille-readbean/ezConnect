@@ -14,9 +14,10 @@ def get_all_semesters(study_plan_id):
     semester_ids = study_plan_info["semester_ids"] # dictionary (key, value) = (semester_number, semester_id)
 
     semester_info = {}
-    for key, value in semester_ids:
-        semester_info = get_a_semester(value)
-        semester_info[key] = semester_info
+    for semester_number in semester_ids:
+        semester_id = str(semester_ids[semester_number])
+        info = get_a_semester(semester_id)[0]
+        semester_info[semester_number] = info
 
     return semester_info, 200
 
