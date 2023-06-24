@@ -46,9 +46,6 @@ function Navigation(props) {
           <Link to="/studyplan" className="navBarLink">
             Study Plan
           </Link>
-          <Link to="/resourcerespository" className="navBarLink">
-            Resources
-          </Link>
           <AuthenticatedTemplate>
             <Link onClick={handleLogoutRedirect} className="navBarLink">Logout</Link>
           </AuthenticatedTemplate>
@@ -77,9 +74,6 @@ function Navigation(props) {
         </Link>
         <Link to="/studyplan" className="navBarLink">
           Study Plan
-        </Link>
-        <Link to="/resourcerespository" className="navBarLink">
-          Resources
         </Link>
         <AuthenticatedTemplate>
           <Link onClick={handleLogoutRedirect} className="navBarLink">Logout</Link>

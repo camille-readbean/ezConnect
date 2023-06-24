@@ -9,7 +9,6 @@ import CreateAccount from "./Pages/User/CreateAccount";
 import MentoringMainPage from "./Pages/Mentoring/MentoringMainPage";
 import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
 import Footer from "./Components/Footer";
-import ResourceRespository from "./Pages/ResourceRespository";
 import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
 import CreateMentorPosting from "./Pages/Mentoring/CreateMentorPosting";
 import CreateMentorRequest from "./Pages/Mentoring/CreateMentorRequest"
@@ -49,10 +48,6 @@ const Pages = () => {
           <Route path="/mentoring/mentees/:posting_id/request" element={<RequestMentee/>} />
           <Route path="/mentoring/matches/accept" element={<AcceptMatch/>} />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
-          <Route
-            path="/resourcerespository"
-            element={<ResourceRespository />}
-          />
           <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
         </Routes>
       </body>
