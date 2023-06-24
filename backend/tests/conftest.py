@@ -28,6 +28,8 @@ def app():
         'DEBUG' : True
     })
 
+    assert app.config['MAILERCFW_API_KEY'] is not None
+
     # other setup can go here
     with app.app_context():
         yield app

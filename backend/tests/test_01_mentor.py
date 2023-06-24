@@ -111,7 +111,8 @@ def test_0008_get_user_mentor_postings(client):
             'title' : posting.title,
             'description' : posting.description,
             'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
-            'name' : posting.mentor.name
+            'name' : posting.mentor.name,
+            'is_published' : posting.is_published
         }]
     }
     assert json.loads(response.data) == expected_response
@@ -126,6 +127,25 @@ def test_0008_get_user_mentor_postings(client):
         "postings" : []
     }
     assert json.loads(response2.data) == expected_response2
+    
+    # Test get_a_mentor for user1
+    response3 = client.get(
+        f'/api/mentoring/mentors/{str(posting.id)}',
+        headers= {
+            "Authorization" : f"Bearer {token1}"
+        }
+    )
+    assert response3.status_code == 200
+    expected_response3 = {
+        'posting_uuid' : str(posting.id),
+        'course' : posting.course_code,
+        'title' : posting.title,
+        'description' : posting.description,
+        'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+        'name' : posting.mentor.name,
+        'is_published' : posting.is_published
+    }
+    assert json.loads(response3.data) == expected_response3
 
 
 # Security check as well, make sure user 2 cannot edit user 1

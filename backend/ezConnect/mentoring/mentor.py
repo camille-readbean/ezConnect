@@ -112,7 +112,6 @@ def get_a_mentor(token_info, mentor_posting_id):
         return {"error": f"{str(e)}"}, 500
 
 
-# TODO : Update is_published in the return; do so for mentee as well
 def get_user_mentor_postings(token_info):
     try:
         postings: List[MentorPosting] = MentorPosting.query\

@@ -21,8 +21,9 @@ Credits:
 def decode_token(token):
     try:
         # DEBUG
-        print(JWT_KEY_URL)
-        print(token)
+        if current_app.debug:
+            print(JWT_KEY_URL)
+            print(token)
 
         jsonurl = urlopen(JWT_KEY_URL)
         jwks = json.loads(jsonurl.read())

@@ -3,7 +3,7 @@ import json, uuid
 from ezConnect.models import MentorRequest
 
 
-def test_0010_create_user1_mentor_in_CS1101S(client):
+def test_0010_create_user2_mentee_in_CS1101S(client):
     not_found_req_body = {
         "course_code": "string",
         "description": "string",
@@ -119,15 +119,35 @@ def test_0012_get_all_mentee_postings(client):
     )
     visibile_get_expected_response = {
         "postings" : [{
-            'posting_uuid' : str(mentor_request.id),
-            'course' : mentor_request.course_code,
-            'title' : mentor_request.title,
-            'description' : mentor_request.description,
-            'date_updated' : mentor_request.date_updated.strftime("%Y-%m-%d %H:%M"),
-            'name' : mentor_request.mentee.name
+        'posting_uuid' : str(mentor_request.id),
+        'course' : mentor_request.course_code,
+        'title' : mentor_request.title,
+        'description' : mentor_request.description,
+        'date_updated' : mentor_request.date_updated.strftime("%Y-%m-%d %H:%M"),
+        'name' : mentor_request.mentee.name,
+        'is_published' : mentor_request.is_published
         }]
     }
     assert json.loads(visibile_get_response.data) == visibile_get_expected_response
+
+    # Test get_a_mentee for user2
+    response3 = client.get(
+        f'/api/mentoring/mentees/{str(mentor_request.id)}',
+        headers= {
+            "Authorization" : f"Bearer {token1}"
+        }
+    )
+    assert response3.status_code == 200
+    expected_response3 = {
+        'posting_uuid' : str(mentor_request.id),
+        'course' : mentor_request.course_code,
+        'title' : mentor_request.title,
+        'description' : mentor_request.description,
+        'date_updated' : mentor_request.date_updated.strftime("%Y-%m-%d %H:%M"),
+        'name' : mentor_request.mentee.name,
+        'is_published' : mentor_request.is_published
+    }
+    assert json.loads(response3.data) == expected_response3
 
 
 def test_0013_get_user_mentor_requests(client):
@@ -149,7 +169,8 @@ def test_0013_get_user_mentor_requests(client):
             'title' : mentor_request.title,
             'description' : mentor_request.description,
             'date_updated' : mentor_request.date_updated.strftime("%Y-%m-%d %H:%M"),
-            'name' : mentor_request.mentee.name
+            'name' : mentor_request.mentee.name,
+            'is_published' : mentor_request.is_published
         }]
     }
     assert json.loads(response.data) == expected_response

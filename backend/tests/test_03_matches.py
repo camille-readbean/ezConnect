@@ -35,6 +35,7 @@ def test_0015_match_mentor_request_with_mentor(client):
     assert invalid_response.status_code == 400
     assert json.loads(invalid_response.data) == invalid_expected_response
 
+
     # Temporarily change the course, so the mentor does not have a posting for this
     mentor_request.is_published, mentor_posting.is_published = True, True
     mentor_posting.course_code = 'LSM1301'
@@ -67,6 +68,27 @@ def test_0015_match_mentor_request_with_mentor(client):
         .filter(MentorMenteeMatch.mentee_id==uuid.UUID(uuid2)) \
         .filter(MentorMenteeMatch.course_code=='CS1101S') \
         .one()
+    
+    # Test /api/mentoring/matches/{mentoring_match_id}
+    get_a_match_response = client.get(
+        f'/api/mentoring/matches/{match.id}',
+        headers={
+            "Authorization" : f"Bearer {token1}"
+        }
+    )
+    expected_match_response = {
+        'posting_uuid' : str(match.id),
+        'course_code' : match.course_code,
+        'mentee_name' : match.mentee_user.name,
+        'mentor_id' : str(match.mentor_id),
+        'mentee_id' : str(match.mentee_id),
+        'status' : match.status,
+        'mentor_name' : match.mentor_user.name,
+        'mentor_request_description' : mentor_request.description,
+        'mentor_posting_description' : mentor_posting.description
+    }
+    assert get_a_match_response.status_code == 200
+    assert json.loads(get_a_match_response.data) == expected_match_response
 
     # Check duplicate match
     response = client.post(
@@ -408,7 +430,7 @@ def test_0016_match_mentor_posting_with_mentee(client):
 
 
 # Get matches
-def test_0017_get_user_matches(client):
+def test_0017_get_user_matches_and_test_redacted_email_before_match(client):
     match1 = MentorMenteeMatch.query \
         .filter(MentorMenteeMatch.mentor_id==uuid.UUID(uuid1)) \
         .filter(MentorMenteeMatch.mentee_id==uuid.UUID(uuid2)) \
@@ -419,6 +441,55 @@ def test_0017_get_user_matches(client):
         .filter(MentorMenteeMatch.mentee_id==uuid.UUID(uuid1)) \
         .filter(MentorMenteeMatch.course_code=='CS2030S') \
         .one()
+    # User 1 create new mentor_request in CM1102
+    cm1102_response_new_1 = client.put(
+        '/api/mentoring/mentees/new-mentee',
+        headers= {
+            "Authorization" : f"Bearer {token1}"
+        },
+        json={
+            'course_code' : 'CM1102',
+            'description' : 'by user 1',
+            'title' : 'Pending email test'
+        }
+    )
+    assert cm1102_response_new_1.status_code == 200
+    # cm1102_request = MentorRequest.query \
+    #     .filter(MentorRequest.course_code=='CM1102') \
+    #     .filter(MentorRequest.user_id==uuid.UUID(uuid1))
+
+    # user 2 create new mentor_posting in CM1102
+    cm1102_response_new_2 = client.put(
+        '/api/mentoring/mentors/new-mentor',
+        headers= {
+            "Authorization" : f"Bearer {token2}"
+        },
+        json={
+            'course_code' : 'CM1102',
+            'description' : 'by user 2',
+            'title' : 'Pending email test'
+        }
+    )
+    cm1102_posting = MentorPosting.query \
+        .filter(MentorPosting.course_code=='CM1102') \
+        .filter(MentorPosting.user_id==uuid.UUID(uuid2)) \
+        .one()
+    assert cm1102_response_new_2.status_code == 200
+    assert json.loads(cm1102_response_new_2.data) == {
+        "message": f"{cm1102_posting} created", 
+        "mentoring_post_uuid" : str(cm1102_posting.id)
+    }
+
+    # User 1 request to user 2 be their mentee (request _a_ mentor) 
+    # State left at pending, email should be redacted
+    cm1102_new_match_by_user1_response = client.post(
+        f'/api/mentoring/mentors/{cm1102_posting.id}/request',
+        headers= {
+            "Authorization" : f"Bearer {token1}"
+        }
+    )
+    assert cm1102_new_match_by_user1_response.status_code == 200
+
     response1 = client.get(
         f'/api/mentoring/matches',
         headers= {
@@ -440,6 +511,10 @@ def test_0017_get_user_matches(client):
         }
     )
     
+    assert json.loads(cm1102_new_match_by_user1_response.data) == \
+        {"message" : "ok, email sent to mentor. Please wait for them to accept"}
+    cm1102_match = MentorMenteeMatch.query.filter(MentorMenteeMatch.course_code=='CM1102').one()
+    
     assert response1.status_code == 200 and response2.status_code == 200
     assert json.loads(response1.data) == {
         'mentor_matches' : [
@@ -458,6 +533,13 @@ def test_0017_get_user_matches(client):
                 'mentor_name' : match2.mentor_user.name,
                 'status' : match2.status,
                 'email' : match2.mentor_user.email
+            },
+            {
+                'posting_uuid' : str(cm1102_match.id),
+                'course_code' : 'CM1102',
+                'mentor_name' : cm1102_match.mentor_user.name,
+                'status' : 'Pending mentor',
+                'email' : 'Hidden, pending mentor acceptance'
             }
         ]
     }
@@ -478,6 +560,15 @@ def test_0017_get_user_matches(client):
                 'mentee_name' : match2.mentee_user.name,
                 'status' : match2.status,
                 'email' : match2.mentee_user.email
+            },
+            {
+                'posting_uuid' : str(cm1102_match.id),
+                'course_code' : 'CM1102',
+                'mentee_name' : cm1102_match.mentee_user.name,
+                'status' : 'Pending mentor',
+                'email' : 'Hidden, pending mentor acceptance'
             }
         ]
     }
+    # assert 
+    # assert response1_dict == expected_response1

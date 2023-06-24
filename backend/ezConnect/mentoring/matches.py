@@ -124,7 +124,7 @@ def get_matches(token_info):
                     'course_code' : posting.course_code,
                     'mentee_name' : posting.mentee_user.name,
                     'status' : posting.status,
-                    'email' : posting.mentee_user.email if posting.status == 'Active' else 'REDACTED'
+                    'email' : posting.mentee_user.email if posting.status == 'Active' else f'Hidden, {posting.status.lower()} acceptance'
                 }
             )
         for posting in mentee_matches:
@@ -134,7 +134,7 @@ def get_matches(token_info):
                     'course_code' : posting.course_code,
                     'mentor_name' : posting.mentor_user.name,
                     'status' : posting.status,
-                    'email' : posting.mentee_user.email if posting.status == 'Active' else 'REDACTED'
+                    'email' : posting.mentor_user.email if posting.status == 'Active' else f'Hidden, {posting.status.lower()} acceptance'
                 }
             )
         return rep, 200
