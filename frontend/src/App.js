@@ -9,7 +9,6 @@ import CreateAccount from "./Pages/User/CreateAccount";
 import MentorMenteeMatcher from "./Pages/MentorMenteeMatcher";
 import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
 import Footer from "./Components/Footer";
-import ResourceRespository from "./Pages/ResourceRespository";
 import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
 
 
@@ -37,11 +36,7 @@ const Pages = () => {
             element={<MentorMenteeMatcher />}
           />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
-          <Route
-            path="/resourcerespository"
-            element={<ResourceRespository />}
-          />
-          <Route path="/studyplan/editor" element={<StudyPlanEditor />} />
+          <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
         </Routes>
       </body>
       <footer>

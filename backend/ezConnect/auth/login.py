@@ -6,6 +6,7 @@ from Crypto.Protocol.KDF import scrypt
 from Crypto.Random import get_random_bytes
 from urllib.request import urlopen
 import json
+from flask import current_app
 
 from ezConnect.models import User
 from ezConnect.config import JWT_SECRET, JWT_ISSUER, \
@@ -29,6 +30,15 @@ def decode_token(token):
         unverified_header = jwt.get_unverified_header(token)
         if 'kid' not in unverified_header:
             # leave this out next time to check for a dev JWT, dont use in prod
+            if current_app.debug:
+                print('\033[93m' + "backdooring!!" + '\x1b[0m')
+                return jwt.decode(
+                    token,
+                    JWT_SECRET,
+                    algorithms=JWT_ALGORITHMS,
+                    audience=JWT_AUD,
+                    issuer=JWT_ISSUER
+                )
             raise Unauthorized("Invalid JWT, expecting access token from Azure AD B2C OAuth")
         rsa_key = {}
         for key in jwks["keys"]:
@@ -62,12 +72,3 @@ def decode_token(token):
         msg = "Error with JWT"
         print("JWT Error" + str(e))
         raise Unauthorized(description=str(e)) from e
-
-
-# user from "sub" property of token_info
-# see: https://connexion.readthedocs.io/en/stable/security.html
-def who_am_i(token_info, user):
-    # return {"user": token_info['oid']}, 200
-    return {"azure_ad_oid": user, 
-            "user_id": 'not implemented',
-            "name": token_info['name']}, 200

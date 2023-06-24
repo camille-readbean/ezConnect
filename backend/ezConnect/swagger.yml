@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: "EzCopnnect REST API"
   description: "An API about people and courses"
-  version: "0.0.2"
+  version: "0.0.3"
 
 servers:
   - url: "/api"
@@ -15,7 +15,7 @@ components:
         - name
         - email
         - year
-        - degree
+        - degrees
       properties:
         name:
           type: string
@@ -26,10 +26,72 @@ components:
           type: integer
           maximum: 6
           minimum: 1
-        degree:
+        degrees:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+        programmes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+    StudyPlan:
+      type: object
+      properties:
+        date_updated:
           type: string
-        programme:
+          format: date-time
+        is_published:
+          type: boolean
+        title:
           type: string
+        description:
+          type: string
+        num_of_likes:
+          type: integer
+        creator_id:
+          type: integer
+        semesters:
+          type: object
+    StudyPlanSemesterInformation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        semester_number:
+          type: integer
+        total_units:
+          type: integer
+        course_codes:
+          type: array
+    MentoringPost:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the mentoring post
+        description:
+          type: string
+          description: Description of the mentoring post
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the mentor creating the post
+        course_code:
+          type: string
+          description: Code of the course user is mentoring
   parameters:
     user_id:
       in: path
@@ -41,6 +103,22 @@ components:
         maxLength: 36
         format: uuid
       description: "User ID"
+    study_plan_id:
+      in: path
+      name: study_plan_id
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "The id of the study plan that this request is associated with"
+    semester_id:
+      in: path
+      name: semester_id
+      required: true
+      schema:
+        type: string
+        format: uuid
+        description: "Study plan semester id"
   securitySchemes:
     # Keeping it as JWT to faciliate debugging
     # Get the token manually from frontend and input it to authorise...
@@ -76,11 +154,29 @@ paths:
               $ref: "#/components/schemas/SignUpNewUser"
             example:
               name: "John Doe"
-              email: "EXXXXXXX@u.nus.edu"
+              email: "testemail@ruibin.me"
               year: 2
-              degree: "Double major in Social Work and Psychology"
-              programme: "College of Alice and Peter Tan"
-              azure_ad_oid: 12345678-1234-1234-1234-1234abvdefgh
+              degrees: [
+                {
+                  "id": "fce92068-5d0d-400a-aeb4-2673370b84c5",
+                  "title": "Computer Science"
+                },
+                {
+                  "id": "4a18721c-2f9a-42fd-b3d3-820e2564d352",
+                  "title": "Medicine"
+                }
+              ]
+              programmes: [
+                {
+                  "id": "e219ca40-ed55-4976-ae2a-c46f2a77ae02",
+                  "title": "University Town College Programme"
+                },
+                {
+                  "id": "5102f572-920a-400a-ae2c-3575fb7e8acf",
+                  "title": "Minor in Meteorology and Climate Science"
+                }
+              ]
+              azure_ad_oid: 12345678-1234-1234-1234-1234abcdef00
       security:
         - jwt: []
       responses:
@@ -93,33 +189,274 @@ paths:
                 properties:
                   message:
                     type: string
-                  user:
-                    type: integer
         "409":
           description: "Invalid request: user already exist in database"
-  /auth/login/who-am-i:
-    get:
-      operationId: "ezConnect.auth.login.who_am_i"
-      tags:
-        - "Auth"
-      summary: "Returns the user ID of the authenticated user"
+  /mentoring/mentors/new-mentor:
+    put:
+      tags: 
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.create_mentor"
+      summary: Create a mentoring post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentoringPost'
       security:
         - jwt: []
       responses:
+        '201':
+          description: Mentoring post created successfully
+        '400':
+          description: Invalid request body
+  /mentoring/mentee/new-mentee:
+    put:
+      tags: 
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.create_request"
+      summary: Create a mentoring post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentoringPost'
+      security:
+        - jwt: []
+      responses:
+        '201':
+          description: Mentoring post created successfully
+        '400':
+          description: Invalid request body
+  /studyplan:
+    get:
+      operationId: "ezConnect.study_plan.studyplan.get_published_study_plans"
+      tags:
+        - Study Plan
+      summary: "Read a collection of published study plans"
+      responses:
         '200':
-          description: User ID
+          description: Study plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StudyPlan"
+    post:
+      operationId: "ezConnect.study_plan.studyplan.create_study_plan"
+      tags:
+        - Study Plan
+      summary: "Create a study plans"
+      requestBody:
+        description: "Study plan to create"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creator_id:
+                  type: string
+                  format: uuid
+              required:
+                - creator_id
+            example:
+              creator_id: 12a3b456-c7de-44ce-bde9-a123bc00237d
+      responses:
+        '200':
+          description: Study plan successfully created
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  azure_ad_oid:
+                  study_plan_id:
                     type: string
-                  user_id:
-                    type: string
-                  name:
-                    type: string
-        '401':
-          description: Unauthorized
+                    format: uuid
+                example:
+                  study_plan_id: 12a3b456-c7de-44ce-bde9-a123bc00237d
+    
+  /studyplan/{study_plan_id}:
+    get:
+      operationId: "ezConnect.study_plan.studyplan.get_a_study_plan"
+      tags:
+        - Study Plan
+      summary: "Read a particular study plan"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '200': 
+          description: Read a particular study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyPlan"
+        '404':
+          description: Study plan does not exist
+    put:
+      operationId: "ezConnect.study_plan.studyplan.update_study_plan"
+      tags:
+        - Study Plan
+      summary: "Update an existing study plan"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      requestBody:
+        description: "Study plan to update"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_published:
+                  type: boolean
+                title:
+                  type: string
+                description:
+                  type: string
+                num_of_likes:
+                  type: integer
+            example:
+              is_published: True
+              title: "Chemistry major with minor in nutrition"
+              description: "Y2 student under CHS. Started minor in Y2. I overloaded in Y1S2 and I recommend doing this."
+              num_of_likes: 25
+      responses:
+        '200':
+          description: Update an existing study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyPlan"
+        '404':
+          description: Study plan does not exist
+    delete:
+      operationId: "ezConnect.study_plan.studyplan.delete_study_plan"
+      tags:
+        - Study Plan
+      summary: "Delete an existing study plan"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '200':
+          description: Delete an existing study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyPlan"
+        '404':
+          description: Study plan does not exist
+    
+  /studyplan/personal/{user_id}:
+    get:
+      operationId: "ezConnect.study_plan.studyplan.get_personal_study_plans"
+      tags:
+        - Study Plan
+      summary: "Read a collection of personal study plans"
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      responses:
+        '200': 
+          description: Read a collection of personal study plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StudyPlan"
+        '404':
+          description: User has not created any study plans
 
-
+  /studyplan/semester/{study_plan_id}:
+    get:
+      operationId: ezConnect.study_plan.study_plan_semester.get_all_semesters
+      tags:
+        - Study Plan Semester
+      summary: Read a collection of semester_ids from an existing study plan
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '200':
+          description: Read a collection of semester_ids from an existing study plan
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '404':
+          description: Study plan does not exist
+    post:
+      operationId: ezConnect.study_plan.study_plan_semester.create_semester
+      tags:
+        - Study Plan Semester
+      summary: Create a new semester in an existing study plan
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '204':
+          description: Study plan semester successfully created
+        '404':
+          description: Study plan does not exist
+  
+  /study_plan_semester/{semester_id}:
+    get:
+      operationId: ezConnect.study_plan.study_plan_semester.get_a_semester
+      tags:
+        - Study Plan Semester
+      summary: Read information from a specific study plan semester
+      parameters:
+        - $ref: "#/components/parameters/semester_id"
+      responses:
+        '200':
+          description: Read information from a specific study plan
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/StudyPlanSemesterInformation"
+        '404':
+          description: Study plan semester does not exist
+    put:
+      operationId: ezConnect.study_plan.study_plan_semester.update_semester_courses
+      tags:
+        - Study Plan Semester
+      summary: Update courses in an existing study plan semester
+      parameters:
+        - $ref: "#/components/parameters/semester_id"
+      requestBody:
+        description: "List of course codes that are in the given semester"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_codes:
+                  type: array
+            example:
+              course_codes: [CS1101S, CS1231S, MA1521]
+      responses:
+        '200':
+          description: Update courses in an existing study plan semester
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/StudyPlanSemesterInformation"
+        '400':
+          description: No information was inputted
+        '404':
+          description: Study plan semester does not exist
+    delete:
+      operationId: ezConnect.study_plan.study_plan_semester.delete_semester
+      tags:
+        - Study Plan Semester
+      summary: Delete an existing study plan semester
+      parameters:
+        - $ref: "#/components/parameters/semester_id"
+      responses:
+        '204':
+          description: Study plan semester successfully deleted
+        '404':
+          description: Study plan does not exist
