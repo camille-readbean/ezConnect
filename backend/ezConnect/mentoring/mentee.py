@@ -77,7 +77,8 @@ def get_mentees(token_info):
                     'title' : posting.title,
                     'description' : posting.description,
                     'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
-                    'name' : posting.mentee.name
+                    'name' : posting.mentee.name,
+                    'is_published' : posting.is_published
                 }
             )
         # db.session.commit()
@@ -88,6 +89,27 @@ def get_mentees(token_info):
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
 
+def get_a_mentee(token_info, mentor_posting_id):
+    try:
+        posting = MentorRequest.query\
+            .get(mentor_posting_id)
+        rep = {
+            'posting_uuid' : posting.id,
+                'course' : posting.course_code,
+                'title' : posting.title,
+                'description' : posting.description,
+                'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+                'name' : posting.mentee.name,
+                'is_published' : posting.is_published
+            }
+        # db.session.commit()
+        return rep, 200
+        # return {"message": "test"}
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        return {"error": f"{str(e)}"}, 500
+    
 
 def get_user_mentor_requests(token_info):
     try:
@@ -103,7 +125,8 @@ def get_user_mentor_requests(token_info):
                     'title' : posting.title,
                     'description' : posting.description,
                     'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
-                    'name' : posting.mentee.name
+                    'name' : posting.mentee.name,
+                    'is_published' : posting.is_published
                 }
             )
         # db.session.commit()

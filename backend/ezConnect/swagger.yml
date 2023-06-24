@@ -122,6 +122,9 @@ components:
         name:
           type: string
           description: Name of the user behind this posting
+        is_published:
+          type: boolean
+          description: Indicator if the mentoring post is published
     MentorPostingsResponse:
       type: object
       properties:
@@ -414,6 +417,24 @@ paths:
         - jwt: []
       responses:
         '200':
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/mentees/{mentor_posting_id}:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentee.get_a_mentee"
+      summary: Update mentor posting
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentor request posting updated successfully
           description: Mentors retrieved successfully
           content:
             application/json:

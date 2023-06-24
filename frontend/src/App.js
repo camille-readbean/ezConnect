@@ -11,8 +11,12 @@ import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMain
 import Footer from "./Components/Footer";
 import ResourceRespository from "./Pages/ResourceRespository";
 import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
-
-
+import CreateMentorPosting from "./Pages/Mentoring/CreateMentorPosting";
+import CreateMentorRequest from "./Pages/Mentoring/CreateMentorRequest"
+import UpdateMentorPosting from './Pages/Mentoring/UpdateMentorPosting';
+import UpdateMentorRequest from './Pages/Mentoring/UpdateMentorRequest';
+import RequestMentor from './Pages/Mentoring/RequestMentor';
+import RequestMentee from './Pages/Mentoring/RequestMentee';
 
 const Pages = () => {
   return (
@@ -36,6 +40,12 @@ const Pages = () => {
             path="/mentoring"
             element={<MentoringMainPage />}
           />
+          <Route path="/mentoring/create-mentor-posting" element={<CreateMentorPosting/>} />
+          <Route path="/mentoring/create-mentor-request" element={<CreateMentorRequest/>} />
+          <Route path="/mentoring/mentors/:posting_id/update" element={<UpdateMentorPosting/>} />
+          <Route path="/mentoring/mentors/:posting_id/request" element={<RequestMentor/>} />
+          <Route path="/mentoring/mentees/:posting_id/update" element={<UpdateMentorRequest/>} />
+          <Route path="/mentoring/mentees/:posting_id/request" element={<RequestMentee/>} />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
           <Route
             path="/resourcerespository"

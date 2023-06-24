@@ -77,7 +77,8 @@ def get_mentors(token_info):
                     'title' : posting.title,
                     'description' : posting.description,
                     'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
-                    'name' : posting.mentor.name
+                    'name' : posting.mentor.name,
+                    'is_published' : posting.is_published
                 }
             )
         # db.session.commit()
@@ -87,8 +88,31 @@ def get_mentors(token_info):
         db.session.rollback()
         traceback.print_exc()
         return {"error": f"{str(e)}"}, 500
+    
+
+def get_a_mentor(token_info, mentor_posting_id):
+    try:
+        posting = MentorPosting.query\
+            .get(mentor_posting_id)
+        rep = {
+            'posting_uuid' : posting.id,
+                'course' : posting.course_code,
+                'title' : posting.title,
+                'description' : posting.description,
+                'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
+                'name' : posting.mentor.name,
+                'is_published' : posting.is_published
+            }
+        # db.session.commit()
+        return rep, 200
+        # return {"message": "test"}
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        return {"error": f"{str(e)}"}, 500
 
 
+# TODO : Update is_published in the return; do so for mentee as well
 def get_user_mentor_postings(token_info):
     try:
         postings: List[MentorPosting] = MentorPosting.query\
@@ -103,7 +127,8 @@ def get_user_mentor_postings(token_info):
                     'title' : posting.title,
                     'description' : posting.description,
                     'date_updated' : posting.date_updated.strftime("%Y-%m-%d %H:%M"),
-                    'name' : posting.mentor.name
+                    'name' : posting.mentor.name,
+                    'is_published' : posting.is_published
                 }
             )
         # db.session.commit()
