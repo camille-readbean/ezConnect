@@ -5,15 +5,16 @@ import { useState } from "react";
 const filterCourseOptions = (inputValue) => {
   return courseOptions.filter(
     function (course) {
-      if (
-        this.count < 10 &&
-        (course["course_code"]
-          .toLowerCase()
-          .includes(inputValue.toLowerCase()) ||
-          course["course_name"]
-            .toLowerCase()
-            .includes(inputValue.toLowerCase()))
-      ) {
+      if (this.count >= 10) {
+        return false;
+      }
+
+      const courseCode = course["course_code"].toLowerCase();
+      const courseName = course["course_name"].toLowerCase();
+      const isInCourseCode = () => courseCode.startsWith(inputValue.toLowerCase());
+      const isInCourseName = () => courseName.includes(inputValue.toLowerCase());
+
+      if (isInCourseCode() || isInCourseName()) {
         this.count++;
         return true;
       }

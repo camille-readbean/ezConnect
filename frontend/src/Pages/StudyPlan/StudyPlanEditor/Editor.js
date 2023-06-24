@@ -139,8 +139,13 @@ function Editor({ studyPlanId }) {
           title={title}
           studyPlanId={studyPlanId}
           setIsFetchAgain={setIsFetchAgain}
+          className="z-[9999]"
         />
       </div>
+      <CourseSelector
+        semesterInformation={semesterInformation}
+        updateSemester={updateSemester}
+      />
       <div id="studyPlan" className="px-3 mb-3">
         <DragDropContext
           onDragEnd={(result) =>
@@ -173,7 +178,7 @@ function Editor({ studyPlanId }) {
                           <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="flex flex-col bg-sky-100 p-3 min-h-[250px] rounded-md"
+                            className="flex flex-col bg-sky-100 p-3 min-h-[285px] rounded-md"
                           >
                             {courseCodeList.map((course, index) => {
                               return (
@@ -198,11 +203,11 @@ function Editor({ studyPlanId }) {
                                           color: "white",
                                           ...provided.draggableProps.style,
                                         }}
-                                        className="flex group rounded-md items-center"
+                                        className="flex group/course rounded-md items-center"
                                       >
                                         {course}
                                         <RxCross2
-                                          className="invisible ml-auto group-hover:visible hover:cursor-pointer"
+                                          className="invisible ml-auto group-hover/course:visible hover:cursor-pointer"
                                           onClick={() =>
                                             deleteCourse(semester, index)
                                           }
@@ -213,9 +218,9 @@ function Editor({ studyPlanId }) {
                                 </Draggable>
                               );
                             })}
+                            {provided.placeholder}
                             <hr className="mt-auto mb-2 border-slate-300"></hr>
                             <p>Total units: {totalUnits}</p>
-                            {provided.placeholder}
                           </div>
                         );
                       }}
@@ -227,10 +232,6 @@ function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
-      <CourseSelector
-        semesterInformation={semesterInformation}
-        updateSemester={updateSemester}
-      />
     </>
   );
 }

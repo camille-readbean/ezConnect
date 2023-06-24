@@ -27,7 +27,7 @@ const downloadStudyPlan = (title) => {
 
 function EditorOptions({ title, studyPlanId, setIsFetchAgain }) {
   return (
-    <Menu as="div" className="relative">
+    <Menu as="div" className="relative z-10">
       <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-sky-500 hover:text-white h-8 w-8">
         <BsThreeDotsVertical />
       </Menu.Button>
