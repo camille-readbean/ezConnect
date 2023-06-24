@@ -121,6 +121,9 @@ function MentoringMainPage() {
       case 'matchRequest':
         navigate(`/mentoring/mentees/${matchId}/request`);
         break
+      case 'matchAccept':
+        navigate(`/mentoring/matches/accept?match=${matchId}`);
+        break
       default:
         console.log('Card button pressed but nothing done')
     }
@@ -139,6 +142,14 @@ function MentoringMainPage() {
                 <h3>Status: {match.status}</h3>
                 <p>Mentee's name: {match.mentee_name}</p>
                 <p>Email: {match.email}</p>
+                {match.status === 'Pending mentor' && (
+                        <button
+                          onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
+                          className='bluebutton py-1 px-1 w-auto'
+                        >
+                          Accept
+                        </button>
+                )}
               </div>
             ))
           ) : (
@@ -149,10 +160,18 @@ function MentoringMainPage() {
           {menteeMatches.length > 0 ? (
             menteeMatches.map((match) => (
               <div key={match.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {match.course_code}</h3>
-                      <h3>Status: {match.status}</h3>
-                      <p>Mentor's name: {match.mentor_name}</p>
-                      <p>Email: {match.email}</p>
+                <h3>Course: {match.course_code}</h3>
+                <h3>Status: {match.status}</h3>
+                <p>Mentor's name: {match.mentor_name}</p>
+                <p>Email: {match.email}</p>
+                {match.status === 'Pending mentee' && (
+                  <button
+                    onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
+                    className='bluebutton py-1 px-1 w-auto'
+                  >
+                    Accept
+                  </button>
+                )}
               </div>
             ))
           ) : (
@@ -239,7 +258,7 @@ function MentoringMainPage() {
                     </div>
                   ))
                 ) : (
-                  <p className='text-cyan-600'>No mentor requests right now.</p>
+                  <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
                 )}
                 </div>
               </div>
@@ -264,7 +283,7 @@ function MentoringMainPage() {
                     </div>
                   ))
                 ) : (
-                  <p className='text-cyan-60'>No mentor requests right now.</p>
+                  <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
                 )}
                 </div>
               </div>
