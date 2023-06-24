@@ -296,6 +296,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MentorPostingsResponse'
+  /mentoring/mentors/{mentor_posting_id}:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.mentor.get_a_mentor"
+      summary: Update mentor posting
+      parameters:
+        - $ref: '#/components/parameters/mentor_posting_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Mentor request posting updated successfully
+          description: Mentors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/mentors/{mentor_posting_id}/update:
     put:
       tags:
@@ -517,6 +535,23 @@ paths:
                 properties:
                   error:
                     type: string
+  /mentoring/matches/{mentoring_match_id}:
+    get:
+      tags:
+        - Mentoring
+      operationId: "ezConnect.mentoring.matches.get_a_match"
+      summary: Get a mentor match details
+      parameters:
+        - $ref: '#/components/parameters/mentoring_match_id'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Match retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorPostingsResponse'
   /mentoring/matches:
     get:
       summary: Get matches for a user

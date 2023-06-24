@@ -124,7 +124,7 @@ def get_matches(token_info):
                     'course_code' : posting.course_code,
                     'mentee_name' : posting.mentee_user.name,
                     'status' : posting.status,
-                    'email' : posting.mentee_user.email
+                    'email' : posting.mentee_user.email if posting.status == 'Active' else 'REDACTED'
                 }
             )
         for posting in mentee_matches:
@@ -134,9 +134,37 @@ def get_matches(token_info):
                     'course_code' : posting.course_code,
                     'mentor_name' : posting.mentor_user.name,
                     'status' : posting.status,
-                    'email' : posting.mentor_user.email
+                    'email' : posting.mentee_user.email if posting.status == 'Active' else 'REDACTED'
                 }
             )
+        return rep, 200
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        return {"error": f"{str(e)}"}, 500
+    
+def get_a_match(token_info, mentoring_match_id):
+    try:
+        # Where user is mentor
+        match = MentorMenteeMatch.query.get(mentoring_match_id)  
+        rep = {
+                'posting_uuid' : match.id,
+                'course_code' : match.course_code,
+                'mentee_name' : match.mentee_user.name,
+                'mentor_id' : match.mentor_id,
+                'mentee_id' : match.mentee_id,
+                'status' : match.status,
+                'mentor_name' : match.mentor_user.name,
+                'mentor_request_description' : MentorRequest.query \
+                    .filter(MentorRequest.course_code == match.course_code) \
+                    .filter(MentorRequest.user_id == match.mentee_id) \
+                    .one().description,
+                'mentor_posting_description' : MentorPosting.query \
+                    .filter(MentorPosting.course_code == match.course_code) \
+                    .filter(MentorPosting.user_id == match.mentor_id) \
+                    .one().description,
+            }
+
         return rep, 200
     except Exception as e:
         db.session.rollback()

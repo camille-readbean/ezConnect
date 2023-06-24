@@ -14,7 +14,10 @@ import { AiFillAlert } from 'react-icons/ai';
 function MentoringMainPage() {
   // obtain user_id of current user
   const { instance } = useMsal();
-
+  
+  if (instance.getActiveAccount() === null) {
+    instance.loginRedirect()
+  }
   const name = instance.getActiveAccount().name;
 
   const [menteeMatches, setMenteeMatches] = useState([]);
@@ -25,6 +28,7 @@ function MentoringMainPage() {
   const [filteredMentorRequests, updateFilteredMentorRequests] = useState([])
 
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,10 +135,9 @@ function MentoringMainPage() {
           {mentorMatches.length > 0 ? (
             mentorMatches.map((match) => (
               <div key={match.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                <h3>Course: {match.course}</h3>
-                <h3>Ttitle: {match.title}</h3>
-                <p className='text-slate-500 py-2'>Description: {match.description}</p>
-                <p>Mentee's name: {match.name}</p>
+                <h3>Course: {match.course_code}</h3>
+                <h3>Status: {match.status}</h3>
+                <p>Mentee's name: {match.mentee_name}</p>
                 <p>Email: {match.email}</p>
               </div>
             ))
@@ -146,10 +149,9 @@ function MentoringMainPage() {
           {menteeMatches.length > 0 ? (
             menteeMatches.map((match) => (
               <div key={match.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {match.course}</h3>
-                      <h3>Ttitle: {match.title}</h3>
-                      <p className='text-slate-500 py-2'>Description: {match.description}</p>
-                      <p>Mentor's name: {match.name}</p>
+                      <h3>Course: {match.course_code}</h3>
+                      <h3>Status: {match.status}</h3>
+                      <p>Mentor's name: {match.mentor_name}</p>
                       <p>Email: {match.email}</p>
               </div>
             ))

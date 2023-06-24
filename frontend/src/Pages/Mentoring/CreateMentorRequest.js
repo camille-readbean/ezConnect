@@ -48,7 +48,7 @@ function CreateMentorRequest() {
           <Unauthenticated />
         </UnauthenticatedTemplate>
         <AuthenticatedTemplate>
-          <h1 className="text-lg font-bold text-center">Create a mentor posting</h1>
+          <h1 className="text-lg font-bold text-center">Create a mentor request</h1>
           <center className='text-slate-500 py-2'>
             This lets people know your interest having a mentor for a particular subject <br/>
             Only your name is shared, your email is not revealed till you accept a mentor <br/>

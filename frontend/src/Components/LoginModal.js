@@ -1,13 +1,19 @@
+import { useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function LoginModal({setLoginModal}) {
     const { instance} = useMsal();
+    const loc = useLocation();
+    const nav = useNavigate();
 
     const handleLoginRedirect = () => {
+        sessionStorage.setItem('last_page', loc.pathname)
         instance
             .loginRedirect({
                 scopes: ['openid', 'profile', 'email', "https://ezconnecttesting.onmicrosoft.com/ezconnecttesting/App.Use"],
                 redirectUri: '/homepage',
+                state: `${loc.pathname}`
             })
             // .loginRedirect()
             .catch((error) => console.log(error));
@@ -16,6 +22,8 @@ function LoginModal({setLoginModal}) {
     const closeModal = () => {
         setLoginModal(false);
     }
+
+    
 
     return (
     <div>

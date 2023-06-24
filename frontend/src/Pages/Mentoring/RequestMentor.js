@@ -4,8 +4,8 @@ import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/
 import { secureApiRequest } from "../../ApiRequest";
 import Unauthenticated from "../../Components/Unauthenticated";
 
-// Mentee requesting for a mentor
-function RequestMentor() {
+// Request a mentor, aka applying to a mentor posting
+function RequestMentee() {
   const [responseMessage, setResponseMessage] = useState("");
   const { posting_id } = useParams();
   const [currentPost, setCurrentPost] = useState({
@@ -14,7 +14,6 @@ function RequestMentor() {
     description: '',
     is_published: false
   });
-  const [isPublished, setIsPublished] = useState(false);
 
   const { instance } = useMsal();
   const navigate = useNavigate();
@@ -23,32 +22,20 @@ function RequestMentor() {
     secureApiRequest(
         instance, 
         'GET', 
-        '/api/mentoring/mentees/get-user-mentor-requests')
-        .then(resp => resp.postings
-            .filter(post => post.posting_uuid === posting_id)
-            .map(post => setCurrentPost(post))[0])
+        `/api/mentoring/mentors/${posting_id}`)
+        .then(resp => setCurrentPost(resp))
     }, []
   )
-
-  const handleCheckboxChange = (event) => {
-    setIsPublished(event.target.checked);
-  };
 
   const handleRequest = (event) => {
     event.preventDefault();
     setResponseMessage('⌛');
-
-    // const request_body = {
-    //   title: event.target.title.value,
-    //   description: event.target.description.value,
-    //   is_published: isPublished
-    // }
     
-    secureApiRequest(instance, "POST", `/api/mentoring/mentees/${posting_id}/update`)
+    secureApiRequest(instance, "POST", `/api/mentoring/mentors/${posting_id}/request`)
       .then((data) => {
           if (data.message) {
             setResponseMessage(data.message);
-            navigate('/mentoring');
+            // navigate('/mentoring');  
           } else if (data.error) {
             setResponseMessage(data.error);
           } else if (data.detail) {
@@ -66,25 +53,17 @@ function RequestMentor() {
           <Unauthenticated />
         </UnauthenticatedTemplate>
         <AuthenticatedTemplate>
-          <h1 className="text-lg font-bold text-center">Update a mentor request</h1>
+          <h1 className="text-lg font-bold text-center">Request to be {currentPost.name}'s' mentee</h1>
           <center className='text-slate-500 py-2'>
-          This lets people know your interest having a mentor for a particular subject <br/>
-            Only your name is shared, your email is not revealed till you accept a mentor <br/>
-            When a mentor acepts, they can give you their contact details so you can communicate <br/>
-            in real life
+          We will send them an email informing them of your request once you submit the request<br/>
+          When a mentee acepts, they can give you their contact details so you can communicate <br/>
+          in real life
           </center>
           <hr className="my-3"></hr>
           <h3>Course: {currentPost.course}</h3>
           <form onSubmit={handleRequest}>
-            <p>
-                <label htmlFor="title">Title</label>
-                <span>{currentPost.title}</span>
-            </p>
-
-            <p>
-                <label htmlFor="description">Description</label>
-                <span>{currentPost.description}</span>
-            </p>
+          <h3>Title: {currentPost.title}</h3>
+          <p className='text-slate-500 py-2'>Description: {currentPost.description}</p>
 
             <p>
                 <label>
@@ -93,8 +72,7 @@ function RequestMentor() {
                     id="is_published"
                     name="is_published"
                     checked={currentPost.is_published}
-                    onChange={handleCheckboxChange}
-                    className="px-2 py-2"
+                    className="px-2 py-2 pointer-events-none opacity-50"
                 />
                 Is published?
                 </label>
@@ -116,4 +94,4 @@ function RequestMentor() {
   );
 }
 
-export default RequestMentor;
+export default RequestMentee;

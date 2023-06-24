@@ -14,7 +14,6 @@ function RequestMentee() {
     description: '',
     is_published: false
   });
-  const [isPublished, setIsPublished] = useState(false);
 
   const { instance } = useMsal();
   const navigate = useNavigate();
@@ -27,14 +26,6 @@ function RequestMentee() {
         .then(resp => setCurrentPost(resp))
     }, []
   )
-
-  const handleCheckboxChange = (event) => {
-    const { checked } = event.target;
-    setCurrentPost((prevPost) => ({
-      ...prevPost,
-      is_published: checked,
-    }));
-  };
 
   const handleRequest = (event) => {
     event.preventDefault();
