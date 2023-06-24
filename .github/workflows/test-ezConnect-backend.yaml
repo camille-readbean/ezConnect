@@ -1,0 +1,48 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Test and check ezConnect
+
+on:
+  push:
+
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11.3"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with ruff
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        ruff --format=github --target-version=311
+    - name: Prepare test database
+      run: |
+        ./backend/tests/setUpTestDB.sh
+    - name: Test with pytest
+      run: |
+        export MAILERCFW_API_KEY='${{ secrets.MAILERCFW_API_KEY }}''
+        cd backend/
+        python -m pytest -vv
+        cd ..
+    - name: Lint JS files
+      run: |
+        cd frontend
+        npx eslint src
+
