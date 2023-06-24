@@ -2,76 +2,85 @@ name: ezConnect
 channels:
   - conda-forge
 dependencies:
-  - _libgcc_mutex=0.1
-  - _openmp_mutex=4.5
-  - aniso8601=9.0.1
-  - blinker=1.6.2
-  - brotlipy=0.7.0
-  - bzip2=1.0.8
-  - ca-certificates=2023.5.7
-  - certifi=2023.5.7
-  - cffi=1.15.1
-  - charset-normalizer=3.1.0
-  - click=8.1.3
-  - cryptography=40.0.2
-  - flask-sqlalchemy=3.0.3
-  - greenlet=2.0.2
-  - idna=3.4
-  - importlib-metadata=6.6.0
-  - itsdangerous=2.1.2
-  - jinja2=3.1.2
-  - ld_impl_linux-64=2.40
-  - libexpat=2.5.0
-  - libffi=3.4.2
-  - libgcc-ng=12.2.0
-  - libgomp=12.2.0
-  - libnsl=2.0.0
-  - libsqlite=3.42.0
-  - libstdcxx-ng=12.2.0
-  - libuuid=2.38.1
-  - libzlib=1.2.13
-  - markupsafe=2.1.2
-  - ncurses=6.3
-  - openssl=3.1.0
-  - pip=23.1.2
-  - pycparser=2.21
-  - pyopenssl=23.1.1
-  - pysocks=1.7.1
-  - python=3.11.3
-  - python-dateutil=2.8.2
-  - python_abi=3.11
-  - pytz=2023.3
-  - readline=8.2
-  - requests=2.29.0
-  - setuptools=67.7.2
-  - six=1.16.0
-  - sqlalchemy=2.0.14
-  - tk=8.6.12
-  - typing-extensions=4.5.0
-  - typing_extensions=4.5.0
-  - tzdata=2023c
-  - urllib3=1.26.15
-  - wheel=0.40.0
-  - xz=5.2.6
-  - zipp=3.15.0
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - aniso8601=9.0.1=pyhd8ed1ab_0
+  - blinker=1.6.2=pyhd8ed1ab_0
+  - brotlipy=0.7.0=py311hd4cff14_1005
+  - bzip2=1.0.8=h7f98852_4
+  - ca-certificates=2023.5.7=hbcca054_0
+  - certifi=2023.5.7=pyhd8ed1ab_0
+  - cffi=1.15.1=py311h409f033_3
+  - charset-normalizer=3.1.0=pyhd8ed1ab_0
+  - click=8.1.3=unix_pyhd8ed1ab_2
+  - cryptography=40.0.2=py311h9b4c7bb_0
+  - flask-sqlalchemy=3.0.3=pyhd8ed1ab_0
+  - greenlet=2.0.2=py311hb755f60_1
+  - idna=3.4=pyhd8ed1ab_0
+  - importlib-metadata=6.6.0=pyha770c72_0
+  - itsdangerous=2.1.2=pyhd8ed1ab_0
+  - jinja2=3.1.2=pyhd8ed1ab_1
+  - ld_impl_linux-64=2.40=h41732ed_0
+  - libexpat=2.5.0=hcb278e6_1
+  - libffi=3.4.2=h7f98852_5
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+  - libnsl=2.0.0=h7f98852_0
+  - libsqlite=3.42.0=h2797004_0
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libuuid=2.38.1=h0b41bf4_0
+  - libzlib=1.2.13=h166bdaf_4
+  - markupsafe=2.1.2=py311h2582759_0
+  - ncurses=6.3=h27087fc_1
+  - openssl=3.1.0=hd590300_3
+  - pip=23.1.2=pyhd8ed1ab_0
+  - pycparser=2.21=pyhd8ed1ab_0
+  - pyopenssl=23.1.1=pyhd8ed1ab_0
+  - pysocks=1.7.1=pyha2e5f31_6
+  - python=3.11.3=h2755cc3_0_cpython
+  - python-dateutil=2.8.2=pyhd8ed1ab_0
+  - python_abi=3.11=3_cp311
+  - pytz=2023.3=pyhd8ed1ab_0
+  - readline=8.2=h8228510_1
+  - requests=2.29.0=pyhd8ed1ab_0
+  - setuptools=67.7.2=pyhd8ed1ab_0
+  - six=1.16.0=pyh6c4a22f_0
+  - sqlalchemy=2.0.14=py311h459d7ec_0
+  - tk=8.6.12=h27826a3_0
+  - typing-extensions=4.5.0=hd8ed1ab_0
+  - typing_extensions=4.5.0=pyha770c72_0
+  - tzdata=2023c=h71feb2d_0
+  - urllib3=1.26.15=pyhd8ed1ab_0
+  - wheel=0.40.0=pyhd8ed1ab_0
+  - xz=5.2.6=h166bdaf_0
+  - zipp=3.15.0=pyhd8ed1ab_0
   - pip:
     - alembic==1.11.1
     - attrs==23.1.0
     - clickclick==20.10.2
     - connexion==2.14.2
+    - ecdsa==0.18.0
     - flask==2.2.5
+    - flask-cors==3.0.10
     - flask-marshmallow==0.15.0
     - flask-migrate==4.0.4
     - inflection==0.5.1
+    - iniconfig==2.0.0
     - jsonschema==4.17.3
     - mako==1.2.4
     - marshmallow==3.19.0
     - marshmallow-sqlalchemy==0.29.0
     - packaging==23.1
+    - pluggy==1.2.0
     - psycopg2==2.9.6
+    - pyasn1==0.5.0
     - pycryptodome==3.18.0
     - pyrsistent==0.19.3
+    - pytest==7.3.2
+    - python-jose==3.3.0
     - pyyaml==6.0
+    - redis==4.5.5
+    - rsa==4.9
     - swagger-ui-bundle==0.0.9
     - werkzeug==2.2.3
 prefix: /home/rb/mambaforge/envs/ezConnect

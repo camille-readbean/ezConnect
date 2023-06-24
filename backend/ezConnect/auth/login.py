@@ -11,7 +11,6 @@ from flask import current_app
 from ezConnect.models import User
 from ezConnect.config import JWT_SECRET, JWT_ISSUER, \
     JWT_ALGORITHMS, JWT_LIFETIME_SECONDS, JWT_KEY_URL, JWT_AUD
-from ezConnect.utils.exceptions import InvalidCredentialsError
 
 """
 Credits: 
@@ -22,8 +21,9 @@ Credits:
 def decode_token(token):
     try:
         # DEBUG
-        print(JWT_KEY_URL)
-        print(token)
+        if current_app.debug:
+            print(JWT_KEY_URL)
+            print(token)
 
         jsonurl = urlopen(JWT_KEY_URL)
         jwks = json.loads(jsonurl.read())
@@ -31,7 +31,7 @@ def decode_token(token):
         if 'kid' not in unverified_header:
             # leave this out next time to check for a dev JWT, dont use in prod
             if current_app.debug:
-                print('\033[93m' + "backdooring!!" + '\x1b[0m')
+                print('\033[91m' + "backdooring!!" + '\x1b[0m')
                 return jwt.decode(
                     token,
                     JWT_SECRET,

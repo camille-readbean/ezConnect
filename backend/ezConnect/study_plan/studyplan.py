@@ -25,7 +25,7 @@ def create_study_plan(body):
 def get_published_study_plans():
     study_plans = StudyPlan.query.filter_by(is_published=True).all()
     study_plans = list(map(lambda study_plan: study_plan.toJSON(), study_plans))
-    return study_plans, 200
+    return {"published_study_plans_list": study_plans}, 200
 
 # Read a particular study plan
 def get_a_study_plan(study_plan_id):
@@ -77,6 +77,11 @@ def delete_study_plan(study_plan_id):
 
 # Read a collection of personal study plans
 def get_personal_study_plans(user_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        abort(404, f"User with id {user_id} not found")
+
     personal_study_plans = StudyPlan.query.filter_by(creator_id=user_id).all()
     personal_study_plans = list(map(lambda study_plan: study_plan.toJSON(), personal_study_plans))
     return {"personal_study_plan_data": personal_study_plans}, 200

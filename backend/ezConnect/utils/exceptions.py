@@ -1,6 +1,5 @@
-class InvalidDomainError(Exception):
-    pass
-    
-class InvalidCredentialsError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__("Invalid username or password")
+def handle_bad_request(e):
+    return {'error' : str(e)}, 400
+
+def handle_unauthorized(e):
+    return {'error' : str(e)}, 401

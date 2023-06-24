@@ -6,12 +6,17 @@ import AboutUs from "./Pages/AboutUs";
 import Homepage from "./Pages/Homepage";
 import Navigation from "./Components/Navigation";
 import CreateAccount from "./Pages/User/CreateAccount";
-import MentorMenteeMatcher from "./Pages/MentorMenteeMatcher";
+import MentoringMainPage from "./Pages/Mentoring/MentoringMainPage";
 import StudyPlanMainPage from "./Pages/StudyPlan/StudyPlanMainPage/StudyPlanMainPage";
 import Footer from "./Components/Footer";
 import StudyPlanEditor from "./Pages/StudyPlan/StudyPlanEditor/StudyPlanEditor";
-
-
+import CreateMentorPosting from "./Pages/Mentoring/CreateMentorPosting";
+import CreateMentorRequest from "./Pages/Mentoring/CreateMentorRequest"
+import UpdateMentorPosting from './Pages/Mentoring/UpdateMentorPosting';
+import UpdateMentorRequest from './Pages/Mentoring/UpdateMentorRequest';
+import RequestMentor from './Pages/Mentoring/RequestMentor';
+import RequestMentee from './Pages/Mentoring/RequestMentee';
+import AcceptMatch from './Pages/Mentoring/AcceptMatch';
 
 const Pages = () => {
   return (
@@ -32,9 +37,16 @@ const Pages = () => {
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/user/create-account" element={<CreateAccount />} />
           <Route
-            path="/mentormenteematcher"
-            element={<MentorMenteeMatcher />}
+            path="/mentoring"
+            element={<MentoringMainPage />}
           />
+          <Route path="/mentoring/create-mentor-posting" element={<CreateMentorPosting/>} />
+          <Route path="/mentoring/create-mentor-request" element={<CreateMentorRequest/>} />
+          <Route path="/mentoring/mentors/:posting_id/update" element={<UpdateMentorPosting/>} />
+          <Route path="/mentoring/mentors/:posting_id/request" element={<RequestMentor/>} />
+          <Route path="/mentoring/mentees/:posting_id/update" element={<UpdateMentorRequest/>} />
+          <Route path="/mentoring/mentees/:posting_id/request" element={<RequestMentee/>} />
+          <Route path="/mentoring/matches/accept" element={<AcceptMatch/>} />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
           <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
         </Routes>

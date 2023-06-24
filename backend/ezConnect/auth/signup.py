@@ -7,11 +7,14 @@ import uuid
 import traceback
 
 # /api/user/create-account
-def create_user(body):
+def create_user(token_info, body):
     try:
         programme = None
         if 'programme' in body.keys():
             programme = body['programme']
+        # Unit testing revealed duplicate user causes 500 error
+        if User.query.get(token_info['sub']) is not None:
+            return {'error' : 'You already have an account'}, 401
         new_user = User(name=body['name'], 
                         email=body['email'],
                         azure_ad_oid=uuid.UUID(body['azure_ad_oid']),

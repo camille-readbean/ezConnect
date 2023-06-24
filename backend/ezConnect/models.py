@@ -196,7 +196,7 @@ class MentorMenteeMatch(db.Model):
     mentee_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
     course_code = Column(String(12), db.ForeignKey('course.course_code'), nullable=False)
     status = Column(String(20))  
-    # Status of the mentor-mentee relationship (e.g., "Pending", "Reject", "Active", "Completed")
+    # Status of the mentor-mentee relationship (e.g., "Pending mentor", "Pending mentee", "Reject", "Active", "Completed")
 
     # mentor = db.relationship("User", foreign_keys=[mentor_id], backref='mentored_courses')
     # mentee = db.relationship("User", foreign_keys=[mentee_id], backref='mentee_courses')

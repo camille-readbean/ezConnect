@@ -5,10 +5,12 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS
 from ezConnect.models import db
+from ezConnect.utils.exceptions import handle_bad_request, handle_unauthorized
+from werkzeug.exceptions import Unauthorized, BadRequest
 
 # db = SQLAlchemy()
 
-def create_app():
+def create_app(config=None):
     # Time stamps all generated in UTC, python-jose need this to decode exp
     os.environ["TZ"] = "Etc/UTC"
     time.tzset()
@@ -18,7 +20,17 @@ def create_app():
 
     connexion_app.app.config.from_pyfile(filename="config.py")
 
+    if os.environ.get('APP_ENV').lower() == 'testing':
+        connexion_app.app.config.update({
+            'SQLALCHEMY_DATABASE_URI' : "postgresql://postgres:test@localhost:5433/ezConnect",
+        })
+    if connexion_app.app.debug == True:
+        print('\033[91m' + 'OPENID CONNECT BYPASS ENABLED FOR SIGNED JWT' + '\x1b[0m')
+
     app = connexion_app.app
+
+    app.register_error_handler(400, handle_bad_request)
+    app.register_error_handler(401, handle_unauthorized)
 
     db.init_app(app)
     migrate = Migrate(app, db)

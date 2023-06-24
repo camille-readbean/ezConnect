@@ -40,7 +40,7 @@ function Navigation(props) {
           <Link to="/homepage" className="navBarLink">
             Home
           </Link>
-          <Link to="/mentormenteematcher" className="navBarLink">
+          <Link to="/mentoring" className="navBarLink">
             Mentoring
           </Link>
           <Link to="/studyplan" className="navBarLink">

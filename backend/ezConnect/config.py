@@ -1,5 +1,5 @@
 import os
-FRONTEND_HOSTNAME="localhost:3000"
+FRONTEND_HOSTNAME="http://localhost:3000"
 
 DOMAINS = ["u.nus.edu"]
 
