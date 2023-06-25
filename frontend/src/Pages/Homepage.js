@@ -57,7 +57,7 @@ function Homepage(props) {
     navigate('/mentoring/create-mentor-posting');
   }
   const onPressCreateMentorRequest = (event) => {
-    navigate('/mentoring/create-mentor-requests');
+    navigate('/mentoring/create-mentor-request');
   }
 
   function handleButtonClick(matchId, action) {
