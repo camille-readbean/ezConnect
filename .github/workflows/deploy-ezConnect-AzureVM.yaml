@@ -5,9 +5,9 @@ name: Deploy ezConnect docker compose to Azure VM
 
 on:
   push:
-    branches: [ "release, *ms*"]
+    branches: [ "release**", "*ms*"]
   pull_request:
-    branches: [ "release" ]
+    branches: [ "release**" ]
   workflow_dispatch:
 
 permissions:
