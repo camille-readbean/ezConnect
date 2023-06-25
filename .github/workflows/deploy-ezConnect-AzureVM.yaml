@@ -24,7 +24,7 @@ jobs:
       run: |
         sudo apt install -y sshpass
         pip install docker
-        export ANSIBLE_CONFIG=infra/playbooks/ansibly.cfg
+        export ANSIBLE_CONFIG=infra/playbooks/ansible.cfg
         ansible-playbook infra/playbooks/deploy.yaml -i infra/.inventory \
           --extra-vars "ansible_user=${{ secrets.ANSIBLE_USER }} \
             ansible_password=${{ secrets.ANSIBLE_PASSWORD }} \
