@@ -1,7 +1,7 @@
 # This workflow will deploy
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Test and check ezConnect
+name: Deploy ezConnect docker compose to Azure VM
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
 
     runs-on: ubuntu-latest
 
