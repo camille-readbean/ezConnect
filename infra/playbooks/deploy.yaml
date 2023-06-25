@@ -8,7 +8,7 @@
   tasks:
     - name: Update ezConnect repository
       git:
-        repo: https://{{ secrets.GIT_USERNAME }}:{{ secrets.GIT_PAT }}@github.com/camille-readbean/ezConnect.git
+        repo: https://{{ GIT_USERNAME }}:{{ GIT_PAT }}@github.com/camille-readbean/ezConnect.git
         dest: /home/azureuser/ezConnect
         update: yes
         version: prepms2
@@ -69,8 +69,8 @@
     - name: Build and start services
       become: true
       vars:
-        MAILERCFW_API_KEY: "{{ secrets.MAILERCFW_API_KEY }}"
-        CLOUDFLARED_SECRET: "{{ secrets.CLOUDFLARED_SECRET }}"
+        MAILERCFW_API_KEY: "{{ MAILERCFW_API_KEY }}"
+        CLOUDFLARED_SECRET: "{{ CLOUDFLARED_SECRET }}"
       docker_compose:
         project_src: /home/azureuser/ezConnect
         files:
