@@ -73,7 +73,7 @@
 
     - name: Build and start services
       become: true
-      vars:
+      environment:
         MAILERCFW_API_KEY: "{{ MAILERCFW_API_KEY }}"
         CLOUDFLARED_SECRET: "{{ CLOUDFLARED_SECRET }}"
       docker_compose:
