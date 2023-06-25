@@ -10,12 +10,9 @@ services:
       POSTGRES_DB: ezConnect
     ports:
       - "5432:5432"
-  in_memory_store:
-    hostname: 'in-mem-store'
-    image: redis
-    restart: always
-    ports:
-      - "6379:6379"
+    volumes:
+      - ../backend/pre_data:/pre_data
+      - ../backend/pre_data/init.sql:/docker-entrypoint-initdb.d/init.sql
   ez_connect_flask:
     restart: unless-stopped
     hostname: 'ezconnectflask'
@@ -24,6 +21,9 @@ services:
     build: 
       context: backend/
       dockerfile: Dockerfile
+    environment:
+      - MAILERCFW_API_KEY={{ MAILERCFW_API_KEY }}
+      - APP_ENV=prod
     ports:
       - "5000:5000"
     entrypoint: "/usr/src/app/ezConnect/init_ezconnectflask.sh"
@@ -41,7 +41,7 @@ services:
     image: cloudflare/cloudflared
     restart: unless-stopped
     hostname: cloudflared
-    entrypoint: "/usr/local/bin/cloudflared tunnel --url http://caddy-proxy --no-autoupdate run --token [fill in]"
+    entrypoint: "/usr/local/bin/cloudflared tunnel --url http://caddy-proxy --no-autoupdate run --token {{ CLOUDFLARED_SECRET }}"
 secrets:
   cloudflared_token:
     file: ./infra/.env.cloudflared.secret

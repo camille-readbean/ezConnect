@@ -1,0 +1,50 @@
+# ANSIBLE_PASSWORD
+# ANSIBLE_USER
+# git_pat
+# git_username
+# MAILERCFW_API_KEY
+# CLOUDFLARED_SECRET
+- hosts: ezconnectvm.ruibin.me
+  tasks:
+    - name: Update ezConnect repository
+      git:
+        repo: https://{{ git_username }}:{{ git_pat }}@github.com/camille-readbean/ezConnect.git
+        dest: /home/azureuser/ezConnect
+        update: yes
+
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+
+    - name: Ensure Docker is installed
+      become: true
+      apt:
+        name: 
+          - docker
+          - python3-pip
+        state: present
+
+    - name: Change to frontend directory and build
+      shell: cd ezConnect/frontend/; npm run build; cd ..; 
+
+    # Server need docker module
+    - name: Install docker Python library
+      become: true
+      pip:
+        name: docker
+
+    - name: Build and start services
+      become: true
+      vars:
+        MAILERCFW_API_KEY: "{{ MAILERCFW_API_KEY }}"
+        CLOUDFLARED_SECRET: "{{ CLOUDFLARED_SECRET }}"
+      docker_compose:
+        project_src: /home/azureuser/ezConnect
+        files:
+          - ezConnect/infra/docker-compose.yml
+        state: present
+        build: yes
+      # shell: cd ezConnect/; docker compose --file infra/docker-compose.prod.
