@@ -1,11 +1,11 @@
 import os
-FRONTEND_HOSTNAME="http://localhost:3000" if os.environ.get('APP_ENV') is not 'prod' else 'https://ezconnect.ruibin.me'
+FRONTEND_HOSTNAME="http://localhost:3000" if os.environ.get('APP_ENV') != 'prod' else 'https://ezconnect.ruibin.me'
 
 DOMAINS = ["u.nus.edu"]
 
 DATABASE_USER = "postgres"
 DATABASE_PASSWORD = "test"
-DATABASE_HOSTNAME = 'localhost' if os.environ.get('APP_ENV') is not 'prod' else 'postgresql-server'
+DATABASE_HOSTNAME = 'localhost' if os.environ.get('APP_ENV') != 'prod' else 'postgresql-server'
 SQLALCHEMY_DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOSTNAME}:5432/ezConnect"
 
 # FORMAT '{hostname}:{port}'
