@@ -8,7 +8,7 @@
   tasks:
     - name: Update ezConnect repository
       git:
-        repo: https://{{ GIT_USERNAME }}:{{ GIT_PAT }}@github.com/camille-readbean/ezConnect.git
+        repo: https://{{ git_username }}:{{ git_pat }}@github.com/camille-readbean/ezConnect.git
         dest: /home/azureuser/ezConnect
         update: yes
         version: prepms2
