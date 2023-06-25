@@ -79,7 +79,7 @@
       docker_compose:
         project_src: /home/azureuser/ezConnect
         files:
-          - infra/docker-compose.yml
+          - docker-compose.yml
         state: present
         build: yes
       # shell: cd ezConnect/; docker compose --file infra/docker-compose.prod.
