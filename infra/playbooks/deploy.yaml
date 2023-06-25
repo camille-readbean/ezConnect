@@ -85,5 +85,4 @@
           - docker-compose.yml
         state: present
         build: yes
-        rebuild: always
       # shell: cd ezConnect/; docker compose --file infra/docker-compose.prod.
