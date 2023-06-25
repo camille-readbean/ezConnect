@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     build: 
-      context: backend/
+      context: ../backend/
       dockerfile: Dockerfile
     environment:
       - MAILERCFW_API_KEY=${MAILERCFW_API_KEY}
