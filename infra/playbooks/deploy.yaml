@@ -64,7 +64,9 @@
     - name: Install docker Python library
       become: true
       pip:
-        name: docker
+        name: 
+          - docker
+          - docker-compose
 
     - name: Change to frontend directory and build
       shell: cd ezConnect/frontend/; npm run build; cd ..; 
