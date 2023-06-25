@@ -69,11 +69,12 @@
           - docker-compose
 
     - name: Change to frontend directory and build
-      shell: cd ezConnect/frontend/; npm run build; cd ..; 
+      become: true
+      shell: cd ezConnect/frontend/; curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs && npm install && npm run build; cd ..; 
 
     - name: Build and start services
       become: true
-      environment:
+      environment :
         MAILERCFW_API_KEY: "{{ MAILERCFW_API_KEY }}"
         CLOUDFLARED_SECRET: "{{ CLOUDFLARED_SECRET }}"
       docker_compose:
