@@ -11,8 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - backend/pre_data:/pre_data
-      - backend/pre_data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/pre_data:/pre_data
+      - ./backend/pre_data/init.sql:/docker-entrypoint-initdb.d/init.sql
   ez_connect_flask:
     restart: unless-stopped
     hostname: 'ezconnectflask'
@@ -32,8 +32,8 @@ services:
     hostname: 'caddy-proxy'
     restart: unless-stopped
     volumes:
-      - frontend/build:/usr/share/caddy
-      - infra/caddy-config/Caddyfile:/etc/caddy/Caddyfile
+      - ./frontend/build:/usr/share/caddy
+      - ./infra/caddy-config/Caddyfile:/etc/caddy/Caddyfile
     ports:
       - "443:443"
       - "80:80"
