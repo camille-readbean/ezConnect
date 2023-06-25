@@ -25,7 +25,7 @@ jobs:
         pip install docker
         ansible-playbook infra/playbooks/deploy.yaml -i infra/.inventory \
           --extra-vars "ansible_user=${{ secrets.ANSIBLE_USER }} \
-            ansible_password=${{ ANSIBLE_PASSWORD }} \
+            ansible_password=${{ secrets.ANSIBLE_PASSWORD }} \
             git_username=${{ secrets.GIT_USERNAME }} \
             git_pat=${{ secrets.GIT_PAT }} \
             MAILERCFW_API_KEY=${{ secrets.MAILERCFW_API_KEY }} \
