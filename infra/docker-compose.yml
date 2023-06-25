@@ -22,7 +22,7 @@ services:
       context: backend/
       dockerfile: Dockerfile
     environment:
-      - MAILERCFW_API_KEY={{ MAILERCFW_API_KEY }}
+      - MAILERCFW_API_KEY=${MAILERCFW_API_KEY}
       - APP_ENV=prod
     ports:
       - "5000:5000"
@@ -41,7 +41,7 @@ services:
     image: cloudflare/cloudflared
     restart: unless-stopped
     hostname: cloudflared
-    entrypoint: "/usr/local/bin/cloudflared tunnel --url http://caddy-proxy --no-autoupdate run --token {{ CLOUDFLARED_SECRET }}"
+    entrypoint: "/usr/local/bin/cloudflared tunnel --url http://caddy-proxy --no-autoupdate run --token ${CLOUDFLARED_SECRET}"
 secrets:
   cloudflared_token:
     file: ./infra/.env.cloudflared.secret

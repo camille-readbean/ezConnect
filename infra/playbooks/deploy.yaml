@@ -8,9 +8,10 @@
   tasks:
     - name: Update ezConnect repository
       git:
-        repo: https://{{ git_username }}:{{ git_pat }}@github.com/camille-readbean/ezConnect.git
+        repo: https://{{ secrets.GIT_USERNAME }}:{{ secrets.GIT_PAT }}@github.com/camille-readbean/ezConnect.git
         dest: /home/azureuser/ezConnect
         update: yes
+        version: prepms2
 
     - name: Update and upgrade apt packages
       become: true
@@ -19,16 +20,42 @@
         update_cache: yes
         cache_valid_time: 86400 #One day
 
-    - name: Ensure Docker is installed
+    - name: Install aptitude
       become: true
       apt:
-        name: 
-          - docker
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install required system packages
+      become: true
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
           - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+    
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
-    - name: Change to frontend directory and build
-      shell: cd ezConnect/frontend/; npm run build; cd ..; 
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
 
     # Server need docker module
     - name: Install docker Python library
@@ -36,15 +63,18 @@
       pip:
         name: docker
 
+    - name: Change to frontend directory and build
+      shell: cd ezConnect/frontend/; npm run build; cd ..; 
+
     - name: Build and start services
       become: true
       vars:
-        MAILERCFW_API_KEY: "{{ MAILERCFW_API_KEY }}"
-        CLOUDFLARED_SECRET: "{{ CLOUDFLARED_SECRET }}"
+        MAILERCFW_API_KEY: "{{ secrets.MAILERCFW_API_KEY }}"
+        CLOUDFLARED_SECRET: "{{ secrets.CLOUDFLARED_SECRET }}"
       docker_compose:
         project_src: /home/azureuser/ezConnect
         files:
-          - ezConnect/infra/docker-compose.yml
+          - infra/docker-compose.yml
         state: present
         build: yes
       # shell: cd ezConnect/; docker compose --file infra/docker-compose.prod.
