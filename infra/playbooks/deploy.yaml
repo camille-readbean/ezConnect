@@ -71,7 +71,7 @@
     - name: Change to frontend directory and build
       # become: true
       # shell: cd ezConnect/frontend/; curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs && npm install && npm run build; cd ..; 
-      shell: cd ezConnect/frontend/; npm run build; cd ..; 
+      shell: cd ezConnect/frontend/; npm install; npm run build; cd ..; 
 
     - name: Build and start services
       become: true
