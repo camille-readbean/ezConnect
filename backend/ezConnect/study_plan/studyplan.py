@@ -50,7 +50,7 @@ def update_study_plan(study_plan_id, body):
     description = body.get('description', None)
     num_of_likes = body.get('num_of_likes', None)
 
-    if is_published:
+    if is_published is not None:
         study_plan.is_published = is_published
     if title:
         study_plan.title = title

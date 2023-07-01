@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import CourseSelector from "./CourseSelector";
 import EditorMenu from "./EditorMenu";
+import Publisher from "./Publisher";
 import { RxCross2 } from "react-icons/rx";
 import { AiFillDelete } from "react-icons/ai";
 
 function Editor({ studyPlanId }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
+  const [isShowPublisher, setIsShowPublisher] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
   const [semesterInformation, setSemesterInformation] = useState([]);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
 
@@ -17,6 +20,7 @@ function Editor({ studyPlanId }) {
       .then((data) => {
         setStudyPlanInformation(data);
         setTitle(data["title"]);
+        setIsPublished(data["is_published"]);
 
         // get semester information
         const semesterIds = data["semester_ids"];
@@ -128,6 +132,15 @@ function Editor({ studyPlanId }) {
 
   return (
     <>
+      {isShowPublisher && (
+        <Publisher
+          studyPlanId={studyPlanId}
+          setIsShowPublisher={setIsShowPublisher}
+          isPublished={isPublished}
+          setIsPublished={setIsPublished}
+          setIsFetchAgain={setIsFetchAgain}
+        />
+      )}
       <div className="flex items-center">
         <input
           type="text"
@@ -139,7 +152,7 @@ function Editor({ studyPlanId }) {
           title={title}
           studyPlanId={studyPlanId}
           setIsFetchAgain={setIsFetchAgain}
-          className="z-[9999]"
+          setIsShowPublisher={setIsShowPublisher}
         />
       </div>
       <CourseSelector

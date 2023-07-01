@@ -25,7 +25,12 @@ const downloadStudyPlan = (title) => {
   });
 };
 
-function EditorOptions({ title, studyPlanId, setIsFetchAgain }) {
+function EditorOptions({
+  title,
+  studyPlanId,
+  setIsFetchAgain,
+  setIsShowPublisher,
+}) {
   return (
     <Menu as="div" className="relative z-10">
       <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-sky-500 hover:text-white h-8 w-8">
@@ -55,6 +60,19 @@ function EditorOptions({ title, studyPlanId, setIsFetchAgain }) {
                 onClick={() => downloadStudyPlan(title)}
               >
                 Download
+              </button>
+            )}
+          </Menu.Item>
+          <hr className="my-1" />
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-sky-500 text-white" : "text-gray-900"
+                } rounded-md px-2 py-1 w-full`}
+                onClick={() => setIsShowPublisher(true)}
+              >
+                Publish
               </button>
             )}
           </Menu.Item>
