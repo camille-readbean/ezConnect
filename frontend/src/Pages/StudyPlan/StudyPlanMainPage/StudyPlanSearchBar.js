@@ -1,10 +1,10 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { BsFilter } from "react-icons/bs";
 
 function StudyPlanSearchBar() {
   return (
-    <div className="flex gap-2 items-center px-2 my-2">
+    <div className="flex flex-col sm:flex-row gap-2 items-center px-2 my-2">
       <Menu as="div" className="relative">
         <Menu.Button className="flex items-center px-2 py-1 rounded-md bg-sky-500 text-white hover:bg-sky-600 min-w-max">
           Order by
