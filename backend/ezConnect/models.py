@@ -64,12 +64,13 @@ class StudyPlan(db.Model):
 
         return {
             "id": self.id,
-            "date_updated": self.date_updated,
+            "date_updated": self.date_updated.strftime("%d %b %Y"),
             "is_published": self.is_published,
             "title": self.title,
             "description": self.description,
             "num_of_likes": self.num_of_likes,
             "creator_id": self.creator_id,
+            "creator_name": User.query.get(self.creator_id).name,
             "semester_ids": semester_ids
         }
 

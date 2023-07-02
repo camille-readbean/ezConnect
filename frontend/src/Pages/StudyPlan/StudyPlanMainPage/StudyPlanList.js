@@ -1,13 +1,21 @@
+import { useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { IconContext } from "react-icons";
+import PopUpPost from "../StudyPlanPost.js/PopUpPost";
 
-function makeCard(studyPlan) {
+function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
   const title = studyPlan["title"];
   const numOfLikes = studyPlan["num_of_likes"];
   const dateUpdated = studyPlan["date_updated"];
 
   return (
-    <div className="w-72 bg-white px-3 py-4 shadow-md rounded-md">
+    <div
+      className="w-72 bg-white px-3 py-4 shadow-md rounded-md hover:cursor-pointer"
+      onClick={() => {
+        setStudyPlanInformation(studyPlan);
+        setIsOpenPopUp(true);
+      }}
+    >
       <img
         src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8"
         alt="study-plan-img"
@@ -26,9 +34,22 @@ function makeCard(studyPlan) {
 }
 
 export default function StudyPlanList({ studyPlans }) {
+  const [isOpenPopUp, setIsOpenPopUp] = useState(false);
+  const [studyPlanInformation, setStudyPlanInformation] = useState({});
+
   return (
-    <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg">
-      {studyPlans.map((studyPlan) => makeCard(studyPlan))}
-    </div>
+    <>
+      {isOpenPopUp && (
+        <PopUpPost
+          studyPlanInformation={studyPlanInformation}
+          setIsOpenPopUp={setIsOpenPopUp}
+        />
+      )}
+      <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+        {studyPlans.map((studyPlan) =>
+          makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation)
+        )}
+      </div>
+    </>
   );
 }
