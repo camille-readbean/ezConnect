@@ -6,6 +6,18 @@ import uuid
 
 db = SQLAlchemy()
 
+favorited_study_plan = db.Table(
+    'favorited_study_plan',
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False),
+    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False)
+)
+
+liked_study_plan = db.Table(
+    'liked_study_plan',
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False),
+    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False)
+)
+
 class User(db.Model):
     __tablename__ = "users"
     azure_ad_oid = Column(UUID(as_uuid=True), primary_key=True)
@@ -15,7 +27,9 @@ class User(db.Model):
     programmes = db.relationship('Programme', backref='users', secondary='programme_user')
     degrees = db.relationship('Degree', backref='users', secondary='degree_user')
     
-    study_plans = db.relationship('StudyPlan', backref='creator')
+    personal_study_plans = db.relationship('PersonalStudyPlan', backref='creator')
+    favourited_study_plans = db.relationship('PublishedStudyPlan', secondary=favorited_study_plan, backref='favourited_by')
+    liked_study_plans = db.relationship('PublishedStudyPlan', secondary=liked_study_plan, backref='liked_by')
 
     mentor_postings = db.relationship('MentorPosting', backref='mentor')
     mentor_requests = db.relationship('MentorRequest', backref='mentee')
@@ -44,15 +58,13 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.name!r} - Year {self.year} {self.degrees}, {self.programmes}>'
     
-class StudyPlan(db.Model):
+class PersonalStudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
-    is_published = Column(Boolean, nullable=False, default=False)
     title = Column(String(150), default="Blank study plan")
-    description = Column(Text)
-    num_of_likes = Column(Integer, db.CheckConstraint('num_of_likes>=0'), default = 0)
     creator_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
-    semesters = db.relationship('StudyPlanSemester', backref='study_plan')
+    semesters = db.relationship('StudyPlanSemester', backref='personal_study_plan')
+    published_version = db.relationship('PublishedStudyPlan', uselist=False, backref='personal_version')
 
     def __repr__(self):
         return f'<Study plan created by {self.creator.name} last updated at {self.date_updated}>'
@@ -65,7 +77,32 @@ class StudyPlan(db.Model):
         return {
             "id": self.id,
             "date_updated": self.date_updated.strftime("%d %b %Y"),
-            "is_published": self.is_published,
+            "title": self.title,
+            "creator_id": self.creator_id,
+            "creator_name": User.query.get(self.creator_id).name,
+            "semester_ids": semester_ids,
+            "is_published": self.published_version != None,
+            "published_version_id": self.published_version.id if self.published_version != None else None
+        }
+
+class PublishedStudyPlan(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    title = Column(String(150), nullable=False, default="Blank study plan")
+    description = Column(Text, nullable=False, default="")
+    num_of_likes = Column(Integer, db.CheckConstraint('num_of_likes>=0'), nullable=False, default = 0)
+    creator_id = Column(UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False)
+    semesters = db.relationship('StudyPlanSemester', backref='published_study_plan')
+    personal_study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('personal_study_plan.id'), nullable=False)
+
+    def toJSON(self):
+        semester_ids = {}
+        for semester in self.semesters:
+            semester_ids[semester.semester_number] = semester.id
+
+        return {
+            "id": self.id,
+            "date_updated": self.date_updated.strftime("%d %b %Y"),
             "title": self.title,
             "description": self.description,
             "num_of_likes": self.num_of_likes,
@@ -83,9 +120,11 @@ class StudyPlanSemester(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     semester_number = Column(Integer, nullable=False)
     total_units = Column(Float, nullable=False, default=0)
-    study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('study_plan.id'))
+    personal_study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('personal_study_plan.id'))
+    published_study_plan_id = Column(UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'))
     courses = db.relationship('Course', secondary=semester_course, backref='study_plan_semesters')
-    __table_args__ = (UniqueConstraint('study_plan_id', 'semester_number', name='semesters_in_study_plan_unique'),)
+    __table_args__ = (UniqueConstraint('personal_study_plan_id', 'semester_number', name='semesters_in_personal_study_plan_unique'),)
+    __table_args__ = (UniqueConstraint('published_study_plan_id', 'semester_number', name='semesters_in_published_study_plan_unique'),)
 
     def __repr__(self):
         return f'<Semester for study plan with id: {self.study_plan_id}>'

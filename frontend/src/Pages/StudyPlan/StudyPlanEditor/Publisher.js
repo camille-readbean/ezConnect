@@ -6,70 +6,98 @@ import { Box, TextField, Button, Stack } from "@mui/material";
 
 function Publisher({
   studyPlanId,
+  studyPlanInformation,
   setIsShowPublisher,
   isPublished,
   setIsPublished,
-  setIsFetchAgain,
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   useEffect(() => {
     console.log("fetching study plan information");
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTitle(data["title"]);
-        setDescription(data["description"]);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    if (!isPublished) {
+      fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setTitle(data["title"]);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    } else {
+      fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanInformation["published_version_id"]}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setTitle(data["title"]);
+          setDescription(data["description"]);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }, [studyPlanId, isPublished]);
 
   const publishStudyPlan = () => {
     console.log("trying to publish study plan");
-    const updatedInformation = {
-      is_published: true,
+
+    const requestBody = {
       title: title,
       description: description,
     };
-    console.log(updatedInformation);
+    console.log(requestBody);
+
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`,
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    ).then((res) => {
+      setIsPublished(true);
+      console.log("study plan published");
+    });
+  };
+
+  const updatePublishedStudyPlan = () => {
+    console.log("trying to update published study plan");
+    const requestBody = {
+      title: title,
+      description: description,
+      personal_study_plan_id: studyPlanId,
+    };
+    console.log(requestBody);
+
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanInformation["published_version_id"]}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedInformation),
+        body: JSON.stringify(requestBody),
       }
     ).then((res) => {
-      setIsPublished(true);
-      setIsFetchAgain((previous) => !previous);
+      console.log("published study plan updated");
+      window.alert("Published Study Plan Updated!");
     });
   };
 
   const unpublishStudyPlan = () => {
     console.log("trying to unpublish study plan");
-    const updatedInformation = {
-      is_published: false,
-      title: title,
-      description: description,
-    };
-    console.log(updatedInformation);
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedInformation),
-      }
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanInformation["published_version_id"]}`,
+      { method: "DELETE" }
     ).then((res) => {
       setIsPublished(false);
-      setIsFetchAgain((previous) => !previous);
+      console.log("study plan unpublished");
     });
   };
 
@@ -110,7 +138,7 @@ function Publisher({
           <Stack direction="row" spacing={2}>
             {isPublished ? (
               <>
-                <Button variant="contained" onClick={publishStudyPlan}>
+                <Button variant="contained" onClick={updatePublishedStudyPlan}>
                   Update
                 </Button>
                 <Button variant="outlined" onClick={unpublishStudyPlan}>

@@ -6,10 +6,10 @@ function StudyPlanGallery() {
   const [studyPlans, setStudyPlans] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan`)
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish`)
       .then((res) => res.json())
       .then((data) => {
-        setStudyPlans(data["published_study_plans_list"]);
+        setStudyPlans(data["published_study_plans"]);
       });
   }, []);
 

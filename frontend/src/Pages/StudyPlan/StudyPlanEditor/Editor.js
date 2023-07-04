@@ -15,7 +15,9 @@ function Editor({ studyPlanId }) {
   const [isFetchAgain, setIsFetchAgain] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`)
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setStudyPlanInformation(data);
@@ -50,7 +52,7 @@ function Editor({ studyPlanId }) {
     const newTitle = event.target.value;
     setTitle(newTitle);
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanInformation["id"]}`,
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanInformation["id"]}`,
       {
         method: "PUT",
         headers: {
@@ -135,10 +137,10 @@ function Editor({ studyPlanId }) {
       {isShowPublisher && (
         <Publisher
           studyPlanId={studyPlanId}
+          studyPlanInformation={studyPlanInformation}
           setIsShowPublisher={setIsShowPublisher}
           isPublished={isPublished}
           setIsPublished={setIsPublished}
-          setIsFetchAgain={setIsFetchAgain}
         />
       )}
       <div className="flex items-center">

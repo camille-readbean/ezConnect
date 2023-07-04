@@ -46,36 +46,90 @@ components:
                 format: uuid
               title:
                 type: string
-    StudyPlan:
+    PersonalStudyPlan:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+          example: abcde123-1234-1234-1234-1234abcdef00
         date_updated:
           type: string
-          format: date-time
-        is_published:
-          type: boolean
+          example: 01 Jul 2023
         title:
           type: string
+          example: Computer Science Major with Second Major in Math
+        creator_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234abcdef00
+        creator_name:
+          type: string
+          example: Jonathan Tan
+        semester_ids:
+          type: object
+          example: {
+            "1": "abc11111-1234-1234-1234-1234abcdef00",
+            "2": "def22222-1234-1234-1234-1234abcdef00",
+            "3": "abc33333-1234-1234-1234-1234abcdef00",
+            "4": "def44444-1234-1234-1234-1234abcdef00",
+            "5": "abc55555-1234-1234-1234-1234abcdef00",
+            "6": "def66666-1234-1234-1234-1234abcdef00",
+            "7": "abc77777-1234-1234-1234-1234abcdef00",
+            "8": "def88888-1234-1234-1234-1234abcdef00"
+          }
+    PublishedStudyPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: abcde123-1234-1234-1234-1234abcdef00
+        date_updated:
+          type: string
+          example: 01 Jul 2023
+        title:
+          type: string
+          example: Computer Science Major with Second Major in Math
         description:
           type: string
         num_of_likes:
           type: integer
         creator_id:
-          type: integer
-        semesters:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234abcdef00
+        creator_name:
+          type: string
+          example: Jonathan Tan
+        semester_ids:
           type: object
+          example: {
+            "1": "abc11111-1234-1234-1234-1234abcdef00",
+            "2": "def22222-1234-1234-1234-1234abcdef00",
+            "3": "abc33333-1234-1234-1234-1234abcdef00",
+            "4": "def44444-1234-1234-1234-1234abcdef00",
+            "5": "abc55555-1234-1234-1234-1234abcdef00",
+            "6": "def66666-1234-1234-1234-1234abcdef00",
+            "7": "abc77777-1234-1234-1234-1234abcdef00",
+            "8": "def88888-1234-1234-1234-1234abcdef00"
+          }
     StudyPlanSemesterInformation:
       type: object
       properties:
         id:
           type: string
           format: uuid
+          example: 87654321-1234-1234-1234-1234abcdef00
         semester_number:
           type: integer
+          example: 3
         total_units:
           type: integer
+          example: 20
         course_codes:
           type: array
+          example: [CS1101S, CS1231S, MA1521, IS1108, ES2660]
     MentoringPost:
       type: object
       properties:
@@ -611,20 +665,6 @@ paths:
                     type: string
 
   /studyplan:
-    get:
-      operationId: "ezConnect.study_plan.studyplan.get_published_study_plans"
-      tags:
-        - Study Plan
-      summary: "Read a collection of published study plans"
-      responses:
-        '200':
-          description: Study plans
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/StudyPlan"
     post:
       operationId: "ezConnect.study_plan.studyplan.create_study_plan"
       tags:
@@ -660,59 +700,6 @@ paths:
                   study_plan_id: 12a3b456-c7de-44ce-bde9-a123bc00237d
     
   /studyplan/{study_plan_id}:
-    get:
-      operationId: "ezConnect.study_plan.studyplan.get_a_study_plan"
-      tags:
-        - Study Plan
-      summary: "Read a particular study plan"
-      parameters:
-        - $ref: "#/components/parameters/study_plan_id"
-      responses:
-        '200': 
-          description: Read a particular study plan
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StudyPlan"
-        '404':
-          description: Study plan does not exist
-    put:
-      operationId: "ezConnect.study_plan.studyplan.update_study_plan"
-      tags:
-        - Study Plan
-      summary: "Update an existing study plan"
-      parameters:
-        - $ref: "#/components/parameters/study_plan_id"
-      requestBody:
-        description: "Study plan to update"
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                is_published:
-                  type: boolean
-                title:
-                  type: string
-                description:
-                  type: string
-                num_of_likes:
-                  type: integer
-            example:
-              is_published: True
-              title: "Chemistry major with minor in nutrition"
-              description: "Y2 student under CHS. Started minor in Y2. I overloaded in Y1S2 and I recommend doing this."
-              num_of_likes: 25
-      responses:
-        '200':
-          description: Update an existing study plan
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StudyPlan"
-        '404':
-          description: Study plan does not exist
     delete:
       operationId: "ezConnect.study_plan.studyplan.delete_study_plan"
       tags:
@@ -721,16 +708,12 @@ paths:
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       responses:
-        '200':
-          description: Delete an existing study plan
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StudyPlan"
+        '204':
+          description: Deleted an existing study plan
         '404':
           description: Study plan does not exist
-    
-  /studyplan/personal/{user_id}:
+
+  /studyplan/user_personal/{user_id}:
     get:
       operationId: "ezConnect.study_plan.studyplan.get_personal_study_plans"
       tags:
@@ -744,29 +727,96 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/StudyPlan"
+                type: object
+                properties:
+                  personal_study_plan_data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PersonalStudyPlan"
         '404':
-          description: User has not created any study plans
+          description: User does not exist
+
+  /studyplan/personal/{study_plan_id}:
+    get:
+      operationId: "ezConnect.study_plan.studyplan.get_a_personal_study_plan"
+      tags:
+        - Study Plan
+      summary: "Read a particular personal study plan"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '200': 
+          description: Information on a particular personal study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonalStudyPlan"
+        '404':
+          description: Study plan does not exist
+    put:
+      operationId: "ezConnect.study_plan.studyplan.update_personal_study_plan_title"
+      tags:
+        - Study Plan
+      summary: "Update the title of an existing personal study plan"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      requestBody:
+        description: "Title to update the study plan with"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Chemistry major with minor in nutrition"
+              required:
+                - title
+      responses:
+        '200':
+          description: Updated an existing personal study plan with its new title
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Study plan <Chemistry major with minor in nutrition> updated
+        '404':
+          description: Study plan does not exist
+
 
   /studyplan/semester/{study_plan_id}:
     get:
       operationId: ezConnect.study_plan.study_plan_semester.get_all_semesters
       tags:
         - Study Plan Semester
-      summary: Read a collection of semester_ids from an existing study plan
+      summary: Read a collection of semester information from an existing study plan
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       responses:
         '200':
-          description: Read a collection of semester_ids from an existing study plan
+          description: Read a collection of semester information from an existing study plan
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties:
-                  type: string
+                example: {
+                  "1": {
+                    "id": 87654321-1234-1234-1234-1234abcdef00,
+                    "semester_number": 1,
+                    "total_units": 20,
+                    "course_codes": [CS1101S, CS1231S, MA1521, IS1108, ES2660]
+                  },
+                  "2": {
+                    "id": 17654321-1234-1234-1234-1234abcdef00,
+                    "semester_number": 2,
+                    "total_units": 12,
+                    "course_codes": [CS2030S, CS2040S, GEA1000]
+                  }
+                }
         '404':
           description: Study plan does not exist
     post:
@@ -777,8 +827,16 @@ paths:
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       responses:
-        '204':
+        '200':
           description: Study plan semester successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new_semester_id:
+                    type: string
+                    example: 17654321-1234-1234-1234-1234abcdef00
         '404':
           description: Study plan does not exist
   
@@ -807,7 +865,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/semester_id"
       requestBody:
-        description: "List of course codes that are in the given semester"
+        description: List of course codes that are in the given semester
         required: true
         content:
           application/json:
@@ -841,3 +899,155 @@ paths:
           description: Study plan semester successfully deleted
         '404':
           description: Study plan does not exist
+
+  /studyplan/publish:
+    get:
+      operationId: ezConnect.study_plan.published_study_plan.get_published_study_plans
+      tags:
+        - Study Plan Publisher
+      summary: Get a collection of published study plans
+      responses:
+        '200':
+          description: Returned a collection of published study plans
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  published_study_plans:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublishedStudyPlan"
+
+  /studyplan/publish/{study_plan_id}:
+    get:
+      operationId: ezConnect.study_plan.published_study_plan.get_published_study_plan_information
+      tags:
+        - Study Plan Publisher
+      summary: Get information on an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      responses:
+        '200': 
+          description: Return published study plan information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishedStudyPlan"
+        '404':
+          description: Published study plan not found
+    post:
+      operationId: ezConnect.study_plan.published_study_plan.publish_study_plan
+      tags:
+        - Study Plan Publisher
+      summary: Create a published study plan from an existing personal study plan
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      requestBody:
+        description: The title and description associated with the new published study Plan
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Computer Science Major with Second Major in Math
+                description:
+                  type: string
+                  example: I am currently a Y3 student. For Y1S2, I recommend that you overload but do not take CS2030S, CS2040S and CS2100 all at the same time.
+              required:
+                - title
+                - description
+      responses:
+        '200': 
+          description: Successfully created a published study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishedStudyPlan"
+        '400':
+          description: Title or description not inputted
+        '404':
+          description: Personal study plan not found
+        '409':
+          description: Personal study plan is already published
+    put:
+      operationId: ezConnect.study_plan.published_study_plan.update_published_study_plan
+      tags:
+        - Study Plan Publisher
+      summary: Update an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      requestBody:
+        description: The title, description and personal study plan id associated with the new published study Plan
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Computer Science Major with Second Major in Math
+                description:
+                  type: string
+                  example: I am currently a Y3 student. For Y1S2, I recommend that you overload but do not take CS2030S, CS2040S and CS2100 all at the same time.
+                personal_study_plan_id:
+                  type: string
+                  format: uuid
+                  example: abcde123-1234-1234-1234-1234abcdef00
+              required:
+                - title
+                - description
+                - personal_study_plan_id
+      responses:
+        '200': 
+          description: Successfully updated a published study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishedStudyPlan"
+        '400':
+          description: Title or description or personal study plan id not inputted
+        '404':
+          description: Either published or personal study plan not found
+
+  /studyplan/publish/copy:
+    post:
+      operationId: ezConnect.study_plan.published_study_plan.create_study_plan_copy
+      tags:
+        - Study Plan Publisher
+      summary: Create a copy of an existing published study Plan
+      requestBody:
+        description: The published study plan id and user id associated with this request
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published_study_plan_id:
+                  type: string
+                  format: uuid
+                  example: abcde123-1234-1234-1234-1234abcdef00
+                user_id:
+                  type: string
+                  format: uuid
+                  example: 12345678-1234-1234-1234-1234abcdef00
+              required:
+                - published_study_plan_id
+                - user_id
+      responses:
+        '200':
+          description: Created a personal copy of a published study plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonalStudyPlan"
+        '400':
+          description: Published study plan id and user id not inputted
+        '404':
+          description: Published study plan not found
+              

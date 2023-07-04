@@ -6,7 +6,7 @@ import EmptyPersonalStudyPlan from "./EmptyPersonalStudyPlan";
 const getPersonalStudyPlans = async (userId) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${userId}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/user_personal/${userId}`
     );
     const data = await res.json();
     const result = data["personal_study_plan_data"];

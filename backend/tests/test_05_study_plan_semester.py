@@ -6,8 +6,8 @@ study_plan_id = None
 semesters_info = None
 
 # get personal study plans from valid user
-def test_0054_get_personal_study_plan(client):
-    response = client.get(f'/api/studyplan/personal/{uuid1}')
+def test_0053_get_personal_study_plan(client):
+    response = client.get(f'/api/studyplan/user_personal/{uuid1}')
     assert response.status_code == 200
 
     received_response = json.loads(response.data)
@@ -20,7 +20,7 @@ def test_0054_get_personal_study_plan(client):
 
 
 # read semester information from a valid study plan
-def test_0055_read_semester_info_from_a_valid_study_plan(client):
+def test_0054_read_semester_info_from_a_valid_study_plan(client):
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
@@ -36,14 +36,14 @@ def test_0055_read_semester_info_from_a_valid_study_plan(client):
 
 
 # read semester ids from an invalid study plan
-def test_0056_read_semester_info_from_a_invalid_study_plan(client):
+def test_0055_read_semester_info_from_a_invalid_study_plan(client):
     response = client.get('/api/studyplan/semester/a2c45678-1234-1234-1234-1234abcdef00')
     assert response.status_code == 404
     assert json.loads(response.data)['detail'] == 'Study plan with id a2c45678-1234-1234-1234-1234abcdef00 not found'
 
 
 # update courses in a valid study plan semester
-def test_0057_update_courses_in_valid_study_plan_semester(client):
+def test_0056_update_courses_in_valid_study_plan_semester(client):
     semester1_id = semesters_info['1']['id']
 
     new_course_codes = ['CS1101S', 'CS1231S', 'MA2001', 'MA1521']
@@ -71,7 +71,7 @@ def test_0057_update_courses_in_valid_study_plan_semester(client):
 
 
 # update courses in an invalid study plan semester
-def test_0058_update_courses_in_invalid_study_plan_semester(client):
+def test_0057_update_courses_in_invalid_study_plan_semester(client):
     req_body = {
         'course_codes': ['CS1101S', 'CS1231S', 'MA2001', 'MA1521']
     }
@@ -86,7 +86,7 @@ def test_0058_update_courses_in_invalid_study_plan_semester(client):
 
 
 # update courses with no information passes in for a valid study plan semester
-def test_0059_update_courses_with_invalid_request_body(client):
+def test_0058_update_courses_with_invalid_request_body(client):
     semester1_id = semesters_info['1']['id']
     response = client.put(
         f'/api/study_plan_semester/{semester1_id}',
@@ -97,7 +97,7 @@ def test_0059_update_courses_with_invalid_request_body(client):
 
 
 # read information from a valid semster
-def test_0060_get_information_from_valid_semester(client):
+def test_0059_get_information_from_valid_semester(client):
     semester1_id = semesters_info['1']['id']
     response = client.get(f'/api/study_plan_semester/{semester1_id}')
     assert response.status_code == 200
@@ -114,14 +114,14 @@ def test_0060_get_information_from_valid_semester(client):
 
 
 # read information from an invalid semester
-def test_0061_get_information_from_invalid_semester(client):
+def test_0060_get_information_from_invalid_semester(client):
     response = client.get(f'/api/study_plan_semester/abc45678-1234-1234-1234-1234abcdef00')
     assert response.status_code == 404
     assert json.loads(response.data)['detail'] == 'Study plan semester with id abc45678-1234-1234-1234-1234abcdef00 not found'
 
 
 # update courses again in multiple semesters in the same study plan
-def test_0062_update_courses_in_multiple_valid_study_plan_semester(client):
+def test_0061_update_courses_in_multiple_valid_study_plan_semester(client):
     course_codes = [
         ['CS1101S', 'CS1231S', 'MA2001', 'IS1108'],
         ['CS2030S', 'CS2040S', 'MA1521', 'HSI1000', 'GEA1000', 'ES2660'],
@@ -153,14 +153,14 @@ def test_0062_update_courses_in_multiple_valid_study_plan_semester(client):
 
 
 # delete semester in the middle of the study plan
-def test_0063_delete_semester(client):
+def test_0062_delete_semester(client):
     semester4_id = semesters_info['4']['id']
     response = client.delete(f'/api/study_plan_semester/{semester4_id}')
     assert response.status_code == 204
 
 
 # read semester information again from a valid study plan after deleting a semester
-def test_0064_read_semester_info_from_a_valid_study_plan_after_semester_deletion(client):
+def test_0063_read_semester_info_from_a_valid_study_plan_after_semester_deletion(client):
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
@@ -193,20 +193,21 @@ def test_0064_read_semester_info_from_a_valid_study_plan_after_semester_deletion
 
 
 # delete semester using an invalid study plan semester id
-def test_0065_delete_invalid_semester(client):
+def test_0064_delete_invalid_semester(client):
     response = client.delete('/api/study_plan_semester/abc45678-1234-1234-1234-1234abcdef00')
     assert response.status_code == 404
     assert json.loads(response.data)['detail'] == 'Study plan semester with id abc45678-1234-1234-1234-1234abcdef00 not found'
 
 
 # create a new semster in a valid study plan
-def test_0066_create_semester(client):
+def test_0065_create_semester(client):
     response = client.post(f'/api/studyplan/semester/{study_plan_id}')
-    assert response.status_code == 204
+    assert response.status_code == 200
+    assert json.loads(response.data)["new_semester_id"] != None
 
 
 # read semester information again from a valid study plan after creating a semester
-def test_0067_read_semester_info_from_a_valid_study_plan_after_semester_creation(client):
+def test_0066_read_semester_info_from_a_valid_study_plan_after_semester_creation(client):
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
@@ -240,7 +241,7 @@ def test_0067_read_semester_info_from_a_valid_study_plan_after_semester_creation
 
 
 # create a new semester in an invalid study plan
-def test_0068_create_semester_in_invalid_study_plan(client):
+def test_0067_create_semester_in_invalid_study_plan(client):
     response = client.post('/api/studyplan/semester/a2c45678-1234-1234-1234-1234abcdef00')
     assert response.status_code == 404
     assert json.loads(response.data)['detail'] == 'Study plan with id a2c45678-1234-1234-1234-1234abcdef00 not found'

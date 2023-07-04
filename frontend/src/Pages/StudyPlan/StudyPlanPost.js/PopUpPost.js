@@ -25,7 +25,7 @@ function PopUpPost({ studyPlanInformation, setIsOpenPopUp }) {
             className="w-full sm:w-2/5 h-fit rounded-lg shadow-sm mb-2"
           />
 
-          <div id="studyPlanInformation">
+          <div id="studyPlanInformation" className="flex-grow">
             <h1 className="text-lg font-semibold">{title}</h1>
 
             <div className="flex justify-between">

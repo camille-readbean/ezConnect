@@ -20,7 +20,7 @@ function StudyPlanEditor() {
 
   const checkStudyPlanInformation = (studyPlanId) => {
     return fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
     )
       .then((res) => res.json())
       .then((data) => {
