@@ -23,7 +23,7 @@ function StudyPlanMainPage() {
 
       <AuthenticatedTemplate>
         <PersonalStudyPlanGallery azure_ad_oid={azure_ad_oid} />
-        <StudyPlanGallery />
+        <StudyPlanGallery azure_ad_oid={azure_ad_oid} />
       </AuthenticatedTemplate>
 
       <UnauthenticatedTemplate>

@@ -1,13 +1,40 @@
-from flask import abort
+from flask import request, abort
 from datetime import datetime
-from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, db
+from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, User, liked_study_plan, db
 
 # API: /studyplan/publish, GET
 # Get a collection of published study plans
 def get_published_study_plans():
     published_study_plans = PublishedStudyPlan.query.all()
-    published_study_plans = list(map(lambda study_plan: study_plan.toJSON(), published_study_plans))
+    user_id = request.args.get('user_id')
+    if user_id:
+        published_study_plans = list(map(lambda study_plan: get_info_from_published_study_plan_object(study_plan, user_id), published_study_plans))
+    else:
+        published_study_plans = list(map(lambda study_plan: study_plan.toJSON(), published_study_plans))
     return {"published_study_plans": published_study_plans}, 200
+
+
+# Not an API call, helper function
+# Get information from a Published Study Plan Object
+def get_info_from_published_study_plan_object(published_study_plan, user_id):
+    favourited_by = published_study_plan.favourited_by # List of users
+    liked_by = published_study_plan.liked_by # List of users
+
+    is_favourited_by = False
+    for user in favourited_by:
+        if str(user.azure_ad_oid) == user_id:
+            is_favourited_by = True
+    
+    is_liked_by = False
+    for user in liked_by:
+        if str(user.azure_ad_oid) == user_id:
+            is_liked_by = True
+
+    study_plan_info = published_study_plan.toJSON()
+    study_plan_info["is_favourited_by"] = is_favourited_by
+    study_plan_info["is_liked_by"] = is_liked_by
+
+    return study_plan_info
 
 
 # API: /studyplan/publish/{study_plan_id}, GET
@@ -16,7 +43,12 @@ def get_published_study_plan_information(study_plan_id):
     study_plan = PublishedStudyPlan.query.get(study_plan_id)
     if not study_plan:
         abort(404, f"Published study plan with id {study_plan_id} not found")
-    return study_plan.toJSON(), 200
+
+    user_id = request.args.get('user_id')
+    if user_id:
+        return get_info_from_published_study_plan_object(study_plan, user_id)
+    else:
+        return study_plan.toJSON(), 200
 
 
 # API: /studyplan/publish/{study_plan_id}, POST
@@ -145,15 +177,122 @@ def create_study_plan_copy(body):
     return new_personal_study_plan.toJSON(), 200
     
 
-# TODO: Work on the these methods
 # API: /studyplan/favourite/{user_id}, GET
 # Get all favourited published study plans
+def get_favourited_published_study_plans(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+    
+    favourited_study_plans = user.favourited_study_plans
+    favourited_study_plans = list(map(lambda study_plan: study_plan.toJSON(), favourited_study_plans))
+    return {"favourited_study_plans": favourited_study_plans}, 200
+
 
 # API: /studyplan/favourite/{user_id}, POST
 # Favourite an existing published study plan
+def favourite_a_study_plan(user_id, body):
+    published_study_plan_id = body.get('published_study_plan_id', None)
+    if published_study_plan_id is None:
+        abort(400, 'Published study plan id not inputted')
+
+    published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
+    if not published_study_plan:
+        abort(404, f'Published study plan <ID: {published_study_plan_id}> not found')
+    
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+
+    user.favourited_study_plans.append(published_study_plan)
+    db.session.commit()
+
+    return {"message": "Successfully favourited a published study plan"}, 204
+
+
+# TODO: changed to DELETE
+# API: /studyplan/favourite/{user_id}, DELETE
+# Unfavourite an existing published study plan
+def unfavourite_a_study_plan(user_id):
+    published_study_plan_id = request.args.get('published_study_plan_id')
+    if published_study_plan_id is None:
+        abort(400, 'Published study plan id not inputted')
+
+    published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
+    if not published_study_plan:
+        abort(404, f'Published study plan <ID: {published_study_plan_id}> not found')
+    
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+
+    try:
+        user.favourited_study_plans.remove(published_study_plan)
+        db.session.commit()
+    except ValueError:
+        abort(409, f'Published study plan <ID:{published_study_plan_id}> not favourited by user <ID {user_id}>')
+
+    return {"message": "Successfully unfavourited a published study plan"}, 204
+
 
 # API: /studyplan/like/{user_id}, GET
 # Get all liked published study plans
+def get_liked_published_study_plans(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+    
+    liked_study_plans = user.liked_study_plans
+    liked_study_plans = list(map(lambda study_plan: study_plan.toJSON(), liked_study_plans))
+    return {"liked_study_plans": liked_study_plans}, 200
+
 
 # API: /studyplan/like/{user_id}, POST
 # Like an existing published study plan
+def like_a_study_plan(user_id, body):
+    published_study_plan_id = body.get('published_study_plan_id', None)
+    if published_study_plan_id is None:
+        abort(400, 'Published study plan id not inputted')
+
+    published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
+    if not published_study_plan:
+        abort(404, f'Published study plan <ID: {published_study_plan_id}> not found')
+    
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+
+    if published_study_plan in user.liked_study_plans:
+        abort(409, f'Published study plan <ID:{published_study_plan_id}> already liked by user <ID {user_id}>')
+    
+    user.liked_study_plans.append(published_study_plan)
+    published_study_plan.num_of_likes += 1
+    db.session.commit()
+
+    return {"message": "Successfully liked a published study plan"}, 204
+
+
+# TODO: changed to DELETE
+# API: /studyplan/like/{user_id}, DELETE
+# Unlike an existing published study plan
+def unlike_a_study_plan(user_id):
+    published_study_plan_id = request.args.get('published_study_plan_id')
+    if published_study_plan_id is None:
+        abort(400, 'Published study plan id not inputted')
+
+    published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
+    if not published_study_plan:
+        abort(404, f'Published study plan <ID: {published_study_plan_id}> not found')
+    
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+
+    try:
+        user.liked_study_plans.remove(published_study_plan)
+        published_study_plan.num_of_likes -= 1
+        db.session.commit()
+    except ValueError:
+        abort(409, f'Published study plan <ID:{published_study_plan_id}> not liked by user <ID {user_id}>')
+
+    return {"message": "Successfully unliked a published study plan"}, 204

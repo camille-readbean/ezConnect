@@ -23,8 +23,8 @@ function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
       />
       <div className="flex items-center">
         <p className="font-semibold mr-2 flex-grow">{title}</p>
-        <IconContext.Provider value={{ color: "pink" }}>
-          <AiFillHeart className="mr-1 h-6 w-8" />
+        <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+          <AiFillHeart className="mr-1 h-5 w-fit flex-shrink-0" />
           <p className="font-medium">{numOfLikes}</p>
         </IconContext.Provider>
       </div>
@@ -33,7 +33,11 @@ function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
   );
 }
 
-export default function StudyPlanList({ studyPlans }) {
+export default function StudyPlanList({
+  studyPlans,
+  azure_ad_oid,
+  setIsFetchAgain,
+}) {
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
   const [studyPlanInformation, setStudyPlanInformation] = useState({});
 
@@ -43,6 +47,8 @@ export default function StudyPlanList({ studyPlans }) {
         <PopUpPost
           studyPlanInformation={studyPlanInformation}
           setIsOpenPopUp={setIsOpenPopUp}
+          azure_ad_oid={azure_ad_oid}
+          setIsFetchAgain={setIsFetchAgain}
         />
       )}
       <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg">

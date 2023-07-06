@@ -906,6 +906,13 @@ paths:
       tags:
         - Study Plan Publisher
       summary: Get a collection of published study plans
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+            format: uuid
+            example: 12345678-1234-1234-1234-1234abcdef00
       responses:
         '200':
           description: Returned a collection of published study plans
@@ -927,6 +934,12 @@ paths:
       summary: Get information on an existing published study plan
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
+        - in: query
+          name: user_id
+          schema:
+            type: string
+            format: uuid
+            example: 12345678-1234-1234-1234-1234abcdef00
       responses:
         '200': 
           description: Return published study plan information
@@ -1050,4 +1063,151 @@ paths:
           description: Published study plan id and user id not inputted
         '404':
           description: Published study plan not found
-              
+
+  /studyplan/favourite/{user_id}:
+    get:
+      operationId: ezConnect.study_plan.published_study_plan.get_favourited_published_study_plans
+      tags:
+        - Study Plan Post
+      summary: Get all published study plans favourited by a user
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      responses:
+        '200':
+          description: Read a collection of published study plans favourited by a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favourited_study_plans:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublishedStudyPlan"
+        '404':
+          description: User does not exist
+    post:
+      operationId: ezConnect.study_plan.published_study_plan.favourite_a_study_plan
+      tags: 
+        - Study Plan Post
+      summary: Favourite an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      requestBody:
+        description: The ID of the published study plan to favourite
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published_study_plan_id:
+                  type: string
+                  format: uuid
+                  example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+              required:
+                - published_study_plan_id
+      responses:
+        '204':
+          description: Successfully favourited a published study plan
+        '400':
+          description: Published study plan id not inputted
+        '404':
+          description: User or published study plan does not exist
+    delete:
+      operationId: ezConnect.study_plan.published_study_plan.unfavourite_a_study_plan
+      tags: 
+        - Study Plan Post
+      summary: Unfavourite an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+        - in: query
+          name: published_study_plan_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 12345678-1234-1234-1234-1234abcdef00
+      responses:
+        '204':
+          description: Successfully unfavourited a published study plan
+        '400':
+          description: Published study plan id not inputted
+        '404':
+          description: User or published study plan does not exist
+        '409':
+          description: Published study plan is not favourited by user
+
+  /studyplan/like/{user_id}:
+    get:
+      operationId: ezConnect.study_plan.published_study_plan.get_liked_published_study_plans
+      tags:
+        - Study Plan Post
+      summary: Get all published study plans liked by a user
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      responses:
+        '200':
+          description: Read a collection of published study plans liked by a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  liked_study_plans:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublishedStudyPlan"
+        '404':
+          description: User does not exist
+    post:
+      operationId: ezConnect.study_plan.published_study_plan.like_a_study_plan
+      tags: 
+        - Study Plan Post
+      summary: Like an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      requestBody:
+        description: The ID of the published study plan to like
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published_study_plan_id:
+                  type: string
+                  format: uuid
+                  example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+              required:
+                - published_study_plan_id
+      responses:
+        '204':
+          description: Successfully liked a published study plan
+        '400':
+          description: Published study plan id not inputted
+        '404':
+          description: User or published study plan does not exist
+    delete:
+      operationId: ezConnect.study_plan.published_study_plan.unlike_a_study_plan
+      tags: 
+        - Study Plan Post
+      summary: Unlike an existing published study plan
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+        - in: query
+          name: published_study_plan_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 12345678-1234-1234-1234-1234abcdef00
+      responses:
+        '204':
+          description: Successfully unliked a published study plan
+        '400':
+          description: Published study plan id not inputted
+        '404':
+          description: User or published study plan does not exist
+        '409':
+          description: Published study plan is not liked by user
