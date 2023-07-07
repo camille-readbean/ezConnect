@@ -1216,3 +1216,36 @@ paths:
           description: User or published study plan does not exist
         '409':
           description: Published study plan is not liked by user
+
+  /studyplan/view:
+    post:
+      operationId: ezConnect.study_plan.published_study_plan.add_viewership
+      tags: 
+        - Study Plan Post
+      summary: Add view to an existing published study plan
+      requestBody:
+        description: The user ID and the ID of the published study plan to like
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                  example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                published_study_plan_id:
+                  type: string
+                  format: uuid
+                  example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+              required:
+                - user_id
+                - published_study_plan_id
+      responses:
+        '204':
+          description: Successfully added view to a published study plan
+        '400':
+          description: User id or published study plan id not inputted
+        '404':
+          description: User or published study plan does not exist

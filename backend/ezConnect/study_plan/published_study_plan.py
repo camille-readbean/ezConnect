@@ -1,16 +1,32 @@
 from flask import request, abort
-from datetime import datetime
-from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, User, liked_study_plan, db
+from datetime import datetime, date, timedelta
+from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, User, viewed_study_plan, db
 
 # API: /studyplan/publish, GET
 # Get a collection of published study plans
 def get_published_study_plans():
-    # ordering can be 'mostRecent', 'mostLikes', 'mostRelevant', 'mostTrending'
+    # ordering can be 'mostRecent', 'mostLikes', 'relevant', 'trending'
     # default ordering is 'mostRecent'
-    # TODO: add ordering for 'mostRelevant' and 'mostTrending'
+    # TODO: add ordering for 'relevant'
     ordering = request.args.get('ordering')
-    if ordering == "mostLikes":
+    if ordering == 'mostLikes':
         published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.num_of_likes.desc()).all()
+    elif ordering == 'trending':
+        # Delete viewership data that is longer than 30 days ago
+        delete_stmt = viewed_study_plan.delete().where(viewed_study_plan.c.date_viewed < date.today() - timedelta(days=30))
+        db.session.execute(delete_stmt)
+        db.session.commit()
+        
+        # Get all study plans
+        published_study_plans = PublishedStudyPlan.query.all()
+        # Calculate trend scores for all study plans
+        for index, study_plan in enumerate(published_study_plans):
+            trend_score = study_plan.calculate_trend_score()
+            published_study_plans[index] = (study_plan, trend_score)
+        # Sort by trend scores
+        published_study_plans.sort(key = lambda x: x[1], reverse=True)
+        # Return only a list of study plans
+        published_study_plans = list(map(lambda x: x[0], published_study_plans))
     else:
         published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.date_updated.desc()).all()
 
@@ -218,7 +234,6 @@ def favourite_a_study_plan(user_id, body):
     return {"message": "Successfully favourited a published study plan"}, 204
 
 
-# TODO: changed to DELETE
 # API: /studyplan/favourite/{user_id}, DELETE
 # Unfavourite an existing published study plan
 def unfavourite_a_study_plan(user_id):
@@ -280,7 +295,6 @@ def like_a_study_plan(user_id, body):
     return {"message": "Successfully liked a published study plan"}, 204
 
 
-# TODO: changed to DELETE
 # API: /studyplan/like/{user_id}, DELETE
 # Unlike an existing published study plan
 def unlike_a_study_plan(user_id):
@@ -304,3 +318,26 @@ def unlike_a_study_plan(user_id):
         abort(409, f'Published study plan <ID:{published_study_plan_id}> not liked by user <ID {user_id}>')
 
     return {"message": "Successfully unliked a published study plan"}, 204
+
+
+# API: /studyplan/view, POST
+# Add view to published study plan
+def add_viewership(body):
+    user_id = body.get('user_id', None)
+    published_study_plan_id = body.get('published_study_plan_id', None)
+
+    if not user_id or not published_study_plan_id:
+        abort(400, 'User id or published study plan id not inputted')
+    
+    published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
+    if not published_study_plan:
+        abort(404, f'Published study plan <ID: {published_study_plan_id}> not found')
+    
+    user = User.query.get(user_id)
+    if not user:
+        abort(404, f'User <ID: {user_id}> not found')
+    
+    user.viewed_study_plans.append(published_study_plan)
+    db.session.commit()
+
+    return {"message": "Successfully viewed a published study plan"}, 204

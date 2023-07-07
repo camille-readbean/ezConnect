@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint, Float
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, UniqueConstraint, Float, func
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import uuid
 
 db = SQLAlchemy()
@@ -9,13 +9,24 @@ db = SQLAlchemy()
 favorited_study_plan = db.Table(
     'favorited_study_plan',
     Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False),
-    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False)
+    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False),
+    Column('date_favourited', DateTime, nullable=False, default=datetime.utcnow),
+    UniqueConstraint('user_id', 'published_study_plan_id', name='unique_user_favourited_study_plan')
 )
 
 liked_study_plan = db.Table(
     'liked_study_plan',
     Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False),
-    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False)
+    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False),
+    Column('date_liked', DateTime, nullable=False, default=datetime.utcnow),
+    UniqueConstraint('user_id', 'published_study_plan_id', name='unique_user_liked_study_plan')
+)
+
+viewed_study_plan = db.Table(
+    'viewed_study_plan',
+    Column('user_id', UUID(as_uuid=True), db.ForeignKey('users.azure_ad_oid'), nullable=False),
+    Column('published_study_plan_id', UUID(as_uuid=True), db.ForeignKey('published_study_plan.id'), nullable=False),
+    Column('date_viewed', DateTime, nullable=False, default=date.today)
 )
 
 class User(db.Model):
@@ -30,6 +41,7 @@ class User(db.Model):
     personal_study_plans = db.relationship('PersonalStudyPlan', backref='creator')
     favourited_study_plans = db.relationship('PublishedStudyPlan', secondary=favorited_study_plan, backref='favourited_by')
     liked_study_plans = db.relationship('PublishedStudyPlan', secondary=liked_study_plan, backref='liked_by')
+    viewed_study_plans = db.relationship('PublishedStudyPlan', secondary=viewed_study_plan, backref='viewed_by')
 
     mentor_postings = db.relationship('MentorPosting', backref='mentor')
     mentor_requests = db.relationship('MentorRequest', backref='mentee')
@@ -110,6 +122,33 @@ class PublishedStudyPlan(db.Model):
             "creator_name": User.query.get(self.creator_id).name,
             "semester_ids": semester_ids
         }
+    
+    def calculate_trend_score(self):
+        view_weight = 1
+        like_weight = 2
+        favorite_weight = 3
+        
+        trend_score = (
+            (
+                db.session.query(func.count()).filter(
+                    viewed_study_plan.c.published_study_plan_id == self.id
+                ).scalar() * view_weight
+            )
+            + (
+                db.session.query(func.count()).filter(
+                    liked_study_plan.c.published_study_plan_id == self.id,
+                    liked_study_plan.c.date_liked > datetime.utcnow() - timedelta(days=30)
+                ).scalar() * like_weight
+            )
+            + (
+                db.session.query(func.count()).filter(
+                    favorited_study_plan.c.published_study_plan_id == self.id,
+                    favorited_study_plan.c.date_favourited > datetime.utcnow() - timedelta(days=30)
+                ).scalar() * favorite_weight
+            )
+        )
+
+        return trend_score
 
 semester_course = db.Table('semester_course',
     Column('study_plan_semester_id', UUID(as_uuid=True), db.ForeignKey('study_plan_semester.id')),

@@ -3,7 +3,12 @@ import { AiFillHeart } from "react-icons/ai";
 import { IconContext } from "react-icons";
 import PopUpPost from "../StudyPlanPost.js/PopUpPost";
 
-function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
+function makeCard(
+  studyPlan,
+  setIsOpenPopUp,
+  setStudyPlanInformation,
+  azure_ad_oid
+) {
   const title = studyPlan["title"];
   const numOfLikes = studyPlan["num_of_likes"];
   const dateUpdated = studyPlan["date_updated"];
@@ -14,6 +19,19 @@ function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
       onClick={() => {
         setStudyPlanInformation(studyPlan);
         setIsOpenPopUp(true);
+
+        const requestBody = {
+          user_id: azure_ad_oid,
+          published_study_plan_id: studyPlan["id"],
+        };
+
+        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/view`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
       }}
     >
       <img
@@ -61,7 +79,12 @@ export default function StudyPlanList({
         {studyPlans
           .filter((studyPlan) => filterStudyPlan(studyPlan, searchValue))
           .map((studyPlan) =>
-            makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation)
+            makeCard(
+              studyPlan,
+              setIsOpenPopUp,
+              setStudyPlanInformation,
+              azure_ad_oid
+            )
           )}
       </div>
     </>
