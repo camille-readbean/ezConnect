@@ -5,6 +5,7 @@ import StudyPlanSearchBar from "./StudyPlanSearchBar";
 function StudyPlanGallery({ azure_ad_oid }) {
   const [studyPlans, setStudyPlans] = useState([]);
   const [isFetchAgain, setIsFetchAgain] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     fetch(
@@ -21,13 +22,14 @@ function StudyPlanGallery({ azure_ad_oid }) {
       <h1 className="text-2xl font-semibold pb-3">Browse Study Plans</h1>
 
       <div className="container m-auto">
-        <StudyPlanSearchBar />
+        <StudyPlanSearchBar setSearchValue={setSearchValue} />
 
         {studyPlans.length > 0 ? (
           <StudyPlanList
             studyPlans={studyPlans}
             azure_ad_oid={azure_ad_oid}
             setIsFetchAgain={setIsFetchAgain}
+            searchValue={searchValue}
           />
         ) : (
           <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full">

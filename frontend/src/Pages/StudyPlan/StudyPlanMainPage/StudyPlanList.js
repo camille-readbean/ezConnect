@@ -33,10 +33,16 @@ function makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation) {
   );
 }
 
+function filterStudyPlan(studyPlan, searchValue) {
+  const title = studyPlan["title"].toLowerCase();
+  return title.includes(searchValue.toLowerCase());
+}
+
 export default function StudyPlanList({
   studyPlans,
   azure_ad_oid,
   setIsFetchAgain,
+  searchValue,
 }) {
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
   const [studyPlanInformation, setStudyPlanInformation] = useState({});
@@ -52,9 +58,11 @@ export default function StudyPlanList({
         />
       )}
       <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg">
-        {studyPlans.map((studyPlan) =>
-          makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation)
-        )}
+        {studyPlans
+          .filter((studyPlan) => filterStudyPlan(studyPlan, searchValue))
+          .map((studyPlan) =>
+            makeCard(studyPlan, setIsOpenPopUp, setStudyPlanInformation)
+          )}
       </div>
     </>
   );

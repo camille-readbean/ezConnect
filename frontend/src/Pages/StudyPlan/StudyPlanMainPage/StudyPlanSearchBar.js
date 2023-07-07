@@ -2,7 +2,7 @@ import { Menu } from "@headlessui/react";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { BsFilter } from "react-icons/bs";
 
-function StudyPlanSearchBar() {
+function StudyPlanSearchBar({ setSearchValue }) {
   return (
     <div className="flex flex-col sm:flex-row gap-2 items-center px-2 my-2">
       <Menu as="div" className="relative">
@@ -49,14 +49,23 @@ function StudyPlanSearchBar() {
         </Menu.Items>
       </Menu>
 
-      <div className="flex-grow flex gap-1 items-center bg-white p-1 pl-2 rounded-md border-2 border-slate-200 shadow-sm">
-        <BiSearch className="w-6 h-6" />
+      <form
+        className="flex-grow flex gap-1 items-center bg-white p-1 pl-2 rounded-md border-2 border-slate-200 shadow-sm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSearchValue(event.target.searchInput.value);
+        }}
+      >
         <input
           type="search"
+          name="searchInput"
           placeholder="Search for a study plan"
-          className="border-0 outline-0 rounded-md flex-grow"
+          className="border-0 outline-0 flex-grow"
         />
-      </div>
+        <button>
+          <BiSearch className="w-6 h-6" />
+        </button>
+      </form>
 
       <BsFilter className="w-8 h-8 min-w-max min-h-max" />
     </div>
