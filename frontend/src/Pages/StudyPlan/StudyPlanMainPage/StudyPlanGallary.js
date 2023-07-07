@@ -6,23 +6,25 @@ function StudyPlanGallery({ azure_ad_oid }) {
   const [studyPlans, setStudyPlans] = useState([]);
   const [isFetchAgain, setIsFetchAgain] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  // Ordering Choices: mostRecent, mostLikes, relevancy, trending
+  const [orderingChoice, setOrderingChoice] = useState("mostRecent");
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish?user_id=${azure_ad_oid}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish?user_id=${azure_ad_oid}&ordering=${orderingChoice}`
     )
       .then((res) => res.json())
       .then((data) => {
         setStudyPlans(data["published_study_plans"]);
       });
-  }, [isFetchAgain]);
+  }, [isFetchAgain, orderingChoice]);
 
   return (
     <div className="bg-slate-50 px-20 py-10">
       <h1 className="text-2xl font-semibold pb-3">Browse Study Plans</h1>
 
       <div className="container m-auto">
-        <StudyPlanSearchBar setSearchValue={setSearchValue} />
+        <StudyPlanSearchBar setSearchValue={setSearchValue} setOrderingChoice={setOrderingChoice}/>
 
         {studyPlans.length > 0 ? (
           <StudyPlanList

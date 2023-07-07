@@ -76,6 +76,6 @@ def get_personal_study_plans(user_id):
     if not user:
         abort(404, f"User with id {user_id} not found")
 
-    personal_study_plans = PersonalStudyPlan.query.filter_by(creator_id=user_id).all()
+    personal_study_plans = PersonalStudyPlan.query.filter_by(creator_id=user_id).order_by(PersonalStudyPlan.date_updated.desc()).all()
     personal_study_plans = list(map(lambda study_plan: study_plan.toJSON(), personal_study_plans))
     return {"personal_study_plan_data": personal_study_plans}, 200

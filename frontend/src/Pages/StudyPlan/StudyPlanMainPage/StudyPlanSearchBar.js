@@ -2,7 +2,7 @@ import { Menu } from "@headlessui/react";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { BsFilter } from "react-icons/bs";
 
-function StudyPlanSearchBar({ setSearchValue }) {
+function StudyPlanSearchBar({ setSearchValue, setOrderingChoice }) {
   return (
     <div className="flex flex-col sm:flex-row gap-2 items-center px-2 my-2">
       <Menu as="div" className="relative">
@@ -18,6 +18,7 @@ function StudyPlanSearchBar({ setSearchValue }) {
                   className={`${
                     active ? "bg-sky-500 text-white" : "text-gray-900"
                   } w-full rounded-md p-1`}
+                  onClick={() => setOrderingChoice("relevancy")}
                 >
                   Relevancy
                 </button>
@@ -29,6 +30,7 @@ function StudyPlanSearchBar({ setSearchValue }) {
                   className={`${
                     active ? "bg-sky-500 text-white" : "text-gray-900"
                   } w-full rounded-md p-1`}
+                  onClick={() => setOrderingChoice("trending")}
                 >
                   Trending
                 </button>
@@ -40,8 +42,21 @@ function StudyPlanSearchBar({ setSearchValue }) {
                   className={`${
                     active ? "bg-sky-500 text-white" : "text-gray-900"
                   } w-full rounded-md p-1`}
+                  onClick={() => setOrderingChoice("mostRecent")}
                 >
                   Most Recent
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  className={`${
+                    active ? "bg-sky-500 text-white" : "text-gray-900"
+                  } w-full rounded-md p-1`}
+                  onClick={() => setOrderingChoice("mostLikes")}
+                >
+                  Most Likes
                 </button>
               )}
             </Menu.Item>

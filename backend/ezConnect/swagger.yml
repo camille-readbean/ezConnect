@@ -913,6 +913,11 @@ paths:
             type: string
             format: uuid
             example: 12345678-1234-1234-1234-1234abcdef00
+        - in: query
+          name: ordering
+          schema:
+            type: string
+            example: mostLikes
       responses:
         '200':
           description: Returned a collection of published study plans

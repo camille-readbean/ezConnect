@@ -5,7 +5,15 @@ from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, U
 # API: /studyplan/publish, GET
 # Get a collection of published study plans
 def get_published_study_plans():
-    published_study_plans = PublishedStudyPlan.query.all()
+    # ordering can be 'mostRecent', 'mostLikes', 'mostRelevant', 'mostTrending'
+    # default ordering is 'mostRecent'
+    # TODO: add ordering for 'mostRelevant' and 'mostTrending'
+    ordering = request.args.get('ordering')
+    if ordering == "mostLikes":
+        published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.num_of_likes.desc()).all()
+    else:
+        published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.date_updated.desc()).all()
+
     user_id = request.args.get('user_id')
     if user_id:
         published_study_plans = list(map(lambda study_plan: get_info_from_published_study_plan_object(study_plan, user_id), published_study_plans))
