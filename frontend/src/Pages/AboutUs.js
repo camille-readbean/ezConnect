@@ -29,11 +29,10 @@ function AboutUs() {
       </section>
 
       <section id="MMMIntroduction" className="aboutussection">
-        <FaSlideshare className="w-64 h-64" />
+        <FaSlideshare className="w-40 h-40" />
         <div className="aboutusdescription">
           <h1 className="text-2xl font-bold">Mentor-Mentee Matcher</h1>
           <p>
-            {" "}
             Looking for academic help or career advice? Passionate about helping
             others? Search for a mentor or a mentee to benefit from one another!
           </p>
@@ -63,7 +62,7 @@ function AboutUs() {
             Look at study plans
           </Link>
         </div>
-        <FcPlanner className="w-64 h-64" />
+        <FcPlanner className="w-40 h-40" />
       </section>
     </>
   );

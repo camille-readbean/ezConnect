@@ -16,7 +16,7 @@
   }
 
   .aboutussection {
-    @apply p-16 flex gap-8 justify-center;
+    @apply px-8 py-16 sm:px-16 flex flex-col sm:flex-row gap-8 justify-center;
   }
 
   .aboutusdescription {

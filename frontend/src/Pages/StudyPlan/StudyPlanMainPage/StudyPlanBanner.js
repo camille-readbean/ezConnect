@@ -9,7 +9,7 @@ function StudyPlanBanner() {
         height: "350px",
       }}
     >
-      <div className="backdrop-blur-sm h-full w-full px-40 flex flex-col gap-1 justify-center">
+      <div className="backdrop-blur-sm h-full w-full px-10 sm:px-40 flex flex-col gap-1 justify-center">
         <h1 className="text-5xl font-bold uppercase">Study Plan</h1>
         <hr className="w-1/12 border-sky-500 border-2 my-2 rounded-full"></hr>
         <h2 className="text-2xl font-semibold">Course planning made easier</h2>

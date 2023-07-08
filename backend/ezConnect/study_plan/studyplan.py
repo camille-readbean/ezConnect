@@ -38,7 +38,7 @@ def update_personal_study_plan_title(study_plan_id, body):
 
     title = body.get('title', None)
     if title is None:
-        abort(400, f"No information was passed in")
+        abort(400, "No information was passed in")
 
     study_plan.title = title
     study_plan.date_updated = datetime.utcnow()
@@ -66,7 +66,7 @@ def delete_study_plan(study_plan_id):
         db.session.delete(published_study_plan)
         db.session.commit()
     
-    return {"message": f"Study plan deleted"}, 204
+    return {"message": "Study plan deleted"}, 204
 
 
 # Read a collection of personal study plans
@@ -76,6 +76,12 @@ def get_personal_study_plans(user_id):
     if not user:
         abort(404, f"User with id {user_id} not found")
 
-    personal_study_plans = PersonalStudyPlan.query.filter_by(creator_id=user_id).order_by(PersonalStudyPlan.date_updated.desc()).all()
-    personal_study_plans = list(map(lambda study_plan: study_plan.toJSON(), personal_study_plans))
+    personal_study_plans = (PersonalStudyPlan.query
+        .filter_by(creator_id=user_id)
+        .order_by(PersonalStudyPlan.date_updated.desc())
+        .all())
+    personal_study_plans = list(map(
+        lambda study_plan: study_plan.toJSON(), 
+        personal_study_plans
+    ))
     return {"personal_study_plan_data": personal_study_plans}, 200

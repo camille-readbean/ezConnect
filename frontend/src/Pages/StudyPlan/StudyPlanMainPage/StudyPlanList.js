@@ -75,7 +75,7 @@ export default function StudyPlanList({
           setIsFetchAgain={setIsFetchAgain}
         />
       )}
-      <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg">
+      <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg min-h-[256px]">
         {studyPlans
           .filter((studyPlan) => filterStudyPlan(studyPlan, searchValue))
           .map((studyPlan) =>

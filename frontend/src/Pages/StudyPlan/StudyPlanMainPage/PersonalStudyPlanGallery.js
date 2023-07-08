@@ -65,7 +65,7 @@ function PersonalStudyPlanGallery({ azure_ad_oid }) {
   };
 
   return (
-    <div className="bg-slate-50 px-20 py-10">
+    <div className="bg-slate-50 px-10 sm:px-20 py-10">
       <h1 className="text-2xl font-semibold pb-3">Your study plans</h1>
       {personalStudyPlans.length > 0 ? (
         <PersonalStudyPlanList

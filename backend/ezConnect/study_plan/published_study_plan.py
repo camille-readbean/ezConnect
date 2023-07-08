@@ -1,6 +1,7 @@
 from flask import request, abort
 from datetime import datetime, date, timedelta
-from ..models import PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester, User, viewed_study_plan, db
+from ..models import (PublishedStudyPlan, PersonalStudyPlan, 
+                      StudyPlanSemester, User, viewed_study_plan, db)
 
 # API: /studyplan/publish, GET
 # Get a collection of published study plans
@@ -10,10 +11,14 @@ def get_published_study_plans():
     # TODO: add ordering for 'relevant'
     ordering = request.args.get('ordering')
     if ordering == 'mostLikes':
-        published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.num_of_likes.desc()).all()
+        published_study_plans = PublishedStudyPlan.query.order_by(
+            PublishedStudyPlan.num_of_likes.desc()
+        ).all()
     elif ordering == 'trending':
         # Delete viewership data that is longer than 30 days ago
-        delete_stmt = viewed_study_plan.delete().where(viewed_study_plan.c.date_viewed < date.today() - timedelta(days=30))
+        delete_stmt = viewed_study_plan.delete().where(
+            viewed_study_plan.c.date_viewed < date.today() - timedelta(days=30)
+        )
         db.session.execute(delete_stmt)
         db.session.commit()
         
@@ -28,13 +33,22 @@ def get_published_study_plans():
         # Return only a list of study plans
         published_study_plans = list(map(lambda x: x[0], published_study_plans))
     else:
-        published_study_plans = PublishedStudyPlan.query.order_by(PublishedStudyPlan.date_updated.desc()).all()
+        published_study_plans = PublishedStudyPlan.query.order_by(
+            PublishedStudyPlan.date_updated.desc()
+        ).all()
 
     user_id = request.args.get('user_id')
     if user_id:
-        published_study_plans = list(map(lambda study_plan: get_info_from_published_study_plan_object(study_plan, user_id), published_study_plans))
+        published_study_plans = list(map(
+            lambda study_plan: 
+                get_info_from_published_study_plan_object(study_plan, user_id), 
+            published_study_plans
+        ))
     else:
-        published_study_plans = list(map(lambda study_plan: study_plan.toJSON(), published_study_plans))
+        published_study_plans = list(map(
+            lambda study_plan: study_plan.toJSON(), 
+            published_study_plans
+        ))
     return {"published_study_plans": published_study_plans}, 200
 
 
@@ -84,7 +98,8 @@ def publish_study_plan(study_plan_id, body):
 
     if personal_study_plan.published_version is not None:
         # study plan is already published
-        abort(409, f'Personal Study Plan with id <{study_plan_id}> is already published')
+        abort(409, 
+            f'Personal Study Plan with id <{study_plan_id}> is already published')
 
     title = body.get('title', None)
     description = body.get('description', None)
@@ -104,7 +119,8 @@ def publish_study_plan(study_plan_id, body):
     db.session.commit()
 
     # Duplicate semesters
-    personal_semesters = personal_study_plan.semesters # Array of StudyPlanSemester objects
+    # Array of StudyPlanSemester objects
+    personal_semesters = personal_study_plan.semesters 
     for semester in personal_semesters:
         clone_semester(semester, new_published_study_plan.id, True)
 
@@ -161,7 +177,8 @@ def update_published_study_plan(study_plan_id, body):
     if not personal_study_plan:
         abort(404, f'Personal Study Plan with id <{personal_study_plan_id}> not found')
     
-    personal_semesters = personal_study_plan.semesters # Array of StudyPlanSemester objects
+    # Array of StudyPlanSemester objects
+    personal_semesters = personal_study_plan.semesters 
     for semester in personal_semesters:
         clone_semester(semester, study_plan_id, True)
 
@@ -183,7 +200,8 @@ def create_study_plan_copy(body):
     # Get published study plan to copy from
     published_study_plan = PublishedStudyPlan.query.get(published_study_plan_id)
     if not published_study_plan:
-        abort(404, f'Published Study Plan with id <{published_study_plan_id}> not found')
+        abort(404, 
+            f'Published Study Plan with id <{published_study_plan_id}> not found')
 
     # Create a new personal study plan
     new_personal_study_plan = PersonalStudyPlan(
@@ -194,7 +212,8 @@ def create_study_plan_copy(body):
     db.session.commit()
 
     # Duplicate semesters
-    original_semesters = published_study_plan.semesters # Array of StudyPlanSemester objects
+    # Array of StudyPlanSemester objects
+    original_semesters = published_study_plan.semesters 
     for semester in original_semesters:
         clone_semester(semester, new_personal_study_plan.id, False)
     
@@ -209,7 +228,11 @@ def get_favourited_published_study_plans(user_id):
         abort(404, f'User <ID: {user_id}> not found')
     
     favourited_study_plans = user.favourited_study_plans
-    favourited_study_plans = list(map(lambda study_plan: study_plan.toJSON(), favourited_study_plans))
+    favourited_study_plans = list(map(
+        lambda study_plan: 
+            get_info_from_published_study_plan_object(study_plan, user_id), 
+        favourited_study_plans
+    ))
     return {"favourited_study_plans": favourited_study_plans}, 200
 
 
@@ -253,7 +276,9 @@ def unfavourite_a_study_plan(user_id):
         user.favourited_study_plans.remove(published_study_plan)
         db.session.commit()
     except ValueError:
-        abort(409, f'Published study plan <ID:{published_study_plan_id}> not favourited by user <ID {user_id}>')
+        abort(409, 
+            (f'Published study plan <ID:{published_study_plan_id}> '
+             + f'not favourited by user <ID {user_id}>'))
 
     return {"message": "Successfully unfavourited a published study plan"}, 204
 
@@ -266,7 +291,11 @@ def get_liked_published_study_plans(user_id):
         abort(404, f'User <ID: {user_id}> not found')
     
     liked_study_plans = user.liked_study_plans
-    liked_study_plans = list(map(lambda study_plan: study_plan.toJSON(), liked_study_plans))
+    liked_study_plans = list(map(
+        lambda study_plan: 
+            get_info_from_published_study_plan_object(study_plan, user_id), 
+        liked_study_plans
+    ))
     return {"liked_study_plans": liked_study_plans}, 200
 
 
@@ -286,7 +315,8 @@ def like_a_study_plan(user_id, body):
         abort(404, f'User <ID: {user_id}> not found')
 
     if published_study_plan in user.liked_study_plans:
-        abort(409, f'Published study plan <ID:{published_study_plan_id}> already liked by user <ID {user_id}>')
+        abort(409, (f'Published study plan <ID:{published_study_plan_id}> '
+                    + 'already liked by user <ID {user_id}>'))
     
     user.liked_study_plans.append(published_study_plan)
     published_study_plan.num_of_likes += 1
@@ -315,7 +345,8 @@ def unlike_a_study_plan(user_id):
         published_study_plan.num_of_likes -= 1
         db.session.commit()
     except ValueError:
-        abort(409, f'Published study plan <ID:{published_study_plan_id}> not liked by user <ID {user_id}>')
+        abort(409, (f'Published study plan <ID:{published_study_plan_id}> ' 
+                    + 'not liked by user <ID {user_id}>'))
 
     return {"message": "Successfully unliked a published study plan"}, 204
 

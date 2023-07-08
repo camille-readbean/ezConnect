@@ -14,7 +14,7 @@ function PersonalStudyPlanList({
 
     // TODO: improve styling
     return (
-      <div className="group relative bg-white rounded-lg w-64 h-44 p-3 m-2 shadow-md overflow-hidden">
+      <div className="group relative bg-white rounded-lg w-64 min-w-[256px] h-44 p-3 m-2 shadow-md overflow-hidden">
         <Link
           to={`/studyplan/editor/${id}`}
           className="font-semibold whitespace-normal break-words"
@@ -26,7 +26,7 @@ function PersonalStudyPlanList({
             Last updated: {dateUpdated}
           </p>
           <AiFillDelete
-            className="hidden cursor-pointer group-hover:block hover:bg-sky-500 p-1 h-6 w-6 rounded-md"
+            className="hidden cursor-pointer group-hover:block hover:bg-sky-500 p-1 h-6 w-6 rounded-md transition"
             onClick={() => deleteStudyPlan(id)}
           />
         </div>
@@ -42,7 +42,7 @@ function PersonalStudyPlanList({
       <div className="flex overflow-x-auto whitespace-nowrap">
         {personalStudyPlans.map((studyPlan) => makeCard(studyPlan))}
         <div
-          className="group relative"
+          className="group relative hover:cursor-pointer"
           onClick={() => createNewStudyPlan(azure_ad_oid)}
         >
           <div className="absolute bg-white w-64 rounded-lg h-44 p-3 m-2 shadow-md flex items-center justify-center">

@@ -114,6 +114,48 @@ components:
             "7": "abc77777-1234-1234-1234-1234abcdef00",
             "8": "def88888-1234-1234-1234-1234abcdef00"
           }
+    PublishedStudyPlanWithLikedFavourited:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: abcde123-1234-1234-1234-1234abcdef00
+        date_updated:
+          type: string
+          example: 01 Jul 2023
+        title:
+          type: string
+          example: Computer Science Major with Second Major in Math
+        description:
+          type: string
+        num_of_likes:
+          type: integer
+        creator_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234abcdef00
+        creator_name:
+          type: string
+          example: Jonathan Tan
+        is_favourited_by:
+          type: boolean
+          example: false
+        is_liked_by:
+          type: boolean
+          example: true
+        semester_ids:
+          type: object
+          example: {
+            "1": "abc11111-1234-1234-1234-1234abcdef00",
+            "2": "def22222-1234-1234-1234-1234abcdef00",
+            "3": "abc33333-1234-1234-1234-1234abcdef00",
+            "4": "def44444-1234-1234-1234-1234abcdef00",
+            "5": "abc55555-1234-1234-1234-1234abcdef00",
+            "6": "def66666-1234-1234-1234-1234abcdef00",
+            "7": "abc77777-1234-1234-1234-1234abcdef00",
+            "8": "def88888-1234-1234-1234-1234abcdef00"
+          }
     StudyPlanSemesterInformation:
       type: object
       properties:
@@ -1088,7 +1130,7 @@ paths:
                   favourited_study_plans:
                     type: array
                     items:
-                      $ref: "#/components/schemas/PublishedStudyPlan"
+                      $ref: "#/components/schemas/PublishedStudyPlanWithLikedFavourited"
         '404':
           description: User does not exist
     post:
@@ -1162,7 +1204,7 @@ paths:
                   liked_study_plans:
                     type: array
                     items:
-                      $ref: "#/components/schemas/PublishedStudyPlan"
+                      $ref: "#/components/schemas/PublishedStudyPlanWithLikedFavourited"
         '404':
           description: User does not exist
     post:

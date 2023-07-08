@@ -1,6 +1,7 @@
 from flask import abort
 from datetime import datetime
-from ..models import PersonalStudyPlan, PublishedStudyPlan, StudyPlanSemester, Course, db
+from ..models import (PersonalStudyPlan, PublishedStudyPlan, 
+                      StudyPlanSemester, Course, db)
 
 # Read a collection of semester information from an existing study plan
 def get_all_semesters(study_plan_id):
@@ -13,7 +14,8 @@ def get_all_semesters(study_plan_id):
         abort(404, f"Study plan with id {study_plan_id} not found")
     
     study_plan_info = study_plan.toJSON()
-    semester_ids = study_plan_info["semester_ids"] # dictionary (key, value) = (semester_number, semester_id)
+    semester_ids = study_plan_info["semester_ids"] 
+    # dictionary (key, value) = (semester_number, semester_id)
 
     semester_info = {}
     for semester_number in semester_ids:
@@ -81,7 +83,7 @@ def update_semester_courses(semester_id, body):
 
     # if no information was inputted
     if course_code_list is None:
-        abort(400, f"No information was passed in")
+        abort(400, "No information was passed in")
     else:
         semester.courses = []
         for course_code in course_code_list:
@@ -145,9 +147,11 @@ def delete_semester(semester_id):
     db.session.commit()
 
     if is_published:
-        remaining_semesters = StudyPlanSemester.query.filter_by(published_study_plan_id=study_plan_id).all()
+        remaining_semesters = StudyPlanSemester.query.filter_by(
+            published_study_plan_id=study_plan_id).all()
     else:
-        remaining_semesters = StudyPlanSemester.query.filter_by(personal_study_plan_id=study_plan_id).all()
+        remaining_semesters = StudyPlanSemester.query.filter_by(
+            personal_study_plan_id=study_plan_id).all()
     
     for remaining_semester in remaining_semesters:
         if remaining_semester.semester_number > curr_semester_number:
