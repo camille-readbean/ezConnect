@@ -14,15 +14,13 @@ function StudyPlanEditor() {
       setIsAuthUser(false);
       return;
     }
-    // ! check before deploying for production, fixed id is used for internal testing!
     const currUserId = activeAccount.idTokenClaims["oid"];
-    // const currUserId = "12a3b456-c7de-44ce-bde9-a123bc00237d";
     setIsAuthUser(currUserId === creatorId);
   };
 
   const checkStudyPlanInformation = (studyPlanId) => {
     return fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
     )
       .then((res) => res.json())
       .then((data) => {
