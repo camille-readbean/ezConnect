@@ -9,6 +9,8 @@ const getPersonalStudyPlans = async (userId) => {
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/user_personal/${userId}`
     );
     const data = await res.json();
+    if (data.detail && data.detail.includes("User") && data.detail.includes("not found"))
+      throw new Error('User not found');
     const result = data["personal_study_plan_data"];
     return result;
   } catch (error) {
@@ -41,7 +43,10 @@ function PersonalStudyPlanGallery({ azure_ad_oid }) {
     const fetchStudyPlans = async () => {
       try {
         const plans = await getPersonalStudyPlans(azure_ad_oid);
-        setPersonalStudyPlans(plans);
+        if (plans != null)
+          setPersonalStudyPlans(plans);
+        else console.log("Error")
+        // setPersonalStudyPlans(plans);
       } catch (error) {
         console.error(error);
       }

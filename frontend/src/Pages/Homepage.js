@@ -35,19 +35,25 @@ function Homepage(props) {
         'GET', 
         '/api/mentoring/matches')
         .then(resp => {
+          // setMenteeMatches(resp.mentee_matches);
+          // setMentorMatches(resp.mentor_matches);
+          if (resp.mentee_matches != null && resp.mentor_matches) { 
           setMenteeMatches(resp.mentee_matches);
           setMentorMatches(resp.mentor_matches);
+          } else {
+            console.log("Error in getting mentor matches")
+          }
         })
       secureApiRequest(
         instance, 
         'GET', 
         '/api/mentoring/mentors/get-user-mentor-postings')
-        .then(resp => setUserMentorPostings(resp.postings))
+        .then(resp => resp ? setUserMentorPostings(resp.postings) : console.log("Error in getting mentor posting"))
       secureApiRequest(
         instance, 
         'GET', 
         '/api/mentoring/mentees/get-user-mentor-requests')
-        .then(resp => setUserMentorRequests(resp.postings))
+        .then(resp => resp ? setUserMentorRequests(resp.postings) : console.log("Error in getting mentor request"))
     }
   }
 
