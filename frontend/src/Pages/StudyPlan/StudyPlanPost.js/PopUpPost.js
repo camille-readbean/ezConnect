@@ -10,6 +10,7 @@ import {
 import { IconContext } from "react-icons";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu } from "@headlessui/react";
+import Tags from "./Tags";
 
 function PopUpPost({
   studyPlanInformation,
@@ -30,6 +31,7 @@ function PopUpPost({
   const [isLikedBy, setIsLikedBy] = useState(
     studyPlanInformation["is_liked_by"]
   );
+  const academicPlanInformation = studyPlanInformation["academic_plan"];
   const navigate = useNavigate();
 
   const makeACopy = () => {
@@ -130,11 +132,6 @@ function PopUpPost({
       });
   };
 
-  // TODO: Add functionality for learn more
-  const learnMore = () => {
-    console.log("trying to learn more");
-  };
-
   return (
     <div className="fixed inset-0 z-10 p-3 flex items-center justify-center bg-gray-500 bg-opacity-75">
       <div className="relative p-5 bg-white rounded-md shadow-md min-w-min w-full sm:max-w-3xl">
@@ -152,6 +149,12 @@ function PopUpPost({
 
           <div id="studyPlanInformation" className="flex-grow">
             <h1 className="text-lg font-semibold">{title}</h1>
+
+            {academicPlanInformation != null ? (
+              <Tags academicPlanInformation={academicPlanInformation} />
+            ) : (
+              <></>
+            )}
 
             <div className="flex justify-between items-center">
               <p>Created by: {creatorName}</p>
@@ -228,15 +231,6 @@ function PopUpPost({
             <h6 className="font-medium">Description</h6>
             <p className="bg-slate-50 rounded-md p-2">{description}</p>
           </div>
-        </div>
-
-        <div className="flex items-center justify-center">
-          <button
-            className="border-2 border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white font-semibold px-3 py-1 rounded-md transition"
-            onClick={learnMore}
-          >
-            Learn more
-          </button>
         </div>
       </div>
     </div>
