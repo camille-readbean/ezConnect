@@ -1,7 +1,7 @@
 from flask import request, abort
 from datetime import datetime, date, timedelta
-from ..models import (PublishedStudyPlan, PersonalStudyPlan, 
-                      StudyPlanSemester, User, viewed_study_plan, db)
+from ..models import (PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester,
+                      User, AcademicPlan, Degree, Programme, viewed_study_plan, db)
 
 # API: /studyplan/publish, GET
 # Get a collection of published study plans
@@ -36,6 +36,8 @@ def get_published_study_plans():
         published_study_plans = PublishedStudyPlan.query.order_by(
             PublishedStudyPlan.date_updated.desc()
         ).all()
+
+    # TODO: filter after ordering (using another function?)
 
     user_id = request.args.get('user_id')
     if user_id:
@@ -103,9 +105,18 @@ def publish_study_plan(study_plan_id, body):
 
     title = body.get('title', None)
     description = body.get('description', None)
+    academic_plan_info = body.get('academic_plan_info', None)
 
-    if title is None or description is None:
-        abort(400, "Title or description not inputted")
+    if title is None or description is None or academic_plan_info is None:
+        abort(400, "Title, description, or academic plan information not inputted")
+    
+    # check that first degree is given and check validity
+    first_degree_id = academic_plan_info.get('first_degree_id', None)
+    if first_degree_id is None:
+        abort(400, 'First degree not inputted')
+    first_degree_obj = Degree.query.get(first_degree_id)
+    if not first_degree_obj:
+        abort(404, f'Degree <ID:{first_degree_id}> not found')
     
     new_published_study_plan = PublishedStudyPlan(
         title = title,
@@ -117,6 +128,14 @@ def publish_study_plan(study_plan_id, body):
     db.session.add(new_published_study_plan)
     personal_study_plan.published_version = new_published_study_plan
     db.session.commit()
+
+    new_published_study_plan_id = new_published_study_plan.id
+    new_academic_plan = AcademicPlan(
+        published_study_plan_id=new_published_study_plan_id,
+        first_degree_id=first_degree_id
+    )
+    db.session.add(new_academic_plan)
+    update_academic_plan_obj(new_academic_plan, academic_plan_info)
 
     # Duplicate semesters
     # Array of StudyPlanSemester objects
@@ -164,10 +183,12 @@ def update_published_study_plan(study_plan_id, body):
     title = body.get('title', None)
     description = body.get('description', None)
     personal_study_plan_id = body.get('personal_study_plan_id', None)
+    academic_plan_info = body.get('academic_plan_info', None)
 
-    if title is None or description is None or personal_study_plan_id is None:
+    if title is None or description is None or personal_study_plan_id is None or academic_plan_info is None:
         abort(400, 'Some information not passed in')
     
+    # Update title and description
     published_study_plan.title = title
     published_study_plan.description = description
 
@@ -181,6 +202,23 @@ def update_published_study_plan(study_plan_id, body):
     personal_semesters = personal_study_plan.semesters 
     for semester in personal_semesters:
         clone_semester(semester, study_plan_id, True)
+
+    # Update academic plan
+    academic_plan_obj = published_study_plan.academic_plan
+    if academic_plan_obj is None:
+        first_degree_id = academic_plan_info.get('first_degree_id', None)
+        if first_degree_id is None:
+            abort(400, 'First degree not inputted')
+        first_degree_obj = Degree.query.get(first_degree_id)
+        if not first_degree_obj:
+            abort(404, f'Degree <ID:{first_degree_id}> not found')
+
+        academic_plan_obj = AcademicPlan(
+            published_study_plan_id=study_plan_id,
+            first_degree_id=first_degree_id
+        )
+        db.session.add(academic_plan_obj)
+    update_academic_plan_obj(academic_plan_obj, academic_plan_info)
 
     published_study_plan.date_updated = datetime.utcnow()
     db.session.commit()
@@ -372,3 +410,56 @@ def add_viewership(body):
     db.session.commit()
 
     return {"message": "Successfully viewed a published study plan"}, 204
+
+
+# Not an API method
+def update_academic_plan_obj(academic_plan, body):
+    # get information from request body
+    first_degree_id = body.get('first_degree_id', None)
+    second_degree_id = body.get('second_degree_id', False)
+    second_major = body.get('second_major', None)
+    minors_id_list = body.get('minors_id_list', None)
+    special_programmes_id_list = body.get('special_programmes_id_list', None)
+
+    # check validity of information and update the academic plan
+    if first_degree_id is not None:
+        first_degree_obj = Degree.query.get(first_degree_id)
+        if not first_degree_obj:
+            abort(404, f'Degree <ID:{first_degree_id}> not found')
+        academic_plan.first_degree_id = first_degree_id
+    
+    if second_degree_id != False:
+        if second_degree_id is None:
+            academic_plan.second_degree_id = None
+        else:
+            second_degree_obj = Degree.query.get(second_degree_id)
+            if not second_degree_obj:
+                abort(404, f'Degree <ID:{second_degree_id}> not found')
+            academic_plan.second_degree_id = second_degree_id
+
+    if second_major is not None:
+        academic_plan.second_major = second_major
+
+    if minors_id_list is not None:
+        academic_plan.minors = []
+        for minor_id in minors_id_list:
+            minor_obj = Programme.query.get(minor_id)
+            if not minor_obj:
+                abort(404, f'Minor <ID:{minor_id}> not found')
+            try:
+                academic_plan.minors.append(minor_obj)
+            except ValueError:
+                abort(409, 'Input is not a minor or maximum number of minors exceeded')
+    
+    if special_programmes_id_list is not None:
+        academic_plan.special_programmes = []
+        for special_programme_id in special_programmes_id_list:
+            special_programme_obj = Programme.query.get(special_programme_id)
+            if not special_programme_obj:
+                abort(404, f'Special programme <ID:{special_programme_id}> not found')
+            try:
+                academic_plan.special_programmes.append(special_programme_obj)
+            except ValueError:
+                abort(409, 'Input is a minor, not a special programme')
+    
+    db.session.commit()

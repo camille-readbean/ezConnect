@@ -114,6 +114,8 @@ components:
             "7": "abc77777-1234-1234-1234-1234abcdef00",
             "8": "def88888-1234-1234-1234-1234abcdef00"
           }
+        academic_plan:
+          $ref: "#/components/schemas/AcademicPlan"
     PublishedStudyPlanWithLikedFavourited:
       type: object
       properties:
@@ -172,6 +174,64 @@ components:
         course_codes:
           type: array
           example: [CS1101S, CS1231S, MA1521, IS1108, ES2660]
+    AcademicPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: abc54321-1234-1234-1234-1234abcdef00
+        published_study_plan_id:
+          type: string
+          format: uuid
+          example: abc54321-1234-1234-1234-1234abcdef00
+        first_degree:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: abc54321-1234-1234-1234-1234abcdef00
+            title:
+              type: string
+              example: Computer Science
+        second_degree:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: abc54321-1234-1234-1234-1234abcdef00
+            title:
+              type: string
+              example: Data Science and Economics
+        second_major:
+          type: string
+          example: Mathematics
+        minors:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: abc54321-1234-1234-1234-1234abcdef00
+              title:
+                type: string
+                example: Minor in Communications and New Media
+        special_programmes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: abc54321-1234-1234-1234-1234abcdef00
+              title:
+                type: string
+                example: University Town College Programme
     MentoringPost:
       type: object
       properties:
@@ -1017,9 +1077,37 @@ paths:
                 description:
                   type: string
                   example: I am currently a Y3 student. For Y1S2, I recommend that you overload but do not take CS2030S, CS2040S and CS2100 all at the same time.
+                academic_plan_info:
+                  type: object
+                  properties:
+                    first_degree_id:
+                      type: string
+                      format: uuid
+                      example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    second_degree_id:
+                      type: string
+                      format: uuid
+                      nullable: true
+                      example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    second_major:
+                      type: string
+                      example: Math
+                    minors_id_list:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    special_programmes_id_list:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: 12a3b456-c7de-44ce-bde9-a123bc00237d
               required:
                 - title
                 - description
+                - academic_plan_info
       responses:
         '200': 
           description: Successfully created a published study plan
@@ -1058,10 +1146,38 @@ paths:
                   type: string
                   format: uuid
                   example: abcde123-1234-1234-1234-1234abcdef00
+                academic_plan_info:
+                  type: object
+                  properties:
+                    first_degree_id:
+                      type: string
+                      format: uuid
+                      example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    second_degree_id:
+                      type: string
+                      format: uuid
+                      nullable: true
+                      example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    second_major:
+                      type: string
+                      example: Math
+                    minors_id_list:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: 12a3b456-c7de-44ce-bde9-a123bc00237d
+                    special_programmes_id_list:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: 12a3b456-c7de-44ce-bde9-a123bc00237d
               required:
                 - title
                 - description
                 - personal_study_plan_id
+                - academic_plan_info
       responses:
         '200': 
           description: Successfully updated a published study plan

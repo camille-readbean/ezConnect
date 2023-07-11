@@ -141,6 +141,7 @@ function Editor({ studyPlanId }) {
           setIsShowPublisher={setIsShowPublisher}
           isPublished={isPublished}
           setIsPublished={setIsPublished}
+          setIsFetchAgain={setIsFetchAgain}
         />
       )}
       <div className="flex items-center">
