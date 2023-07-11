@@ -59,8 +59,22 @@ prerequisiteRule = "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) 
 
         ]
     }
-]
+]   
 
-def parse_pre_rule(rule):
+def parse_pre_rule(rule_string):
     # TODO: REGEX = (COURSES( \([1-9]\))?)|([A-Z]*[0-9]*[A-Z]*(?=(\:[A-F])))|\(|\)|OR|AND
-    return rule.split('THEN')[1][:1]
+    rule = rule_string.split('THEN')[1][1:]
+    print(rule)
+    regex_pattern = re.compile(r'((COURSES( \([1-9]\))?)|([A-Z]+[0-9]+[A-Z]*)(?=(\:[A-F])?)|\(|\)|OR|AND)')
+    # return regex.findall(rule)
+    for m in re.finditer(regex_pattern, rule):
+        print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
+    # result = [x for tup in regex_pattern.findall(rule) for x in tup if x]
+    print(regex_pattern.findall(rule))
+    print([m[0] for m in regex_pattern.findall(rule) if m])
+    # matches = regex_pattern.findall(rule)
+    # flattened_list = [x for tup in regex_pattern.findall(rule) for x in tup if x]
+    # return flattened_list
+
+
+print(parse_pre_rule(CS2030S['prerequisiteRule'] + " AND CS1010"))
