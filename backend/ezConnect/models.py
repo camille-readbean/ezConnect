@@ -243,6 +243,29 @@ class PublishedStudyPlan(db.Model):
 
         return trend_score
 
+    def calculate_relevancy_score(self, user):
+        first_degree_weight = 10
+        second_degree_weight = 5
+        second_major_weight = 3
+        minor_weight = special_programme_weight = 1
+
+        if self.academic_plan is None:
+            return 0
+        
+        relevancy_score = 0
+        if self.academic_plan.first_degree in user.degrees:
+            relevancy_score += first_degree_weight
+        if self.academic_plan.second_degree is not None and self.academic_plan.second_degree in user.degrees:
+            relevancy_score += second_degree_weight
+        for minor in self.academic_plan.minors:
+            if minor in user.programmes:
+                relevancy_score += minor_weight
+        for special_programme in self.academic_plan.special_programmes:
+            if special_programme in user.programmes:
+                relevancy_score += special_programme_weight
+        
+        return relevancy_score
+
 semester_course = db.Table('semester_course',
     Column(
         'study_plan_semester_id', 

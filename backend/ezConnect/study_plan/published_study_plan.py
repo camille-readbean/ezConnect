@@ -8,7 +8,6 @@ from ..models import (PublishedStudyPlan, PersonalStudyPlan, StudyPlanSemester,
 def get_published_study_plans():
     # ordering can be 'mostRecent', 'mostLikes', 'relevant', 'trending'
     # default ordering is 'mostRecent'
-    # TODO: add ordering for 'relevant'
     ordering = request.args.get('ordering')
     if ordering == 'mostLikes':
         published_study_plans = PublishedStudyPlan.query.order_by(
@@ -29,6 +28,25 @@ def get_published_study_plans():
             trend_score = study_plan.calculate_trend_score()
             published_study_plans[index] = (study_plan, trend_score)
         # Sort by trend scores
+        published_study_plans.sort(key = lambda x: x[1], reverse=True)
+        # Return only a list of study plans
+        published_study_plans = list(map(lambda x: x[0], published_study_plans))
+    elif ordering == 'relevancy':
+        # Get user
+        user_id = request.args.get('user_id')
+        if not user_id:
+            abort(400, 'User ID is required for ordering by relevancy')
+        user = User.query.get(user_id)
+        if not user:
+            abort(404, f'User <ID: {user_id}> not found')
+
+        # Get all study plans
+        published_study_plans = PublishedStudyPlan.query.all()
+        # Calculate relevancy scores for all study plans
+        for index, study_plan in enumerate(published_study_plans):
+            relevancy_score = study_plan.calculate_relevancy_score(user)
+            published_study_plans[index] = (study_plan, relevancy_score)
+        # Sort by relevancy score
         published_study_plans.sort(key = lambda x: x[1], reverse=True)
         # Return only a list of study plans
         published_study_plans = list(map(lambda x: x[0], published_study_plans))

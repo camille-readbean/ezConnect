@@ -32,7 +32,7 @@ function Navigation(props) {
       {showLoginModal && <LoginModal setLoginModal={setLoginModal} />}
       <nav
         id="navbar"
-        className="bg-sky-500 text-white fixed w-full z-10 top-0 p-3 shadow-md"
+        className="bg-sky-500 text-white fixed w-full z-30 top-0 p-3 shadow-md"
       >
         <div className="flex items-center justify-between">
           <Link to="/" className="flex gap-2">

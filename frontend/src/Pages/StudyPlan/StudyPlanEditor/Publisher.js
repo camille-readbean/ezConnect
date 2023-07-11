@@ -26,7 +26,6 @@ function Publisher({
   );
 
   useEffect(() => {
-    console.log("fetching study plan information");
     if (!isPublished) {
       fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
@@ -55,7 +54,6 @@ function Publisher({
   }, [studyPlanId, isPublished]);
 
   const getAcademicPlanRequestBody = (academicPlanInformation) => {
-    console.log(academicPlanInformation);
     return {
       first_degree_id: academicPlanInformation["first_degree"].id,
       second_degree_id:
@@ -73,14 +71,11 @@ function Publisher({
   };
 
   const publishStudyPlan = () => {
-    console.log("trying to publish study plan");
-
     const requestBody = {
       title: title,
       description: description,
       academic_plan_info: getAcademicPlanRequestBody(academicPlanInformation),
     };
-    console.log(requestBody);
 
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanId}`,
@@ -93,19 +88,16 @@ function Publisher({
       }
     ).then((res) => {
       setIsPublished(true);
-      console.log("study plan published");
     });
   };
 
   const updatePublishedStudyPlan = () => {
-    console.log("trying to update published study plan");
     const requestBody = {
       title: title,
       description: description,
       personal_study_plan_id: studyPlanId,
       academic_plan_info: getAcademicPlanRequestBody(academicPlanInformation),
     };
-    console.log(requestBody);
 
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanInformation["published_version_id"]}`,
@@ -117,20 +109,17 @@ function Publisher({
         body: JSON.stringify(requestBody),
       }
     ).then((res) => {
-      console.log("published study plan updated");
       window.alert("Published Study Plan Updated!");
       setIsFetchAgain((previous) => !previous);
     });
   };
 
   const unpublishStudyPlan = () => {
-    console.log("trying to unpublish study plan");
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanInformation["published_version_id"]}`,
       { method: "DELETE" }
     ).then((res) => {
       setIsPublished(false);
-      console.log("study plan unpublished");
     });
   };
 
