@@ -1,8 +1,17 @@
 import { Menu } from "@headlessui/react";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { BsFilter } from "react-icons/bs";
+import { useState } from "react";
+import SelectTags from "../StudyPlanEditor/SelectTags";
 
-function StudyPlanSearchBar({ setSearchValue, setOrderingChoice }) {
+function StudyPlanSearchBar({
+  setSearchValue,
+  setOrderingChoice,
+  filterRequest,
+  setFilterRequest,
+}) {
+  const [isFilterTabOpen, setIsFilterTabOpen] = useState(false);
+
   return (
     <div className="flex flex-col sm:flex-row gap-2 items-center px-2 my-2">
       <Menu as="div" className="relative">
@@ -82,7 +91,29 @@ function StudyPlanSearchBar({ setSearchValue, setOrderingChoice }) {
         </button>
       </form>
 
-      <BsFilter className="w-8 h-8 min-w-max min-h-max" />
+      <div className="relative hover:cursor-pointer">
+        <BsFilter
+          className="w-8 h-8 min-w-max min-h-max hover:bg-slate-200 rounded-md transition"
+          onClick={() => setIsFilterTabOpen((previous) => !previous)}
+        />
+        {isFilterTabOpen ? (
+          <div className="bg-slate-50 absolute right-0 w-96 rounded-md shadow-md p-3">
+            <div className="flex items-center gap-2">
+              <h6 className="font-semibold">Filter by Tags</h6>
+              <p className="text-sm text-gray-600">
+                Select tags to filter study plans by
+              </p>
+            </div>
+            <SelectTags
+              academicPlanInformation={filterRequest}
+              setAcademicPlanInformation={setFilterRequest}
+              isPublisher={false}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }

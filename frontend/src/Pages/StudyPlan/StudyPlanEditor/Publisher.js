@@ -157,10 +157,19 @@ function Publisher({
             helperText="Explain your reasoning behind your study plan and share your experience (if applicable)"
             margin="dense"
           />
-          <SelectTags
-            academicPlanInformation={academicPlanInformation}
-            setAcademicPlanInformation={setAcademicPlanInformation}
-          />
+          <div className="flex flex-col gap-2 my-3 border-[1px] border-slate-300 rounded-md p-3">
+            <h6 className="text-lg font-semibold">Tags</h6>
+            <p className="text-sm text-gray-600">
+              Select tags for users to find your study plan more easily! Only
+              the degree tag is required, other tags are optional! Select more
+              tags to make your study plan more visible!
+            </p>
+            <SelectTags
+              academicPlanInformation={academicPlanInformation}
+              setAcademicPlanInformation={setAcademicPlanInformation}
+              isPublisher={true}
+            />
+          </div>
           <Stack direction="row" spacing={2}>
             {isPublished ? (
               <>

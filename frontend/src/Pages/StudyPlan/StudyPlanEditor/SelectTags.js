@@ -2,7 +2,11 @@ import Select from "react-select";
 import programmesOptions from "../../../programmes.json";
 import degreesOptions from "../../../degrees.json";
 
-function SelectTags({ academicPlanInformation, setAcademicPlanInformation }) {
+function SelectTags({
+  academicPlanInformation,
+  setAcademicPlanInformation,
+  isPublisher,
+}) {
   const minorOptions = programmesOptions.filter((programme) =>
     programme.title.toLowerCase().includes("minor")
   );
@@ -48,21 +52,15 @@ function SelectTags({ academicPlanInformation, setAcademicPlanInformation }) {
   };
 
   return (
-    <div className="flex flex-col gap-2 my-3 border-[1px] border-slate-300 rounded-md p-3">
-      <h6 className="text-lg font-semibold">Tags</h6>
-      <p className="text-sm text-gray-600">
-        Select tags for users to find your study plan more easily! Only the
-        degree tag is required, other tags are optional! Select more tags to
-        make your study plan more visible!
-      </p>
-
+    <>
       <div>
         <label for="firstDegree">Degree</label>
         <Select
           options={degreesOptions}
           getOptionLabel={(option) => option.title}
           getOptionValue={(option) => option.id}
-          required
+          required={isPublisher}
+          isClearable={!isPublisher}
           isSearchable
           value={academicPlanInformation["first_degree"]}
           onChange={updateFirstDegree}
@@ -135,7 +133,7 @@ function SelectTags({ academicPlanInformation, setAcademicPlanInformation }) {
           placeholder="Special Programmes (Optional)"
         />
       </div>
-    </div>
+    </>
   );
 }
 

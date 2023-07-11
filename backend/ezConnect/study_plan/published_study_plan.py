@@ -55,8 +55,6 @@ def get_published_study_plans():
             PublishedStudyPlan.date_updated.desc()
         ).all()
 
-    # TODO: filter after ordering (using another function?)
-
     user_id = request.args.get('user_id')
     if user_id:
         published_study_plans = list(map(
