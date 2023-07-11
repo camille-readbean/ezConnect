@@ -1,28 +1,32 @@
+import re
+
 #TODO
-"CS2030S"
-prerequisite = "if undertaking an Undergraduate Degree then ( must have completed 1 of CS1010/CS1010E/CS1010J/CS1010S/CS1010X/CS1101S at a grade of at least D)"
-prerequisiteRule = "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) CS2020:D, CS1020:D, CS1020E:D) OR (COURSES (1) CS2030S:D, CS2030:D AND COURSES (1) CS2040S:D, CS2040:D, CS2040C:D))"
-[
-    {
-        "OR 1" : [
-            {"OR 1" : ["CS2020", "CS1020", "CS1020E"]},
-            {"AND" : 
-                [
-                    [{"OR 1" : ["CS2030S", "CS2030"]}],
-                    [{"OR 1" : ["CS2040S", "CS2040", "CS2040C"]}]
-                ]
-            }
-        ]
-    }
-]
+CS2030S = {
+    'prerequisite' : "if undertaking an Undergraduate Degree then ( must have completed 1 of CS1010/CS1010E/CS1010J/CS1010S/CS1010X/CS1101S at a grade of at least D)",
+    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) CS2020:D, CS1020:D, CS1020E:D) OR (COURSES (1) CS2030S:D, CS2030:D AND COURSES (1) CS2040S:D, CS2040:D, CS2040C:D))",
+    'prerequisite_parsed' : [
+        {
+            "OR 1" : [
+                {"OR 1" : ["CS2020", "CS1020", "CS1020E"]},
+                {"AND" : 
+                    [
+                        [{"OR 1" : ["CS2030S", "CS2030"]}],
+                        [{"OR 1" : ["CS2040S", "CS2040", "CS2040C"]}]
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
 
-"ST2132"
-prerequisite = "If undertaking an Undergraduate Degree THEN ( must have completed ST2334 at a grade of at least D OR must have completed ST2131 at a grade of at least D OR must have completed MA2116 at a grade of at least D OR must have completed MA2216 at a grade of at least D)"
-prerequisiteRule = "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES ST2334:D OR COURSES ST2131:D OR COURSES MA2116:D OR COURSES MA2216:D)"
-[
-    {"OR" : ["ST2334", "ST2131", "MA2116", "MA2216"]}
-]
+ST2132 = {
+    'prerequisite' : "If undertaking an Undergraduate Degree THEN ( must have completed ST2334 at a grade of at least D OR must have completed ST2131 at a grade of at least D OR must have completed MA2116 at a grade of at least D OR must have completed MA2216 at a grade of at least D)",
+    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES ST2334:D OR COURSES ST2131:D OR COURSES MA2116:D OR COURSES MA2216:D)",
+    'prerequisite_parsed' : [
+        {"OR" : ["ST2334", "ST2131", "MA2116", "MA2216"]}
+    ]
+}
 
 
 "CS4225"
@@ -58,4 +62,5 @@ prerequisiteRule = "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) 
 ]
 
 def parse_pre_rule(rule):
+    # TODO: REGEX = (COURSES( \([1-9]\))?)|([A-Z]*[0-9]*[A-Z]*(?=(\:[A-F])))|\(|\)|OR|AND
     return rule.split('THEN')[1][:1]
