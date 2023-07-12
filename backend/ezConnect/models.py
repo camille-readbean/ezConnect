@@ -2,6 +2,7 @@ from sqlalchemy import (Column, Integer, String, DateTime,
                         Boolean, Text, UniqueConstraint, Float, func)
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import validates
 from datetime import datetime, date, timedelta
 import uuid
 
@@ -194,6 +195,7 @@ class PublishedStudyPlan(db.Model):
         db.ForeignKey('personal_study_plan.id'), 
         nullable=False
     )
+    academic_plan = db.relationship('AcademicPlan', uselist=False, backref='published_study_plan')
 
     def toJSON(self):
         semester_ids = {}
@@ -208,7 +210,8 @@ class PublishedStudyPlan(db.Model):
             "num_of_likes": self.num_of_likes,
             "creator_id": self.creator_id,
             "creator_name": User.query.get(self.creator_id).name,
-            "semester_ids": semester_ids
+            "semester_ids": semester_ids,
+            "academic_plan": self.academic_plan.toJSON() if self.academic_plan is not None else None
         }
     
     def calculate_trend_score(self):
@@ -239,6 +242,29 @@ class PublishedStudyPlan(db.Model):
         )
 
         return trend_score
+
+    def calculate_relevancy_score(self, user):
+        first_degree_weight = 10
+        second_degree_weight = 5
+        second_major_weight = 3
+        minor_weight = special_programme_weight = 1
+
+        if self.academic_plan is None:
+            return 0
+        
+        relevancy_score = 0
+        if self.academic_plan.first_degree in user.degrees:
+            relevancy_score += first_degree_weight
+        if self.academic_plan.second_degree is not None and self.academic_plan.second_degree in user.degrees:
+            relevancy_score += second_degree_weight
+        for minor in self.academic_plan.minors:
+            if minor in user.programmes:
+                relevancy_score += minor_weight
+        for special_programme in self.academic_plan.special_programmes:
+            if special_programme in user.programmes:
+                relevancy_score += special_programme_weight
+        
+        return relevancy_score
 
 semester_course = db.Table('semester_course',
     Column(
@@ -400,3 +426,102 @@ class MentorMenteeMatch(db.Model):
 
     def __repr__(self):
         return f'<MentorMenteeCourse: Mentor {self.mentor_id}, Mentee {self.mentee_id}, Course {self.course_code}>'
+
+minor_academic_plan = db.Table(
+    'minor_academic_plan',
+    Column('minor_id', UUID(as_uuid=True), db.ForeignKey('programme.id')),
+    Column('academic_plan_id', UUID(as_uuid=True), db.ForeignKey('academic_plan.id'))
+)
+
+special_programmes_academic_plan = db.Table(
+    'special_programmes_academic_plan',
+    Column('special_programme_id', UUID(as_uuid=True), db.ForeignKey('programme.id')),
+    Column('academic_plan_id', UUID(as_uuid=True), db.ForeignKey('academic_plan.id'))
+)
+
+class AcademicPlan(db.Model):
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    published_study_plan_id = Column(
+        UUID(as_uuid=True), 
+        db.ForeignKey('published_study_plan.id'), 
+        nullable=False
+    )
+    
+    first_degree_id = Column(
+        UUID(as_uuid=True),
+        db.ForeignKey('degree.id'), 
+        nullable=False
+    )
+    first_degree = db.relationship(
+        'Degree', 
+        foreign_keys=[first_degree_id], 
+        uselist=False, 
+        backref='first_degree_taken_by'
+    )
+    second_degree_id = Column(UUID(as_uuid=True), db.ForeignKey('degree.id'))
+    second_degree = db.relationship(
+        'Degree', 
+        foreign_keys=[second_degree_id], 
+        uselist=False, 
+        backref='second_degree_taken_by'
+    )
+    
+    second_major = Column(String(150))
+    minors = db.relationship(
+        'Programme', 
+        secondary=minor_academic_plan, 
+        backref='academic_plans_with_minor'
+    )
+    special_programmes = db.relationship(
+        'Programme', 
+        secondary=special_programmes_academic_plan, 
+        backref='academic_plans_with_special_programme'
+    )
+
+    @validates('minors')
+    def validate_minors(self, key, minor):
+        MAX_CHILDREN_LIMIT = 3
+        # check if input is a minor
+        if 'minor' not in minor.title.lower():
+            raise ValueError('Input is not a minor')
+        # check if number of minors <= 3
+        if len(self.minors) >= MAX_CHILDREN_LIMIT:
+            raise ValueError('Exceeded the maximum number of minors allowed')
+        return minor
+    
+    @validates('special_programmes')
+    def validate_special_programmes(self, key, special_programme):
+        if 'minor' in special_programme.title.lower():
+            raise ValueError('Input is a minor, not a special programme')
+        return special_programme
+
+    def toJSON(self):
+        minors_list = []
+        for minor in self.minors:
+            minors_list.append({
+                "id": minor.id,
+                "title": minor.title
+            })
+        
+        special_programmes_list = []
+        for special_programme in self.special_programmes:
+            special_programmes_list.append({
+                "id": special_programme.id,
+                "title": special_programme.title
+            })
+
+        return {
+            "id": str(self.id),
+            "published_study_plan_id": str(self.published_study_plan_id),
+            "first_degree": {
+                "id": self.first_degree.id,
+                "title": self.first_degree.title
+            },
+            "second_degree": {
+                "id": self.second_degree.id,
+                "title": self.second_degree.title
+            } if self.second_degree is not None else None,
+            "second_major": self.second_major,
+            "minors": minors_list,
+            "special_programmes": special_programmes_list
+        }

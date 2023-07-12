@@ -63,6 +63,8 @@ def delete_study_plan(study_plan_id):
         published_study_plan = PublishedStudyPlan.query.get(study_plan_id)
         if not published_study_plan:
             abort(404, f"Study plan with id {study_plan_id} not found")
+        if published_study_plan.academic_plan is not None:
+            db.session.delete(published_study_plan.academic_plan)
         db.session.delete(published_study_plan)
         db.session.commit()
     
