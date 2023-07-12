@@ -86,102 +86,31 @@ def tokenise_prerequisite_rule(rule_string: str) -> list[str]:
     print(tokens)
     return tokens
     
-"""
-Recursive function that validates a tokenised rule
-Example input: ['(', 'COURSES (1)', 'CS1010', 'CS1010E', 'CS1010X', 'CS1101S', 'CS1010S', 'CS1010J', ')', 'AND', '']
-CS1101S is true in user_study_plan
-Return true
-"""
-def eval_tokenised_rule(tokenised_rule: list[str|bool]) -> bool:
-    # Max len
-    result_stack = []
-    # Possible state, 'AND', 'OR', 'COURSES', None
-    # nest_stack = []
-    operation_stack = []
-    # For testing
-    completed_courses = ['CS1101S']
-    course_pattern = re.compile(r'([A-Z]+[0-9]+[A-Z]*)')
-    if len(tokenised_rule) == 1 and type(tokenised_rule[0]) == str:
-        return tokenised_rule[0] in completed_courses
-    # for i in range(tokenised_rule):
-    #     # Go down one layer
-    #     if tokenised_rule[i] == '(':
-    #         result_stack = 
-    #     if tokenised_rule[i] == 'AND':
-    #         result_stack = result_stack.pop() and 
+def evaluate_tokenised_rule(tokens):
+    """
+    Recursive function that validates a tokenized rule.
 
-    #     if course_pattern.match(tokenised_rule[i]) is not None:
+    Args:
+        tokens (list): List of tokens from a tokenised prerequisiteRule.
 
-    
+    Returns:
+        bool: True if the module prequsite is validated, False otherwise.
 
-# CS2030S_prereqs = tokenise_prerequisite_rule(CS2030S['prerequisiteRule'])
+    Raises:
+        Exception: If there are unmatched parentheses or unknown tokens.
 
-# print(eval_tokenised_rule(['CS2100']))
-
-
-
-# def evaluate_course_tokens(tokens, completed_courses):
-#     required_courses = set()
-#     requirements_stack = []
-#     current_requirement = set()
-#     operation_stack = []
-
-#     for token in tokens:
-#         if token == '(':
-#             requirements_stack.append(current_requirement)
-#             operation_stack.append('AND')
-#             current_requirement = set()
-#         elif token == ')':
-#             previous_requirement = requirements_stack.pop()
-#             operation = operation_stack.pop()
-#             if operation == 'OR':
-#                 current_requirement = previous_requirement.union(current_requirement)
-#             else:
-#                 current_requirement = previous_requirement.intersection(current_requirement)
-#         elif token == 'OR':
-#             operation_stack.append('OR')
-#         elif token == 'AND':
-#             operation_stack.append('AND')
-#         elif token.startswith('COURSES'):
-#             # Extract the number in the parenthesis, if present
-#             matches = re.findall(r'\((\d+)\)', token)
-#             if matches:
-#                 required_courses.update(matches)
-#         else:
-#             required_courses.add(token)
-    
-#     for course in required_courses:
-#         if course in completed_courses:
-#             current_requirement.add(course)
-    
-#     return len(current_requirement) > 0
-
-# Example usage
-# tokens = ['(', 'COURSES (1)', 'CS1010', 'CS1010E', 'CS1010X', 'CS1101S', 'CS1010S', 'CS1010J', ')']
-# completed_courses = ['CS1010', 'CS1010E', 'CS2103T', 'MA2216', 'CS2030', 'CS2040S']
-
-# result = evaluate_course_tokens(
-#     tokenise_prerequisite_rule(CS4248["prerequisiteRule"]), 
-#     completed_courses)
-# print(result)
-
-# print(ST2132['prerequisite'])
-# print()
-
-"""
-Recursive function that validates a tokenised rule
-Example input: ['(', 'COURSES (1)', 'CS1010', 'CS1010E', 'CS1010X', 'CS1101S', 'CS1010S', 'CS1010J', ')', 'AND', '']
-CS1101S is true in user_study_plan
-Return true
-"""
-def evaluate_boolean(tokens):
-    # print(tokens)
+    Example:
+        >>> tokens = ['(', 'COURSES (1)', 'CS1010', 'CS1010E', 'CS1010X', 'CS1101S', 'CS1010S', 'CS1010J', ')', 'AND', '']
+        >>> result = evaluate_boolean(tokens)
+        >>> print(f'Expected: True   Actual: {result}')  # True
+    """
+    # print(f'tokens {tokens}')
     stack = []
     token_index = 0
     while token_index < len(tokens):
         token = tokens[token_index]
         # print(f'{token_index} {token}')
-        # go backwards
+
         if tokens[token_index] == ')':
             # Evaluate the subexpression inside the brackets
             subexpr = []
@@ -191,10 +120,9 @@ def evaluate_boolean(tokens):
                 raise Exception('Unmatched )')
             stack.pop()  # Remove the '('
             subexpr.reverse()
-            result = evaluate_boolean(subexpr)
+            result = evaluate_tokenised_rule(subexpr)
             stack.append(result)
             token_index += 1
-        # this seeks forward
         elif type(tokens[token_index]) == str and tokens[token_index].startswith('COURSES'):
             # Evaluate the COURSES or COURSES (n) expression
             n = 1
@@ -202,7 +130,6 @@ def evaluate_boolean(tokens):
                 n = int(tokens[token_index][len('COURSES ('):-1])
             courses_and_remaining = tokens[token_index + 1:]
             courses = []
-            # Eval all courses
             i = 0
             # print(f'courses_and_remaining {courses_and_remaining}')
             while courses_and_remaining and  i < len(courses_and_remaining)\
@@ -213,19 +140,18 @@ def evaluate_boolean(tokens):
                 i += 1
             # print(f'courses: {courses}')
             num_courses = len(courses)
-            count = sum(evaluate_boolean([x]) for x in courses)
+            count = sum(evaluate_tokenised_rule([x]) for x in courses)
             # n or more matches
             result = count >= n
             # print(f'courses result: {result}')
-            ending_token_index = token_index + num_courses
+            ending_token_index = token_index + num_courses + 1
             # print(f'Last pos is: {ending_token_index} {tokens[ending_token_index]}')
-            # Skip the bracket
-            if tokens[ending_token_index] == ')':
-                token_index = ending_token_index + 1 # Skip the ) for this
+            # Skip the bracket if opening bracket is right before it, aka '(COURSES (n) x x x)'
+            if tokens[ending_token_index] == ')' and stack[-1] == '(':
                 # If closing bracket, check if there was an opening bracket and remove it
-                if stack[-1] == '(' and tokens[token_index - 1] == '(':
-                    print('removing the opening bracket for this')
-                    stack.pop()
+                token_index = ending_token_index + 1 # Skip the ) for this
+                # print('removing the opening bracket for this')
+                stack.pop()
             # Skip all the processed tokens
             else:
                 token_index = ending_token_index
@@ -263,22 +189,22 @@ def evaluate_boolean(tokens):
 
     return result
 
-# tokens = ['(', 'COURSES (2)', 'TRUE', 'FALSE', 'TRUE', ')']
-# result = evaluate_boolean(tokens)
-# print(f'Expected: True   Actual: {result}')  # True
+tokens = ['(', 'COURSES (2)', 'TRUE', 'FALSE', 'TRUE', ')']
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: True   Actual: {result}')  # True
 
-# tokens = ['(', 'COURSES (2)', 'TRUE', 'FALSE', 'FALSE', ')']
-# result = evaluate_boolean(tokens)
-# print(f'Expected: False  Actual: {result}')  # False
+tokens = ['(', 'COURSES (2)', 'TRUE', 'FALSE', 'FALSE', ')']
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: False  Actual: {result}')  # False
 
 
-# tokens = ['(', '(', 'TRUE', 'AND', 'TRUE', ')', 'AND', '(', 'FALSE', 'OR', '(', 'COURSES (1)', 'TRUE', 'FALSE', ')', ')', ')']
-# result = evaluate_boolean(tokens)
-# print(f'Expected: True   Actual: {result}')  # True
+tokens = ['(', '(', 'TRUE', 'AND', 'TRUE', ')', 'AND', '(', 'FALSE', 'OR', '(', 'COURSES (1)', 'TRUE', 'FALSE', ')', ')', ')']
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: True   Actual: {result}')  # True
 
-# tokens = ['(', '(', 'TRUE', 'AND', 'TRUE', ')', 'AND', '(', 'FALSE', 'OR', '(', 'TRUE', 'OR', 'FALSE', ')', ')', ')']
-# result = evaluate_boolean(tokens)
-# print(f'Expected: True   Actual: {result}')  # True
+tokens = ['(', '(', 'TRUE', 'AND', 'TRUE', ')', 'AND', '(', 'FALSE', 'OR', '(', 'TRUE', 'OR', 'FALSE', ')', ')', ')']
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: True   Actual: {result}')  # True
 
 
 tokens = ['(', 
@@ -294,7 +220,7 @@ tokens = ['(',
                 'COURSES (2)', 'FALSE', 'FALSE', 
             ')', 
         ')']
-result = evaluate_boolean(tokens)
+result = evaluate_tokenised_rule(tokens)
 print(f'Expected: False  Actual: {result}')  # False
 
 tokens = ['(', 
@@ -310,8 +236,8 @@ tokens = ['(',
                 'COURSES (2)', 'FALSE', 'FALSE', 
             ')', 
         ')']
-result = evaluate_boolean(tokens)
-print(f'Expected: False  Actual: {result}')  # False
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: True   Actual: {result}')  # False
 
 
 tokens = ['(', 
@@ -322,12 +248,12 @@ tokens = ['(',
             ')',
             'AND', 
             '(', 
-                'COURSES (1)', 'FALSE', 'FALSE', 'FALSE', 'TRUE', 'TRUE', 'TRUE', 
+                'COURSES (1)', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 
                 'OR', 
                 'COURSES (2)', 'TRUE', 'FALSE', 
             ')', 
         ')']
-result = evaluate_boolean(tokens)
+result = evaluate_tokenised_rule(tokens)
 print(f'Expected: False  Actual: {result}')  # False
 
 tokens = ['(', 
@@ -343,7 +269,7 @@ tokens = ['(',
                 'COURSES (2)', 'TRUE', 'TRUE', 
             ')', 
         ')']
-result = evaluate_boolean(tokens)
+result = evaluate_tokenised_rule(tokens)
 print(f'Expected: False  Actual: {result}')  # False
 
 tokens = ['(', 
@@ -359,5 +285,5 @@ tokens = ['(',
                 'COURSES (2)', 'TRUE', 'TRUE', 
             ')', 
         ')']
-result = evaluate_boolean(tokens)
+result = evaluate_tokenised_rule(tokens)
 print(f'Expected: True   Actual: {result}')  # True
