@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import CourseSelector from "./CourseSelector";
 import EditorMenu from "./EditorMenu";
 import Publisher from "./Publisher";
+import ImportExport from "./ImportExport";
 import { RxCross2 } from "react-icons/rx";
 import { AiFillDelete } from "react-icons/ai";
 
@@ -248,6 +249,10 @@ function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
+      <ImportExport
+        semesterInformation={semesterInformation}
+        updateSemester={updateSemester}
+      />
     </>
   );
 }
