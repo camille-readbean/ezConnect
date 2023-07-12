@@ -319,8 +319,8 @@ class StudyPlanSemester(db.Model):
         }
 
 prerequisite = db.Table('prerequisites',
-    Column('prerequisite_code', String(10), db.ForeignKey('course.course_code')),
-    Column('course_code', String(10), db.ForeignKey('course.course_code'))
+    Column('course_code', String(12), db.ForeignKey('course.course_code')),
+    Column('prerequisite_str', Text)
 )
 
 class Course(db.Model):
@@ -330,11 +330,9 @@ class Course(db.Model):
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
     prerequisites = db.relationship(
-        'Course', 
-        secondary=prerequisite, 
-        primaryjoin=course_code == prerequisite.c.course_code,
-        secondaryjoin=course_code == prerequisite.c.prerequisite_code,
-        backref='required_by'
+        'prerequisites',
+        uselist=False,
+        back_populates='course_code'
     )
 
     def __repr__(self):

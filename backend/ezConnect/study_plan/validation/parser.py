@@ -287,3 +287,7 @@ tokens = ['(',
         ')']
 result = evaluate_tokenised_rule(tokens)
 print(f'Expected: True   Actual: {result}')  # True
+
+tokens = ['(', 'COURSES (1)', 'TRUE', ')']
+result = evaluate_tokenised_rule(tokens)
+print(f'Expected: True   Actual: {result}')  # True
