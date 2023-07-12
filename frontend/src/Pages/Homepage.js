@@ -42,6 +42,8 @@ function Homepage(props) {
           setMentorMatches(resp.mentor_matches);
           } else {
             console.log("Error in getting mentor matches")
+            if ("User not found" === resp.error)
+              navigate('/user/create-account')
           }
         })
       secureApiRequest(
