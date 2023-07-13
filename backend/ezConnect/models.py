@@ -330,9 +330,9 @@ class Course(db.Model):
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
     prerequisites = db.relationship(
-        'prerequisites',
-        uselist=False,
-        back_populates='course_code'
+        'Course',
+        secondary=prerequisite,
+        back_populates='prerequisites'
     )
 
     def __repr__(self):
