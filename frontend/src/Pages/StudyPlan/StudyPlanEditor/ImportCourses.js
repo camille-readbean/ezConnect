@@ -20,7 +20,7 @@ function getCourseListFromNUSMod(shareLink) {
   return courseList.filter((courseCode) => courseCode in courseDictionary);
 }
 
-export default function ImportExport({ semesterInformation, updateSemester }) {
+export default function ImportCourses({ semesterInformation, updateSemester }) {
   const [responseMessage, setResponseMessage] = useState("");
   const [selectedSemester, setSelectedSemester] = useState({});
 

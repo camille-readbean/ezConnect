@@ -3,9 +3,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import CourseSelector from "./CourseSelector";
 import EditorMenu from "./EditorMenu";
 import Publisher from "./Publisher";
-import ImportExport from "./ImportExport";
+import ImportCourses from "./ImportCourses";
+import SemesterMenu from "./SemesterMenu";
+import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
-import { AiFillDelete } from "react-icons/ai";
 
 function Editor({ studyPlanId }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
@@ -14,6 +15,8 @@ function Editor({ studyPlanId }) {
   const [isPublished, setIsPublished] = useState(false);
   const [semesterInformation, setSemesterInformation] = useState([]);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
+  const [isShowExportSemester, setIsShowExportSemester] = useState(false);
+  const [exportSemesterInfo, setExportSemesterInfo] = useState({});
 
   useEffect(() => {
     fetch(
@@ -64,17 +67,6 @@ function Editor({ studyPlanId }) {
         }),
       }
     );
-  };
-
-  const deleteSemester = (semesterId) => {
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${semesterId}`,
-      {
-        method: "DELETE",
-      }
-    ).then(() => {
-      setIsFetchAgain((previous) => !previous);
-    });
   };
 
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
@@ -145,6 +137,12 @@ function Editor({ studyPlanId }) {
           setIsFetchAgain={setIsFetchAgain}
         />
       )}
+      {isShowExportSemester && (
+        <ExportCourses
+          semesterInfo={exportSemesterInfo}
+          setIsShowExportSemester={setIsShowExportSemester}
+        />
+      )}
       <div className="flex items-center">
         <input
           type="text"
@@ -157,6 +155,7 @@ function Editor({ studyPlanId }) {
           studyPlanId={studyPlanId}
           setIsFetchAgain={setIsFetchAgain}
           setIsShowPublisher={setIsShowPublisher}
+          semesterInformation={semesterInformation}
         />
       </div>
       <CourseSelector
@@ -174,7 +173,6 @@ function Editor({ studyPlanId }) {
               const semesterNumber = semester["semester_number"];
               const totalUnits = semester["total_units"];
               const courseCodeList = semester["course_codes"];
-              const semesterId = semester["id"];
 
               return (
                 <div className="group w-56 p-1">
@@ -183,9 +181,11 @@ function Editor({ studyPlanId }) {
                       Y{Math.ceil(semesterNumber / 2)}S
                       {((semesterNumber + 1) % 2) + 1}
                     </h2>
-                    <AiFillDelete
-                      className="invisible group-hover:visible hover:cursor-pointer"
-                      onClick={() => deleteSemester(semesterId)}
+                    <SemesterMenu
+                      setIsShowExportSemester={setIsShowExportSemester}
+                      setExportSemesterInfo={setExportSemesterInfo}
+                      semesterInfo={semester}
+                      updateSemester={updateSemester}
                     />
                   </div>
                   <div>
@@ -249,7 +249,7 @@ function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
-      <ImportExport
+      <ImportCourses
         semesterInformation={semesterInformation}
         updateSemester={updateSemester}
       />

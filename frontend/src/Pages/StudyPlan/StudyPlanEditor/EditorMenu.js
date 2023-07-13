@@ -13,6 +13,23 @@ const addSemester = (studyPlanId, setIsFetchAgain) => {
   });
 };
 
+const deleteLastSemester = (semesterInformation, setIsFetchAgain) => {
+  if (semesterInformation.length === 0) {
+    return;
+  }
+
+  const lastSemesterId =
+    semesterInformation[semesterInformation.length - 1]["id"];
+  fetch(
+    `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${lastSemesterId}`,
+    {
+      method: "DELETE",
+    }
+  ).then(() => {
+    setIsFetchAgain((previous) => !previous);
+  });
+};
+
 const downloadStudyPlan = (title) => {
   const studyPlan = document.getElementById("studyPlan");
   html2canvas(studyPlan).then((canvas) => {
@@ -30,13 +47,14 @@ function EditorOptions({
   studyPlanId,
   setIsFetchAgain,
   setIsShowPublisher,
+  semesterInformation,
 }) {
   return (
     <Menu as="div" className="relative z-10">
-      <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-sky-500 hover:text-white h-8 w-8">
+      <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-slate-200 transition h-8 w-8">
         <BsThreeDotsVertical />
       </Menu.Button>
-      <Menu.Items className="absolute right-0 bg-white rounded-md shadow-md min-w-max">
+      <Menu.Items className="absolute right-0 bg-white rounded-md shadow-md">
         <div className="p-1">
           <Menu.Item>
             {({ active }) => (
@@ -46,7 +64,21 @@ function EditorOptions({
                 } rounded-md px-2 py-1 w-full`}
                 onClick={() => addSemester(studyPlanId, setIsFetchAgain)}
               >
-                Add Semester
+                Add semester
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-sky-500 text-white" : "text-gray-900"
+                } rounded-md px-2 py-1 w-full whitespace-nowrap`}
+                onClick={() =>
+                  deleteLastSemester(semesterInformation, setIsFetchAgain)
+                }
+              >
+                Delete last semester
               </button>
             )}
           </Menu.Item>

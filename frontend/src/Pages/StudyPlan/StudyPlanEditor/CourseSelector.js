@@ -55,6 +55,7 @@ function CourseSelector({ semesterInformation, updateSemester }) {
       isClearable
       isSearchable
       getOptionLabel={(option) => option.course_code + " " + option.course_name}
+      getOptionValue={(option) => option.course_code}
       placeholder="Search for a course"
       noOptionsMessage={() => "No courses found"}
       onInputChange={(inputValue) => loadOptions(inputValue, () => {})}
