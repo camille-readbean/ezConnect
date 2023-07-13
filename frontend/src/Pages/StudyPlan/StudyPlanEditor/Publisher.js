@@ -124,8 +124,8 @@ function Publisher({
   };
 
   return (
-    <div className="fixed inset-0 z-20 p-3 flex items-center justify-center bg-gray-500 bg-opacity-75">
-      <div className="relative p-5 bg-sky-50 rounded-md shadow-md min-w-min w-full sm:max-w-2xl">
+    <div className="fixed inset-0 z-20 p-3 pt-14 flex items-center justify-center bg-gray-500 bg-opacity-75 max-h-screen">
+      <div className="relative p-5 bg-sky-50 rounded-md shadow-md min-w-min w-full sm:max-w-2xl max-h-full overflow-y-scroll">
         <RxCross2
           className="absolute right-2 top-2 hover:cursor-pointer"
           onClick={() => setIsShowPublisher(false)}
