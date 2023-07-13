@@ -26,7 +26,7 @@ function PersonalStudyPlanList({
             Last updated: {dateUpdated}
           </p>
           <AiFillDelete
-            className="hidden cursor-pointer group-hover:block hover:bg-sky-500 p-1 h-6 w-6 rounded-md transition"
+            className="hidden cursor-pointer group-hover:block hover:bg-slate-200 p-1 h-6 w-6 rounded-md transition"
             onClick={() => deleteStudyPlan(id)}
           />
         </div>

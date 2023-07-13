@@ -126,7 +126,7 @@ function Editor({ studyPlanId }) {
   };
 
   return (
-    <>
+    <div className="px-8">
       {isShowPublisher && (
         <Publisher
           studyPlanId={studyPlanId}
@@ -253,7 +253,7 @@ function Editor({ studyPlanId }) {
         semesterInformation={semesterInformation}
         updateSemester={updateSemester}
       />
-    </>
+    </div>
   );
 }
 
