@@ -17,6 +17,8 @@ function Editor({ studyPlanId }) {
   const [isFetchAgain, setIsFetchAgain] = useState(true);
   const [isShowExportSemester, setIsShowExportSemester] = useState(false);
   const [exportSemesterInfo, setExportSemesterInfo] = useState({});
+  const [lastInteractedSemesterIndex, setLastInteractedSemesterIndex] =
+    useState(0);
 
   useEffect(() => {
     fetch(
@@ -72,6 +74,7 @@ function Editor({ studyPlanId }) {
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
     const { source, destination } = result;
+    setLastInteractedSemesterIndex(destination.droppableId);
     if (source.droppableId !== destination.droppableId) {
       const sourceSemester = semesterInformation[source.droppableId];
       const destSemester = semesterInformation[destination.droppableId];
@@ -122,6 +125,7 @@ function Editor({ studyPlanId }) {
   const deleteCourse = (semester, courseIndex) => {
     const courses = semester["course_codes"];
     courses.splice(courseIndex, 1);
+    setLastInteractedSemesterIndex(semester["semester_number"] - 1);
     updateSemester(semester);
   };
 
@@ -156,11 +160,13 @@ function Editor({ studyPlanId }) {
           setIsFetchAgain={setIsFetchAgain}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
+          setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
         />
       </div>
       <CourseSelector
         semesterInformation={semesterInformation}
         updateSemester={updateSemester}
+        lastInteractedSemesterIndex={lastInteractedSemesterIndex}
       />
       <div id="studyPlan" className="px-3 mb-3">
         <DragDropContext
@@ -186,6 +192,9 @@ function Editor({ studyPlanId }) {
                       setExportSemesterInfo={setExportSemesterInfo}
                       semesterInfo={semester}
                       updateSemester={updateSemester}
+                      setLastInteractedSemesterIndex={
+                        setLastInteractedSemesterIndex
+                      }
                     />
                   </div>
                   <div>
@@ -252,6 +261,7 @@ function Editor({ studyPlanId }) {
       <ImportCourses
         semesterInformation={semesterInformation}
         updateSemester={updateSemester}
+        setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
       />
     </div>
   );

@@ -20,7 +20,11 @@ function getCourseListFromNUSMod(shareLink) {
   return courseList.filter((courseCode) => courseCode in courseDictionary);
 }
 
-export default function ImportCourses({ semesterInformation, updateSemester }) {
+export default function ImportCourses({
+  semesterInformation,
+  updateSemester,
+  setLastInteractedSemesterIndex,
+}) {
   const [responseMessage, setResponseMessage] = useState("");
   const [selectedSemester, setSelectedSemester] = useState({});
 
@@ -31,6 +35,7 @@ export default function ImportCourses({ semesterInformation, updateSemester }) {
       selectedSemester["course_codes"] = courseList;
       updateSemester(selectedSemester);
       setResponseMessage("Succesfully imported courses!");
+      setLastInteractedSemesterIndex(selectedSemester["semester_number"] - 1);
     } catch (TypeError) {
       setResponseMessage("Please input a valid NUSMods sharing link");
     }

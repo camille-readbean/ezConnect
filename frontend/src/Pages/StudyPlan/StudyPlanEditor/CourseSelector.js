@@ -11,8 +11,10 @@ const filterCourseOptions = (inputValue) => {
 
       const courseCode = course["course_code"].toLowerCase();
       const courseName = course["course_name"].toLowerCase();
-      const isInCourseCode = () => courseCode.startsWith(inputValue.toLowerCase());
-      const isInCourseName = () => courseName.includes(inputValue.toLowerCase());
+      const isInCourseCode = () =>
+        courseCode.startsWith(inputValue.toLowerCase());
+      const isInCourseName = () =>
+        courseName.includes(inputValue.toLowerCase());
 
       if (isInCourseCode() || isInCourseName()) {
         this.count++;
@@ -24,22 +26,33 @@ const filterCourseOptions = (inputValue) => {
   );
 };
 
-const addCourse = (course, semesterInformation, updateSemester) => {
+const addCourse = (
+  course,
+  semesterInformation,
+  updateSemester,
+  lastInteractedSemesterIndex
+) => {
   if (
     course === null ||
     semesterInformation === null ||
-    semesterInformation.length === 0
+    semesterInformation.length === 0 ||
+    lastInteractedSemesterIndex < 0 ||
+    lastInteractedSemesterIndex >= semesterInformation.length
   ) {
     return;
   }
   const newCourseCode = course["course_code"];
-  const semester = semesterInformation[0];
+  const semester = semesterInformation[lastInteractedSemesterIndex];
   const semesterCourses = semester["course_codes"];
   semesterCourses.push(newCourseCode);
   updateSemester(semester);
 };
 
-function CourseSelector({ semesterInformation, updateSemester }) {
+function CourseSelector({
+  semesterInformation,
+  updateSemester,
+  lastInteractedSemesterIndex,
+}) {
   const [searchResults, setSearchResults] = useState([]);
 
   const loadOptions = (inputValue, callback) => {
@@ -60,7 +73,12 @@ function CourseSelector({ semesterInformation, updateSemester }) {
       noOptionsMessage={() => "No courses found"}
       onInputChange={(inputValue) => loadOptions(inputValue, () => {})}
       onChange={(course) =>
-        addCourse(course, semesterInformation, updateSemester)
+        addCourse(
+          course,
+          semesterInformation,
+          updateSemester,
+          lastInteractedSemesterIndex
+        )
       }
       className="mx-3 mb-3"
     />

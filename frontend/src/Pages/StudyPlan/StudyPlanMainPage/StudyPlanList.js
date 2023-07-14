@@ -45,13 +45,11 @@ function makeCard(
       </div>
       <p className="text-sm italic">Last updated: {dateUpdated}</p>
 
-      {academicPlanInformation != null ? (
+      {academicPlanInformation != null && (
         <>
           <p className="text-sm font-semibold py-1">Tags:</p>
           <Tags academicPlanInformation={academicPlanInformation} />
         </>
-      ) : (
-        <></>
       )}
     </div>
   );
