@@ -7,10 +7,35 @@ import {
 } from "@azure/msal-react";
 import Unauthenticated from "../../Components/Unauthenticated";
 import { secureApiRequest } from '../../ApiRequest';
-import CourseSelector from './CourseSelector';
-import { RxPlus } from 'react-icons/rx';
+// import CourseSelector from './CourseSelector';
 import { MdAdd } from 'react-icons/md';
 import { Container, Tabs, Tab, Box, Card, CardActions, Stack, Typography, Button } from '@mui/material'; 
+import courseOptions from "../../courses.json";
+import Select from "react-select";
+
+const filterCourseOptions = (inputValue) => {
+  return courseOptions.filter(
+    function (course) {
+      if (this.count >= 10) {
+        return false;
+      }
+
+      const courseCode = course["course_code"].toLowerCase();
+      const courseName = course["course_name"].toLowerCase();
+      const isInCourseCode = () =>
+        courseCode.startsWith(inputValue.toLowerCase());
+      const isInCourseName = () =>
+        courseName.includes(inputValue.toLowerCase());
+
+      if (isInCourseCode() || isInCourseName()) {
+        this.count++;
+        return true;
+      }
+      return false;
+    },
+    { count: 0 }
+  );
+};
 
 function MentoringMainPage() {
   // obtain user_id of current user
@@ -25,13 +50,26 @@ function MentoringMainPage() {
   const [mentorMatches, setMentorMatches] = useState([]);
   const [userMentorPostings, setUserMentorPostings] = useState([]);
   const [userMentorRequests, setUserMentorRequests] = useState([]);
-  const [filteredMentorPostings, updateFilteredMentorPostings] = useState([]);
-  const [filteredMentorRequests, updateFilteredMentorRequests] = useState([])
+  const [allPubMentorPostings, updateAllPubMentorPostings] = useState([]);
+  const [allPubMentorRequests, updateAllPubMentorRequests] = useState([]);
 
-  // For mentorin ggallery tab view
+  // For mentoring ggallery tab view
   const [mentoringGalleryValue, setMentorinngGalleryValue] = useState(0);
   const handleChangeGalleryTabValue = (event, newValue) => {
     setMentorinngGalleryValue (newValue);
+  };
+  // filtered one
+  const [filteredMentorPostings, updateFilteredMentorPostings] = useState([]);
+  const [filteredMentorRequests, updateFilteredMentorRequests] = useState([]);
+  const [courseToFilterBy, setCourseToFilterBy] = useState('');
+
+  const [searchResults, setSearchResults] = useState([]);
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const loadOptions = (inputValue, callback) => {
+    const filteredOptions = filterCourseOptions(inputValue);
+    setSearchResults(filteredOptions);
+    callback(filteredOptions);
   };
 
   const navigate = useNavigate();
@@ -72,15 +110,17 @@ function MentoringMainPage() {
         }
 
         if (filteredPostingsData.postings) {
-          updateFilteredMentorPostings(filteredPostingsData.postings);
+          updateAllPubMentorPostings(filteredPostingsData.postings);
+          updateFilteredMentorPostings(allPubMentorPostings);
         } else if (filteredPostingsData.error) {
           console.log(filteredPostingsData.error);
         } else if (filteredPostingsData.detail) {
           console.log(filteredPostingsData.detail);
         }
-
+        
         if (filteredRequestsData.postings) {
-          updateFilteredMentorRequests(filteredRequestsData.postings);
+          updateAllPubMentorRequests(filteredRequestsData.postings);
+          updateFilteredMentorRequests(allPubMentorRequests);
         } else if (filteredRequestsData.error) {
           console.log(filteredRequestsData.error);
         } else if (filteredRequestsData.detail) {
@@ -94,16 +134,27 @@ function MentoringMainPage() {
     fetchData();
     }, []);
 
-  const filterMentorPostingByCourse = (course) => {
-    const newListOfPostings = filteredMentorPostings.filter(
-      (posting) => posting.course === course
-    )
-    const newListOfRequests = filteredMentorRequests.filter(
-      (posting) => posting.course === course
-    )
-    updateFilteredMentorRequests(newListOfRequests);
-    updateFilteredMentorPostings(newListOfPostings);
-  }
+  useEffect(() => {
+    console.log('Filtered posting use effect triggered');
+    var course = courseToFilterBy;
+    if (course !== null && course !== '') {
+      course = course.course_code;
+      console.log(course)
+      const newListOfPostings = allPubMentorPostings.filter(
+        (posting) => posting.course === course
+      );
+      const newListOfRequests = allPubMentorRequests.filter(
+        (posting) => posting.course === course
+      )
+      updateFilteredMentorRequests(newListOfRequests);
+      updateFilteredMentorPostings(newListOfPostings);
+    } else {
+      updateFilteredMentorRequests(allPubMentorRequests);
+      updateFilteredMentorPostings(allPubMentorPostings);
+    }
+  }, [allPubMentorPostings, allPubMentorRequests, courseToFilterBy, setCourseToFilterBy]);
+
+
 
   const onPressCreateMentorPosting = (event) => {
     navigate('/mentoring/create-mentor-posting');
@@ -253,7 +304,21 @@ function MentoringMainPage() {
           <Box sx={{ bgcolor: '#eff2ef', minHeight: 10 + 'em', padding: 10 + 'px'}}>
             <h2 className='text-2xl mr-4 c-1/10'>Find mentors or mentees</h2>
             <p className='text-slate-500 py-2'>Posts in the community</p>
-            <CourseSelector updateSelectedCourses={filterMentorPostingByCourse} />
+            {/* <CourseSelector updateSelectedCourses={filterMentorPostingByCourse} /> */}
+            <Select
+              options={searchResults}
+              filterOption={() => true}
+              isClearable
+              isSearchable
+              getOptionLabel={(option) =>
+                option.course_code + " " + option.course_name
+              }
+              getOptionValue={(option) => option.course_code}
+              placeholder="Search for a course"
+              noOptionsMessage={() => "No courses found"}
+              onInputChange={(inputValue) => loadOptions(inputValue, () => {})}
+              onChange={(course) => setCourseToFilterBy(course)}
+            />
             <Box sx={{ bgcolor: '#D6EFFF', borderBottom: 1, borderColor: 'divider'}}>
               <Tabs value={mentoringGalleryValue} onChange={handleChangeGalleryTabValue} centered variant="fullWidth">
                 <Tab label="Find mentees" id='full-width-tab-0'/>
