@@ -9,7 +9,8 @@ import Unauthenticated from "../../Components/Unauthenticated";
 import { secureApiRequest } from '../../ApiRequest';
 import CourseSelector from './CourseSelector';
 import { RxPlus } from 'react-icons/rx';
-import { AiFillAlert } from 'react-icons/ai';
+import { MdAdd } from 'react-icons/md';
+import { Container, Tabs, Tab, Box, Card, CardActions, Stack, Typography, Button } from '@mui/material'; 
 
 function MentoringMainPage() {
   // obtain user_id of current user
@@ -26,6 +27,12 @@ function MentoringMainPage() {
   const [userMentorRequests, setUserMentorRequests] = useState([]);
   const [filteredMentorPostings, updateFilteredMentorPostings] = useState([]);
   const [filteredMentorRequests, updateFilteredMentorRequests] = useState([])
+
+  // For mentorin ggallery tab view
+  const [mentoringGalleryValue, setMentorinngGalleryValue] = useState(0);
+  const handleChangeGalleryTabValue = (event, newValue) => {
+    setMentorinngGalleryValue (newValue);
+  };
 
   const navigate = useNavigate();
 
@@ -132,164 +139,184 @@ function MentoringMainPage() {
   return (
     <>
       <AuthenticatedTemplate>
-        <div className='flex-wrap bg-zinc-50 ml-4 mr-4 flex-grow'>
-          <h2 className='text-2xl'>Mentoring: </h2>
-          <p className='text-slate-500'>These are your requested mentees</p>
-          {mentorMatches.length > 0 ? (
-            mentorMatches.map((match) => (
-              <div key={match.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                <h3>Course: {match.course_code}</h3>
-                <h3>Status: {match.status}</h3>
-                <p>Mentee's name: {match.mentee_name}</p>
-                <p>Email: {match.email}</p>
-                {match.status === 'Pending mentor' && (
-                        <button
-                          onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
-                          className='bluebutton py-1 px-1 w-auto'
-                        >
-                          Accept
-                        </button>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className='text-cyan-600'>Currently not matched with anyone.</p>
-          )}
-          <h2 className='text-2xl'>Mentee in: </h2>
-          <p className='text-slate-500'>These are your requested mentors</p>
-          {menteeMatches.length > 0 ? (
-            menteeMatches.map((match) => (
-              <div key={match.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                <h3>Course: {match.course_code}</h3>
-                <h3>Status: {match.status}</h3>
-                <p>Mentor's name: {match.mentor_name}</p>
-                <p>Email: {match.email}</p>
-                {match.status === 'Pending mentee' && (
-                  <button
-                    onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
-                    className='bluebutton py-1 px-1 w-auto'
-                  >
-                    Accept
-                  </button>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className='text-cyan-600'>Currently not matched with anyone.</p>
-          )}
+        <Container>
+          <Box my={1} marginBottom={2}>
+            <h2 className='text-2xl'>Mentoring: </h2>
+            <p className='text-slate-500'>These are your requested mentees</p>
+            {mentorMatches.length > 0 ? (
+              mentorMatches.map((match) => (
+                <Card key={match.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                  <h3>Course: {match.course_code}</h3>
+                  <h3>Status: {match.status}</h3>
+                  <p>Mentee's name: {match.mentee_name}</p>
+                  <p>Email: {match.email}</p>
+                  {match.status === 'Pending mentor' && (
+                          <Button
+                            onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
+                          >
+                            Accept
+                          </Button>
+                  )}
+                </Card>
+              ))
+            ) : (
+              <p className='text-cyan-600'>Currently not matched with anyone.</p>
+            )}
+          </Box>
+
+          <Box my={1} marginBottom={2}>  
+            <h2 className='text-2xl'>Mentee in: </h2>
+            <p className='text-slate-500'>These are your requested mentors</p>
+            {menteeMatches.length > 0 ? (
+              menteeMatches.map((match) => (
+                <Card key={match.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                  <h3>Course: {match.course_code}</h3>
+                  <h3>Status: {match.status}</h3>
+                  <p>Mentor's name: {match.mentor_name}</p>
+                  <p>Email: {match.email}</p>
+                  {match.status === 'Pending mentee' && (
+                    <Button
+                      onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
+                    >
+                      Accept
+                    </Button>
+                  )}
+                </Card>
+              ))
+            ) : (
+              <p className='text-cyan-600'>Currently not matched with anyone.</p>
+            )}
+          </Box>
           <hr className='divide-y-4'></hr>
 
-          <div className="flex items-left py-2">
-            <h2 className='text-2xl mr-4'>User's Mentor Postings</h2>
-            <button className="bluebutton py-1 px-1 w-auto"
+          <Stack direction={'row'} my={1}>
+            <h2 className='text-2xl mr-4'>Your Mentor Postings</h2>
+            <Button
               onClick={onPressCreateMentorPosting}>
-              <RxPlus />
-            </button>
-          </div>
+              <MdAdd size={25}/> Create Posting
+            </Button>
+          </Stack>
           <p className='text-slate-500'>Posts to indicate which courses you are mentoring</p>
+          <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
           {userMentorPostings.length > 0 ? (
             userMentorPostings.map((posting) => (
-              <div key={posting.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {posting.course}</h3>
-                      <h3>Title: {posting.title}</h3>
-                      <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                      <button
-                        onClick={() => handleButtonClick(posting.posting_uuid, 'updatePosting')}
-                        className='bluebutton py-1 px-1 w-auto'
-                      >
-                        Update
-                      </button>
-              </div>
+              <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                  padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                <h3>Course: {posting.course}</h3>
+                <h3>Title: {posting.title}</h3>
+                <h4>Published: {posting.is_published ? 'Yes' : 'No'}</h4>
+                <p className='text-slate-500 py-2'>Description: {posting.description}</p>
+                <Button
+                  onClick={() => handleButtonClick(posting.posting_uuid, 'updatePosting')}
+                >
+                  Update
+                </Button>
+              </Card>
             ))
           ) : (
             <p className='text-cyan-600'>You do not currently have any mentor posting.</p>
           )}
+          </Box>
           
-          <div className="flex items-left py-2">
-            <h2 className='text-2xl mr-4'>User's Mentor Requests</h2>
-            <button className="bluebutton py-1 px-1 w-auto"
-            onClick={onPressCreateMentorRequest}>
-              <RxPlus />
-            </button>
-          </div>
+          <Stack direction={'row'}>
+            <h2 className='text-2xl'>Your Mentor Requests</h2>
+              <Button 
+              onClick={onPressCreateMentorRequest}>
+                <MdAdd size={25}/> Create request
+              </Button>
+          </Stack>
           <p className='text-slate-500'>Posts to indicate which courses you want a mentor for</p>
+          <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
           {userMentorRequests.length > 0 ? (
             userMentorRequests.map((posting) => (
-              <div key={posting.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {posting.course}</h3>
-                      <h3>Title: {posting.title}</h3>
-                      <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                      <button
-                        onClick={() => handleButtonClick(posting.posting_uuid, 'updateRequest')}
-                        className='bluebutton py-1 px-1 w-auto'
-                      >
-                        Update
-                      </button>
-              </div>
+              <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                  padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                <h3>Course: {posting.course}</h3>
+                <h3>Title: {posting.title}</h3>
+                <h4>Published: {posting.is_published ? 'Yes' : 'No'}</h4>
+                <p className='text-slate-500 py-2'>Description: {posting.description}</p>
+                <Button
+                  onClick={() => handleButtonClick(posting.posting_uuid, 'updateRequest')}
+                >
+                  Update
+                </Button>
+              </Card>
             ))
           ) : (
             <p className='text-cyan-600'>You do not currently have any mentor requests.</p>
           )}
-          
+          </Box>     
 
-          <div className='flex flex-col flex-grow flex-shrink-0'>
+
+          <Box sx={{ bgcolor: '#eff2ef', minHeight: 10 + 'em', padding: 10 + 'px'}}>
             <h2 className='text-2xl mr-4 c-1/10'>Find mentors or mentees</h2>
             <p className='text-slate-500 py-2'>Posts in the community</p>
             <CourseSelector updateSelectedCourses={filterMentorPostingByCourse} />
-            <div className='flex justify-center justify-items-center'>
-              <div className='w-1/2'>
-                <h2>Mentor Requests</h2>
-                <div className='max-h-96 overflow-y-auto flex-grow'>
-                {filteredMentorRequests.length > 0 ? (
-                  filteredMentorRequests.map((posting) => (
-                    <div key={posting.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {posting.course}</h3>
-                      <h3>Ttitle: {posting.title}</h3>
-                      <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                      <p>By: {posting.name}</p>
-                      {posting.name !== name && (
-                        <button
-                          onClick={() => handleButtonClick(posting.posting_uuid, 'matchRequest')}
-                          className='bluebutton py-1 px-1 w-auto'
-                        >
-                          Match
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
-                )}
+            <Box sx={{ bgcolor: '#D6EFFF', borderBottom: 1, borderColor: 'divider'}}>
+              <Tabs value={mentoringGalleryValue} onChange={handleChangeGalleryTabValue} centered variant="fullWidth">
+                <Tab label="Find mentees" id='full-width-tab-0'/>
+                <Tab label="Find mentors" id='full-width-tab-1'/>
+              </Tabs>
+            </Box>
+                <div role="tabpanel" hidden={mentoringGalleryValue !== 0} id='full-width-tabpanel-0'>
+                  <Typography sx={{my: 1}} className='text-slate-500'>Find mentees below and request to a match with them as their mentor</Typography>
+                  <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
+                  {filteredMentorRequests.length > 0 ? (
+                    filteredMentorRequests.map((posting) => (
+                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                          padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                        <h3>Course: {posting.course}</h3>
+                        <h3>Ttitle: {posting.title}</h3>
+                        <p className='text-slate-500 py-2'>Description: {posting.description}</p>
+                        <p>By: {posting.name}</p>
+                        {posting.name !== name && (
+                          <Button
+                            onClick={() => handleButtonClick(posting.posting_uuid, 'matchRequest')}
+                            className='bluebutton py-1 px-1 w-auto'
+                          >
+                            Request to be their mentor
+                          </Button>
+                        )}
+                      </Card>
+                    ))
+                  ) : (
+                    <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
+                  )}
+                  </Box>
                 </div>
-              </div>
-              <div className='w-1/2'>
-                <h2>Mentor Posts</h2>
-                <div className='max-h-96 overflow-y-auto flex-grow'>
-                {filteredMentorPostings.length > 0 ? (
-                  filteredMentorPostings.map((posting) => (
-                    <div key={posting.posting_uuid} className='bg-white rounded-lg shadow p-4 mb-4 w-5/6'>
-                      <h3>Course: {posting.course}</h3>
-                      <h3>Ttitle: {posting.title}</h3>
-                      <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                      <p>By: {posting.name}</p>
-                      {posting.name !== name && (
-                        <button
-                          onClick={() => handleButtonClick(posting.posting_uuid, 'matchPosting')}
-                          className='bluebutton py-1 px-1 w-auto'
-                        >
-                          Match
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
-                )}
+                <div role="tabpanel" hidden={mentoringGalleryValue !== 1} id='full-width-tabpanel-1'>
+                  <Typography sx={{my: 1}} className='text-slate-500'>Find mentors below and request to a match with them as their mentee</Typography>
+                  <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
+                  {filteredMentorPostings.length > 0 ? (
+                    filteredMentorPostings.map((posting) => (
+                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
+                          padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                        <h3>Course: {posting.course}</h3>
+                        <h3>Ttitle: {posting.title}</h3>
+                        <p className='text-slate-500 py-2'>Description: {posting.description}</p>
+                        <p>By: {posting.name}</p>
+                        <CardActions>
+                        {posting.name !== name && (
+                          <Button
+                            onClick={() => handleButtonClick(posting.posting_uuid, 'matchPosting')}
+                          >
+                            Request to be their mentee
+                          </Button>
+                        )}
+                        </CardActions>
+                      </Card>
+                    ))
+                  ) : (
+                    <p className='text-cyan-600 h-40'>No mentor requests right now.</p>
+                  )}
+                  </Box>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              
+            
+          </Box>
+        </Container>
       </AuthenticatedTemplate>
 
       <UnauthenticatedTemplate>
