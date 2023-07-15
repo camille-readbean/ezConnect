@@ -43,7 +43,7 @@ function AboutUs() {
             can find a student who meets their requirements or make a post
             looking for one.
           </p>
-          <Link to="/mentormenteematcher" className="bluebutton">
+          <Link to="/mentoring" className="bluebutton">
             Find a match
           </Link>
         </div>
