@@ -890,6 +890,41 @@ paths:
           description: Study plan does not exist
 
 
+  /studyplan/personal/{study_plan_id}/validate:
+    get:
+      operationId: "ezConnect.study_plan.validation.validator.validate_study_plan"
+      tags:
+        - Study Plan
+        - Study Plan Validation
+      summary: "Validate a particular personal study plan for prerequisites"
+      parameters:
+        - $ref: "#/components/parameters/study_plan_id"
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  validated:
+                    type: boolean
+                    description: Indicates whether the prerequisites have been validated
+                  failed_prereq_check_courses:
+                    type: array
+                    items:
+                      type: string
+                    description: A list of courses that failed the prerequisite check
+                example: {
+                  'validated' : False,
+                  'failed_prereq_check_courses' : ['CS2030S', 'CS2040S']
+                }
+        '404':
+          description: Study plan does not exist
+
+
   /studyplan/semester/{study_plan_id}:
     get:
       operationId: ezConnect.study_plan.study_plan_semester.get_all_semesters

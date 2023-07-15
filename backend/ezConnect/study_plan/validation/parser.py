@@ -1,88 +1,6 @@
 import re
-# Remember to import study plan
+from ezConnect.models import Course
 
-#TODO
-CS2030S = {
-    'prerequisite' : 'if undertaking an Undergraduate Degree then ( must have completed 1 of CS1010/CS1010E/CS1010J/CS1010S/CS1010X/CS1101S at a grade of at least D )',
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES (1) CS1010:D, CS1010E:D, CS1010X:D, CS1101S:D, CS1010S:D, CS1010J:D)",
-    'prerequisite_parsed' : [
-        {
-            "OR 1" : [
-                {"OR 1" : ['CS1010', 'CS1010E', 'CS1010X', 'CS1101S', 'CS1010S', 'CS1010J']},
-            ]
-        }
-    ]
-}
-
-CS2103 = {
-    'prerequisite' : 'if undertaking an Undergraduate Degree then ( ( must have completed 1 of "CS1020"/"CS1020E"/"CS2020" at a grade of at least D ) or ( must have completed 1 of CS2030/CS2030S at a grade of at least D and must have completed 1 of CS2040/CS2040C/CS2040S at a grade of at least D ) )',
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) CS2020:D, CS1020:D, CS1020E:D) OR (COURSES (1) CS2030S:D, CS2030:D AND COURSES (1) CS2040S:D, CS2040:D, CS2040C:D))",
-    'prerequisite_parsed' : [
-        {
-            "OR 1" : [
-                {"OR 1" : ["CS2020", "CS1020", "CS1020E"]},
-                {"AND" : 
-                    [
-                        [{"OR 1" : ["CS2030S", "CS2030"]}],
-                        [{"OR 1" : ["CS2040S", "CS2040", "CS2040C"]}]
-                    ]
-                }
-            ]
-        }
-    ]
-}
-
-CS2040S = {
-    'prerequisite' : 'If undertaking an Undergraduate Degree THEN ( must have completed 1 of CS1010/CS1010E/CS1010J/CS1010S/CS1010X/CS1101S at a grade of at least D AND must have completed 1 of CS1231/CS1231S/MA1100/MA1100T at a grade of at least D)',
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES (1) CS1010:D, CS1010E:D, CS1010X:D, CS1101S:D, CS1010S:D, CS1010J:D AND COURSES (1) CS1231S:D, CS1231:D, MA1100:D, MA1100T:D)",
-}
-
-CS1231S = {
-    'prerequisite' : 'If undertaking an Undergraduate Degree THEN ( must have completed 1 of CS1010/CS1010E/CS1010J/CS1010S/CS1010X/CS1101S at a grade of at least D AND must have completed 1 of CS1231/CS1231S/MA1100/MA1100T at a grade of at least D)',
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES (1) CS1010:D, CS1010E:D, CS1010X:D, CS1101S:D, CS1010S:D, CS1010J:D AND COURSES (1) CS1231S:D, CS1231:D, MA1100:D, MA1100T:D)",
-}
-
-ST2132 = {
-    'prerequisite' : "If undertaking an Undergraduate Degree THEN ( must have completed ST2334 at a grade of at least D OR must have completed ST2131 at a grade of at least D OR must have completed MA2116 at a grade of at least D OR must have completed MA2216 at a grade of at least D)",
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES ST2334:D OR COURSES ST2131:D OR COURSES MA2116:D OR COURSES MA2216:D)",
-    'prerequisite_parsed' : [
-        {"OR" : ["ST2334", "ST2131", "MA2116", "MA2216"]}
-    ]
-}
-
-
-"CS4225"
-prerequisite = "If undertaking an Undergraduate Degree THEN ( must have completed 1 of CS2102/IT2002 at a grade of at least D)"
-prerequisiteRule = "PROGRAM_TYPES IF_IN Undergraduate Degree THEN (COURSES (1) CS2102:D, IT2002:D)"
-
-[
-    {"OR 1" : ["CS2102", "IT2002"]}
-]
-
-
-CS4248 = {
-    'prerequisite' : "If undertaking an Undergraduate Degree THEN (( must have completed 1 of CS2109S/CS3243 at a grade of at least D AND must have completed 1 of EE2012/EE2012A/MA2116/MA2216/ST2131/ST2334/YSC2243 at a grade of at least D) AND ( must have completed 1 of MA1102R/MA1505/MA1507/MA1521/MA2002/YSC1216 at a grade of at least D OR must have completed all of MA1511/MA1512 at a grade of at least D))",
-    'prerequisiteRule' : "PROGRAM_TYPES IF_IN Undergraduate Degree THEN ((COURSES (1) CS3243:D, CS2109S:D AND COURSES (1) EE2012A:D, EE2012:D, ST2131:D, MA2216:D, MA2116:D, ST2334:D, YSC2243:D) AND (COURSES (1) MA1505:D, MA1507:D, MA1521:D, MA1102R:D, YSC1216:D, MA2002:D OR COURSES (2) MA1511:D, MA1512:D))",
-    'prerequisite_parsed' : [
-        {
-            "AND" : [
-            [
-                {"AND" : [
-                    {"OR 1" : ["CS3243", "CS2109S"]},
-                    {"OR 1" : ["EE2012A", "EE2012", "ST2131", "MA2216", "MA2116", "ST2334", "YSC2243"]}
-                ]}
-            ],
-            [
-                {"OR" :   [
-                    {"OR 1" : ["MA1505", "MA1507", "MA1521", "MA1102R", "YSC1216", "MA2002"]},
-                    {"OR 2" : ["MA1511", "MA1512"]}
-                ]}
-            ]
-
-            ]
-        }
-    ]   
-}
 
 def tokenise_prerequisite_rule(rule_string: str) -> list[str]:
     rule = rule_string.split('THEN')[1][1:]
@@ -95,11 +13,24 @@ def tokenise_prerequisite_rule(rule_string: str) -> list[str]:
     print(tokens)
     return tokens
     
+def __get_prereq_rule(course_code: str) -> None | str:
+    course: Course = Course.query.get(course_code)
+    if not course:
+        # Some courses as prereq are not in the database cause they are OLD
+        return None
+        # raise ValueError(f'Course {course_code} not found')
+    prereq_rule = course.prerequisites[0].prerequisite_str if course.prerequisites != [] else None
+    return prereq_rule
 
 def check_courses_prereqs(semesters):
-    # Example:
     """
-    Expect semesters to be list of list of strings (course codes)
+    Expect semesters to be list of list of strings (course codes)  
+
+    Returns: 
+    dict: { 
+        'validated' : True | False, 
+        'failed_prereq_check_courses' : List[str]
+    }
     """
     courses_cache = {}
 
@@ -207,8 +138,10 @@ def check_courses_prereqs(semesters):
                     latest_sem_before_number = current_semester_index if current_semester_index > 1 else 1
                     result = token in [course for semester in semesters[:latest_sem_before_number] for course in semester]
                     course_sem_index = [semesters.index(s) for s in semesters if token in s][-1] if result else float('inf')
-                    if result and token in prereqs.keys():
-                        result = evaluate_tokenised_rule(tokenise_prerequisite_rule(prereqs[token]['prerequisiteRule']), course_sem_index)
+                    prereq = __get_prereq_rule(token)
+                    if result and prereq is not None:
+                        result = evaluate_tokenised_rule(
+                            tokenise_prerequisite_rule(prereq), course_sem_index)
                     # courses_cache[token] = current_semester_index if result else float('inf')
                     courses_cache[token] = (course_sem_index, result)
                     print(f'{token} - {result}')
@@ -232,8 +165,9 @@ def check_courses_prereqs(semesters):
         if semesters[i] == []:
             continue
         for course in semesters[i]:
-            if course in prereqs.keys():
-                temp_result = evaluate_tokenised_rule(tokenise_prerequisite_rule(prereqs[course]['prerequisiteRule']), i)
+            prereq = __get_prereq_rule(course)
+            if prereq is not None:
+                temp_result = evaluate_tokenised_rule(tokenise_prerequisite_rule(prereq), i)
                 if not temp_result:
                     failed_prereq_check_courses.append(course)
                 result = result and temp_result
@@ -242,19 +176,3 @@ def check_courses_prereqs(semesters):
     return {'validated' : result, 'failed_prereq_check_courses' : failed_prereq_check_courses}
                 
 
-# Make semester courses dict
-semesters = [
-    ['CS1101S', 'CS1231S'],
-    ['CS2040S'],
-    ['CS2030S'],
-    ['CS2103']
-]
-
-prereqs = {
-    'CS2030S' : CS2030S,
-    'CS2040S' : CS2040S,
-    'CS2103' : CS2103
-}
-
-# Test
-print(check_courses_prereqs(semesters))

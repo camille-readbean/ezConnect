@@ -7,8 +7,9 @@ import ImportCourses from "./ImportCourses";
 import SemesterMenu from "./SemesterMenu";
 import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
+import Validator from "./Validator";
 
-function Editor({ studyPlanId }) {
+function Editor({ studyPlanId, instance }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [isShowPublisher, setIsShowPublisher] = useState(false);
@@ -17,6 +18,9 @@ function Editor({ studyPlanId }) {
   const [isFetchAgain, setIsFetchAgain] = useState(true);
   const [isShowExportSemester, setIsShowExportSemester] = useState(false);
   const [exportSemesterInfo, setExportSemesterInfo] = useState({});
+  const [isShowValidator, setIsShowValidator] = useState(false);
+
+
 
   useEffect(() => {
     fetch(
@@ -143,6 +147,13 @@ function Editor({ studyPlanId }) {
           setIsShowExportSemester={setIsShowExportSemester}
         />
       )}
+      {isShowValidator && (
+        <Validator
+          studyPlanId={studyPlanId}
+          setIsShowValidator={setIsShowValidator}
+          instance={instance}
+        />
+      )}
       <div className="flex items-center">
         <input
           type="text"
@@ -156,6 +167,7 @@ function Editor({ studyPlanId }) {
           setIsFetchAgain={setIsFetchAgain}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
+          setIsShowValidator={setIsShowValidator}
         />
       </div>
       <CourseSelector
