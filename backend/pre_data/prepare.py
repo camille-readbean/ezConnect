@@ -78,6 +78,11 @@ if not pathlib.Path('prerequisites.csv').exists():
                 info = requests.get(url).json()
                 if 'prerequisiteRule' in info.keys(): 
                     prereq_str = info['prerequisiteRule']
+                    # Remove any rules containing information we cannot process
+                    if 'UNITS' in prereq_str or 'MUST_BE_IN' in prereq_str or 'COHORT_YEARS' in prereq_str \
+                        or 'SUBJECTS' in prereq_str or 'Certificate' in prereq_str or 'Graduate' in prereq_str:
+                        done += 1
+                        continue
                     row = [
                         course['moduleCode'],
                         prereq_str
