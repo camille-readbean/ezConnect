@@ -7,8 +7,9 @@ import ImportCourses from "./ImportCourses";
 import SemesterMenu from "./SemesterMenu";
 import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
+import Validator from "./Validator";
 
-export default function Editor({ studyPlanId }) {
+export default function Editor({ studyPlanId, instance }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [isShowPublisher, setIsShowPublisher] = useState(false);
@@ -18,6 +19,7 @@ export default function Editor({ studyPlanId }) {
   const [isFetchAgain, setIsFetchAgain] = useState(true);
   const [isShowExportSemester, setIsShowExportSemester] = useState(false);
   const [exportSemesterInfo, setExportSemesterInfo] = useState({});
+  const [isShowValidator, setIsShowValidator] = useState(false);
   const [lastInteractedSemesterIndex, setLastInteractedSemesterIndex] =
     useState(0);
   const [errorMessage, setErrorMessage] = useState("");
@@ -167,6 +169,13 @@ export default function Editor({ studyPlanId }) {
           setIsShowExportSemester={setIsShowExportSemester}
         />
       )}
+      {isShowValidator && (
+        <Validator
+          studyPlanId={studyPlanId}
+          setIsShowValidator={setIsShowValidator}
+          instance={instance}
+        />
+      )}
       <div className="flex items-center gap-1">
         <input
           type="text"
@@ -192,6 +201,7 @@ export default function Editor({ studyPlanId }) {
           setIsModified={setIsModified}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
+          setIsShowValidator={setIsShowValidator}
           setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
         />
       </div>

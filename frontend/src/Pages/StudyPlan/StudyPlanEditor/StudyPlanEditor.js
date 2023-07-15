@@ -35,7 +35,7 @@ function StudyPlanEditor() {
   if (isAuthUser) {
     return (
       <div className="container mx-auto">
-        <Editor studyPlanId={studyPlanId} />
+        <Editor studyPlanId={studyPlanId} instance={instance} />
       </div>
     );
   } else {

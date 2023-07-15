@@ -17,3 +17,4 @@ cd ../tests
 sudo docker compose --file test.docker-compose.yml exec db psql ezConnect -c "COPY programme FROM '/pre_data/programmes.csv' DELIMITER ',' CSV HEADER;"
 sudo docker compose --file test.docker-compose.yml exec db psql ezConnect -c "COPY degree FROM '/pre_data/degrees.csv' DELIMITER ',' CSV HEADER;"
 sudo docker compose --file test.docker-compose.yml exec db psql ezConnect -c "COPY course FROM '/pre_data/courses.csv' DELIMITER ',' CSV HEADER;"
+sudo docker compose --file test.docker-compose.yml exec db psql ezConnect -c "COPY prerequisites FROM '/prerequisites.csv' DELIMITER ',' CSV HEADER;"

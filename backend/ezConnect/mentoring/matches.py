@@ -112,10 +112,13 @@ def accept_mentor(token_info, mentoring_match_id, body):
     
 def get_matches(token_info):
     try:
+        user = User.query.get(token_info['sub'])
+        if user is None:
+            return {'error' : 'User not found'}, 404
         # Where user is mentor
-        mentor_matches: List[MentorMenteeMatch] = User.query.get(token_info['sub']).mentoring_match
+        mentor_matches: List[MentorMenteeMatch] = user.mentoring_match
         # Where user is mentee
-        mentee_matches: List[MentorMenteeMatch] = User.query.get(token_info['sub']).mentee_match
+        mentee_matches: List[MentorMenteeMatch] = user.mentee_match
         rep = {'mentor_matches' : [], 'mentee_matches' : []}
         for posting in mentor_matches:
             rep['mentor_matches'].append(
