@@ -26,34 +26,13 @@ const filterCourseOptions = (inputValue) => {
   );
 };
 
-const addCourse = (
-  course,
-  semesterInformation,
-  updateCoursesInSemester,
-  lastInteractedSemesterIndex
-) => {
-  if (
-    course === null ||
-    semesterInformation === null ||
-    semesterInformation.length === 0 ||
-    lastInteractedSemesterIndex < 0 ||
-    lastInteractedSemesterIndex >= semesterInformation.length
-  ) {
-    return;
-  }
-  const newCourseCode = course["course_code"];
-  const semester = semesterInformation[lastInteractedSemesterIndex];
-  const newCourseCodeList = semester["course_codes"];
-  newCourseCodeList.push(newCourseCode);
-  updateCoursesInSemester(newCourseCodeList, semester);
-};
-
 function CourseSelector({
   semesterInformation,
   updateCoursesInSemester,
   lastInteractedSemesterIndex,
 }) {
   const [searchResults, setSearchResults] = useState([]);
+  const [responseMessage, setResponseMessage] = useState("");
 
   const loadOptions = (inputValue, callback) => {
     const filteredOptions = filterCourseOptions(inputValue);
@@ -61,27 +40,73 @@ function CourseSelector({
     callback(filteredOptions);
   };
 
+  const addCourse = (course) => {
+    // check validity of inputs
+    if (course === null) {
+      setResponseMessage("");
+      return;
+    } else if (semesterInformation === null) {
+      setResponseMessage("No semester information");
+      return;
+    } else if (semesterInformation.length === 0) {
+      setResponseMessage(
+        "There are no semesters in the study plan to add the course to"
+      );
+      return;
+    } else if (
+      lastInteractedSemesterIndex < 0 ||
+      lastInteractedSemesterIndex >= semesterInformation.length
+    ) {
+      lastInteractedSemesterIndex = 0;
+    }
+
+    const newCourseCode = course["course_code"];
+    const semester = semesterInformation[lastInteractedSemesterIndex];
+    const newCourseCodeList = semester["course_codes"];
+
+    // check for duplicates in semester
+    if (newCourseCodeList.includes(newCourseCode)) {
+      const semesterNumber = lastInteractedSemesterIndex + 1;
+      setResponseMessage(
+        `Semester Y${Math.ceil(semesterNumber / 2)}S${
+          ((semesterNumber + 1) % 2) + 1
+        } contains ${newCourseCode} already`
+      );
+      return;
+    }
+
+    newCourseCodeList.push(newCourseCode);
+    updateCoursesInSemester(newCourseCodeList, semester);
+    setResponseMessage("Course successfully added!");
+  };
+
   return (
-    <Select
-      options={searchResults}
-      filterOption={() => true}
-      isClearable
-      isSearchable
-      getOptionLabel={(option) => option.course_code + " " + option.course_name}
-      getOptionValue={(option) => option.course_code}
-      placeholder="Search for a course"
-      noOptionsMessage={() => "No courses found"}
-      onInputChange={(inputValue) => loadOptions(inputValue, () => {})}
-      onChange={(course) =>
-        addCourse(
-          course,
-          semesterInformation,
-          updateCoursesInSemester,
-          lastInteractedSemesterIndex
-        )
-      }
-      className="mx-3 mb-3"
-    />
+    <div className="mx-3 mb-3">
+      <Select
+        options={searchResults}
+        filterOption={() => true}
+        isClearable
+        isSearchable
+        getOptionLabel={(option) =>
+          option.course_code + " " + option.course_name
+        }
+        getOptionValue={(option) => option.course_code}
+        placeholder="Search for a course"
+        noOptionsMessage={() => "No courses found"}
+        onInputChange={(inputValue) => loadOptions(inputValue, () => {})}
+        onChange={(course) => addCourse(course)}
+        className="mb-1"
+      />
+      <p
+        className={`text-sm ${
+          responseMessage === "Course successfully added!"
+            ? "text-emerald-500"
+            : "text-red-500"
+        }`}
+      >
+        {responseMessage}
+      </p>
+    </div>
   );
 }
 

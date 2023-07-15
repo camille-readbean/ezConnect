@@ -20,6 +20,7 @@ export default function Editor({ studyPlanId }) {
   const [exportSemesterInfo, setExportSemesterInfo] = useState({});
   const [lastInteractedSemesterIndex, setLastInteractedSemesterIndex] =
     useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     fetch(
@@ -47,6 +48,18 @@ export default function Editor({ studyPlanId }) {
       const sourceCourses = [...sourceSemester["course_codes"]];
       const destCourses = [...destSemester["course_codes"]];
       const [removed] = sourceCourses.splice(source.index, 1);
+
+      // check for duplicates
+      if (destCourses.includes(removed)) {
+        const semesterNumber = parseInt(destination.droppableId) + 1;
+        setErrorMessage(
+          `Semester Y${Math.ceil(semesterNumber / 2)}S${
+            ((semesterNumber + 1) % 2) + 1
+          } contains ${removed} already`
+        );
+        return;
+      }
+
       destCourses.splice(destination.index, 0, removed);
       sourceSemester["course_codes"] = sourceCourses;
       destSemester["course_codes"] = destCourses;
@@ -55,6 +68,7 @@ export default function Editor({ studyPlanId }) {
       updatedSemesterInformation[destination.droppableId] = destSemester;
       setSemesterInformation(updatedSemesterInformation);
       setIsModified(true);
+      setErrorMessage("");
     } else {
       const semester = semesterInformation[source.droppableId];
       const courses = [...semester["course_codes"]];
@@ -65,6 +79,7 @@ export default function Editor({ studyPlanId }) {
       updatedSemesterInformation[source.droppableId] = updatedSemester;
       setSemesterInformation(updatedSemesterInformation);
       setIsModified(true);
+      setErrorMessage("");
     }
   };
 
@@ -190,6 +205,7 @@ export default function Editor({ studyPlanId }) {
         updateCoursesInSemester={updateCoursesInSemester}
         lastInteractedSemesterIndex={lastInteractedSemesterIndex}
       />
+      <p className="text-sm text-red-500 px-2 pb-2">{errorMessage}</p>
       <div id="studyPlan" className="px-3 mb-3">
         <DragDropContext
           onDragEnd={(result) =>
@@ -228,8 +244,8 @@ export default function Editor({ studyPlanId }) {
                             {courseCodeList.map((course, index) => {
                               return (
                                 <Draggable
-                                  key={course}
-                                  draggableId={course}
+                                  key={course + semesterNumber + index}
+                                  draggableId={course + semesterNumber + index}
                                   index={index}
                                 >
                                   {(provided, snapshot) => {
