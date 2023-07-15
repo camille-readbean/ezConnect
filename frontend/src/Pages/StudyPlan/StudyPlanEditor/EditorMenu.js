@@ -47,6 +47,7 @@ function EditorOptions({
   studyPlanId,
   setIsFetchAgain,
   setIsShowPublisher,
+  setIsShowValidator,
   semesterInformation,
 }) {
   return (
@@ -105,6 +106,19 @@ function EditorOptions({
                 onClick={() => setIsShowPublisher(true)}
               >
                 Publish
+              </button>
+            )}
+          </Menu.Item>
+          <hr className="my-1" />
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? "bg-sky-500 text-white" : "text-gray-900"
+                } rounded-md px-2 py-1 w-full`}
+                onClick={() => setIsShowValidator(true)}
+              >
+                Validate Prerequisites
               </button>
             )}
           </Menu.Item>

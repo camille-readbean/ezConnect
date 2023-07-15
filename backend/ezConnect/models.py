@@ -145,7 +145,11 @@ class PersonalStudyPlan(db.Model):
         db.ForeignKey('users.azure_ad_oid'), 
         nullable=False
     )
-    semesters = db.relationship('StudyPlanSemester', backref='personal_study_plan')
+    semesters = db.relationship(
+        'StudyPlanSemester', 
+        backref='personal_study_plan',
+        order_by='StudyPlanSemester.semester_number'
+    )
     published_version = db.relationship(
         'PublishedStudyPlan', 
         uselist=False, 
@@ -304,7 +308,7 @@ class StudyPlanSemester(db.Model):
     )
 
     def __repr__(self):
-        return f'<Semester for study plan with id: {self.study_plan_id}>'
+        return f'<Semester {self.semester_number} for study plan with id: {self.personal_study_plan_id}>'
     
     def toJSON(self):
         course_codes = []
@@ -318,10 +322,16 @@ class StudyPlanSemester(db.Model):
             "course_codes": course_codes
         }
 
-prerequisite = db.Table('prerequisites',
-    Column('prerequisite_code', String(10), db.ForeignKey('course.course_code')),
-    Column('course_code', String(10), db.ForeignKey('course.course_code'))
-)
+# prerequisite = db.Table('prerequisites',
+#     Column('course_code', String(12), db.ForeignKey('course.course_code')),
+#     Column('prerequisite_str', Text)
+# )
+
+class Prerequisite(db.Model):
+    __tablename__ = 'prerequisites'
+    # id = db.Column(db.Integer, primary_key=True)
+    course_code = db.Column(db.String(12), db.ForeignKey('course.course_code'), primary_key=True)
+    prerequisite_str = db.Column(db.Text)
 
 class Course(db.Model):
     course_code = Column(String(12), primary_key=True, nullable=False)
@@ -330,11 +340,9 @@ class Course(db.Model):
     is_offered_in_sem1 = Column(Boolean, nullable=False)
     is_offered_in_sem2 = Column(Boolean, nullable=False)
     prerequisites = db.relationship(
-        'Course', 
-        secondary=prerequisite, 
-        primaryjoin=course_code == prerequisite.c.course_code,
-        secondaryjoin=course_code == prerequisite.c.prerequisite_code,
-        backref='required_by'
+        Prerequisite,
+        backref='course',
+        lazy=True
     )
 
     def __repr__(self):
