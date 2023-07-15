@@ -204,10 +204,6 @@ class PublishedStudyPlan(db.Model):
     academic_plan = db.relationship('AcademicPlan', uselist=False, backref='published_study_plan')
 
     def toJSON(self):
-        semester_ids = {}
-        for semester in self.semesters:
-            semester_ids[semester.semester_number] = semester.id
-
         return {
             "id": self.id,
             "date_updated": self.date_updated.strftime("%d %b %Y"),
@@ -216,7 +212,7 @@ class PublishedStudyPlan(db.Model):
             "num_of_likes": self.num_of_likes,
             "creator_id": self.creator_id,
             "creator_name": User.query.get(self.creator_id).name,
-            "semester_ids": semester_ids,
+            "semester_info_list": list(map(lambda semester: semester.toJSON(), self.semesters)),
             "academic_plan": self.academic_plan.toJSON() if self.academic_plan is not None else None
         }
     

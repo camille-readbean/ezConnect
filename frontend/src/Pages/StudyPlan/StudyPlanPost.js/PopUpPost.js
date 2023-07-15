@@ -203,7 +203,11 @@ function PopUpPost({
             <h6 className="font-semibold">Description</h6>
             <p className="bg-slate-50 rounded-md p-2">{description}</p>
           </div>
-          <Preview studyPlanId={studyPlanInformation["id"]} />
+          <Preview
+            semesterInformationArray={
+              studyPlanInformation["semester_info_list"]
+            }
+          />
         </div>
       </div>
     </div>

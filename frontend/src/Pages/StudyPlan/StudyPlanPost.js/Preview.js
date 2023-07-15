@@ -1,18 +1,4 @@
-import { useEffect, useState } from "react";
-
-export default function Preview({ studyPlanId }) {
-  const [semesterInformationArray, setSemesterInformationArray] = useState([]);
-
-  useEffect(() => {
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/semester/${studyPlanId}`
-    )
-      .then((res) => res.json())
-      .then((data) => data["semester_info_list"])
-      .then((semesterInfoList) =>
-        setSemesterInformationArray(semesterInfoList)
-      );
-  }, [studyPlanId]);
+export default function Preview({ semesterInformationArray }) {
 
   return (
     <div

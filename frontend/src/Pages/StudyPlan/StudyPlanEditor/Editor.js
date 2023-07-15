@@ -195,7 +195,10 @@ export default function Editor({ studyPlanId }) {
           setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
         />
       </div>
-      <p className="text-sm px-2 pb-2">
+      <p className="px-2 text-gray-600">
+        Drag and drop courses to create your own study plan!
+      </p>
+      <p className="text-sm p-2 text-gray-600">
         Your study plan is autosaved every few seconds. Click on the save button
         to ensure that your study plan is saved and calculate the total number
         of units per semester.
@@ -205,7 +208,11 @@ export default function Editor({ studyPlanId }) {
         updateCoursesInSemester={updateCoursesInSemester}
         lastInteractedSemesterIndex={lastInteractedSemesterIndex}
       />
-      <p className="text-sm text-red-500 px-2 pb-2">{errorMessage}</p>
+      <ImportCourses
+        semesterInformation={semesterInformation}
+        updateCoursesInSemester={updateCoursesInSemester}
+      />
+      <p className="text-sm text-red-500 px-4 pb-2">{errorMessage}</p>
       <div id="studyPlan" className="px-3 mb-3">
         <DragDropContext
           onDragEnd={(result) =>
@@ -293,10 +300,6 @@ export default function Editor({ studyPlanId }) {
           </div>
         </DragDropContext>
       </div>
-      <ImportCourses
-        semesterInformation={semesterInformation}
-        updateCoursesInSemester={updateCoursesInSemester}
-      />
     </div>
   );
 }

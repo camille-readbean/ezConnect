@@ -101,18 +101,10 @@ components:
         creator_name:
           type: string
           example: Jonathan Tan
-        semester_ids:
-          type: object
-          example: {
-            "1": "abc11111-1234-1234-1234-1234abcdef00",
-            "2": "def22222-1234-1234-1234-1234abcdef00",
-            "3": "abc33333-1234-1234-1234-1234abcdef00",
-            "4": "def44444-1234-1234-1234-1234abcdef00",
-            "5": "abc55555-1234-1234-1234-1234abcdef00",
-            "6": "def66666-1234-1234-1234-1234abcdef00",
-            "7": "abc77777-1234-1234-1234-1234abcdef00",
-            "8": "def88888-1234-1234-1234-1234abcdef00"
-          }
+        semester_info_list:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanSemesterInformation"
         academic_plan:
           $ref: "#/components/schemas/AcademicPlan"
     PublishedStudyPlanWithLikedFavourited:
@@ -145,18 +137,10 @@ components:
         is_liked_by:
           type: boolean
           example: true
-        semester_ids:
-          type: object
-          example: {
-            "1": "abc11111-1234-1234-1234-1234abcdef00",
-            "2": "def22222-1234-1234-1234-1234abcdef00",
-            "3": "abc33333-1234-1234-1234-1234abcdef00",
-            "4": "def44444-1234-1234-1234-1234abcdef00",
-            "5": "abc55555-1234-1234-1234-1234abcdef00",
-            "6": "def66666-1234-1234-1234-1234abcdef00",
-            "7": "abc77777-1234-1234-1234-1234abcdef00",
-            "8": "def88888-1234-1234-1234-1234abcdef00"
-          }
+        semester_info_list:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanSemesterInformation"
     StudyPlanSemesterInformation:
       type: object
       properties:

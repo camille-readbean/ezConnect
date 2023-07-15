@@ -81,7 +81,12 @@ function CourseSelector({
   };
 
   return (
-    <div className="mx-3 mb-3">
+    <div className="mx-2 mb-3 p-2 bg-slate-50 rounded-md">
+      <h3 className="font-semibold">Course Selector</h3>
+      <p className="text-sm text-gray-600 mb-2">
+        Search by course code or title and select a course to add it into your
+        study plan!
+      </p>
       <Select
         options={searchResults}
         filterOption={() => true}

@@ -39,7 +39,8 @@ export default function ImportCourses({
   };
 
   return (
-    <div id="importCourses" className="px-5 py-2">
+    <div id="importCourses" className="mx-2 p-2 bg-slate-50 rounded-md">
+      <h3 className="font-semibold">Import courses from NUSMods</h3>
       <form onSubmit={updateCourseList} className="flex gap-2 items-center">
         <input
           type="text"

@@ -51,7 +51,7 @@ function Publisher({
           console.error(err);
         });
     }
-  }, [studyPlanId, isPublished]);
+  }, [studyPlanId]);
 
   const getAcademicPlanRequestBody = (academicPlanInformation) => {
     return {
@@ -88,6 +88,7 @@ function Publisher({
       }
     ).then(() => {
       setIsPublished(true);
+      setIsFetchAgain((previous) => !previous);
     });
   };
 
@@ -120,6 +121,7 @@ function Publisher({
       { method: "DELETE" }
     ).then((res) => {
       setIsPublished(false);
+      setIsFetchAgain((previous) => !previous);
     });
   };
 
@@ -188,8 +190,13 @@ function Publisher({
           </Stack>
           {isPublished ? (
             <p className="text-sm text-gray-600 mt-2">
+              Click on update if you have made changes (e.g. added / deleted
+              courses) to your study plan and would like these changes to be
+              reflected in your published study plan.
+              <br />
               Note: Unpublishing a study plan will remove data on the
-              description and tags associated with the study plan.
+              description and tags associated with the study plan. Likes and
+              favourites will also be lost.
             </p>
           ) : (
             <></>
