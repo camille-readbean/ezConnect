@@ -2,34 +2,6 @@ import html2canvas from "html2canvas";
 import { Menu } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-const addSemester = (studyPlanId, setIsFetchAgain) => {
-  fetch(
-    `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/semester/${studyPlanId}`,
-    {
-      method: "POST",
-    }
-  ).then(() => {
-    setIsFetchAgain((previous) => !previous);
-  });
-};
-
-const deleteLastSemester = (semesterInformation, setIsFetchAgain) => {
-  if (semesterInformation.length === 0) {
-    return;
-  }
-
-  const lastSemesterId =
-    semesterInformation[semesterInformation.length - 1]["id"];
-  fetch(
-    `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${lastSemesterId}`,
-    {
-      method: "DELETE",
-    }
-  ).then(() => {
-    setIsFetchAgain((previous) => !previous);
-  });
-};
-
 const downloadStudyPlan = (title) => {
   const studyPlan = document.getElementById("studyPlan");
   html2canvas(studyPlan).then((canvas) => {
@@ -44,12 +16,35 @@ const downloadStudyPlan = (title) => {
 
 function EditorOptions({
   title,
-  studyPlanId,
-  setIsFetchAgain,
+  setSemesterInformation,
+  setIsModified,
   setIsShowPublisher,
   setIsShowValidator,
   semesterInformation,
+  setLastInteractedSemesterIndex,
 }) {
+  const addSemester = () => {
+    const newSemesterInfo = {
+      course_codes: [],
+      id: null,
+      semester_number: semesterInformation.length,
+      total_units: 0,
+    };
+    const newSemesterInfoArray = [...semesterInformation, newSemesterInfo];
+    setSemesterInformation(newSemesterInfoArray);
+    setIsModified(true);
+  };
+
+  const deleteLastSemester = () => {
+    if (semesterInformation.length === 0) {
+      return;
+    }
+    const newSemesterInfoArray = semesterInformation.slice(0, -1);
+    setLastInteractedSemesterIndex(newSemesterInfoArray.length - 1);
+    setSemesterInformation(newSemesterInfoArray);
+    setIsModified(true);
+  };
+
   return (
     <Menu as="div" className="relative z-10">
       <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-slate-200 transition h-8 w-8">
@@ -63,7 +58,7 @@ function EditorOptions({
                 className={`${
                   active ? "bg-sky-500 text-white" : "text-gray-900"
                 } rounded-md px-2 py-1 w-full`}
-                onClick={() => addSemester(studyPlanId, setIsFetchAgain)}
+                onClick={() => addSemester()}
               >
                 Add semester
               </button>
@@ -75,9 +70,7 @@ function EditorOptions({
                 className={`${
                   active ? "bg-sky-500 text-white" : "text-gray-900"
                 } rounded-md px-2 py-1 w-full whitespace-nowrap`}
-                onClick={() =>
-                  deleteLastSemester(semesterInformation, setIsFetchAgain)
-                }
+                onClick={() => deleteLastSemester()}
               >
                 Delete last semester
               </button>

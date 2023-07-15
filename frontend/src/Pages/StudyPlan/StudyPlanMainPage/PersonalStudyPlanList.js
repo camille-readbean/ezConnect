@@ -26,7 +26,7 @@ function PersonalStudyPlanList({
             Last updated: {dateUpdated}
           </p>
           <AiFillDelete
-            className="hidden cursor-pointer group-hover:block hover:bg-sky-500 p-1 h-6 w-6 rounded-md transition"
+            className="hidden cursor-pointer group-hover:block hover:bg-slate-200 p-1 h-6 w-6 rounded-md transition"
             onClick={() => deleteStudyPlan(id)}
           />
         </div>
@@ -37,10 +37,9 @@ function PersonalStudyPlanList({
   return (
     <div className="bg-white p-2 rounded-lg">
       <p className="text-lg m-1 font-medium">
-        Click on a study plan to continue editing!
+        Click on a study plan title to continue editing!
       </p>
       <div className="flex overflow-x-auto whitespace-nowrap">
-        {personalStudyPlans.map((studyPlan) => makeCard(studyPlan))}
         <div
           className="group relative hover:cursor-pointer"
           onClick={() => createNewStudyPlan(azure_ad_oid)}
@@ -52,6 +51,7 @@ function PersonalStudyPlanList({
             <p>Create blank</p>
           </div>
         </div>
+        {personalStudyPlans.map((studyPlan) => makeCard(studyPlan))}
       </div>
     </div>
   );

@@ -92,13 +92,13 @@ export default function ExportCourses({
 
   return (
     <div className="fixed inset-0 z-20 p-3 flex items-center justify-center bg-gray-500 bg-opacity-75">
-      <div className="relative p-5 bg-white rounded-md shadow-md min-w-min w-full sm:max-w-2xl">
+      <div className="relative p-5 bg-white rounded-md shadow-md w-full sm:max-w-2xl">
         <RxCross2
           className="absolute right-2 top-2 hover:cursor-pointer"
           onClick={() => setIsShowExportSemester(false)}
         />
         <div className="flex justify-between m-1 border-[1px] rounded-md">
-          <p className="px-3 py-1 flex items-center">{exportLink}</p>
+          <p className="px-3 py-1 flex items-center break-all">{exportLink}</p>
           <button onClick={copyLink} className="bg-sky-100 hover:bg-sky-200 transition p-2 flex flex-col items-center justify-center">
             <IoMdCopy className="w-6 h-auto"/>
             Copy
