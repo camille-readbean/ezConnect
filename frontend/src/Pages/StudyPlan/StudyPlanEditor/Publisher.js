@@ -86,7 +86,7 @@ function Publisher({
         },
         body: JSON.stringify(requestBody),
       }
-    ).then((res) => {
+    ).then(() => {
       setIsPublished(true);
     });
   };

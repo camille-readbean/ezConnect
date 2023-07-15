@@ -16,40 +16,32 @@ const downloadStudyPlan = (title) => {
 
 function EditorOptions({
   title,
-  studyPlanId,
-  setIsFetchAgain,
+  setSemesterInformation,
+  setIsModified,
   setIsShowPublisher,
   semesterInformation,
   setLastInteractedSemesterIndex,
 }) {
   const addSemester = () => {
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/semester/${studyPlanId}`,
-      {
-        method: "POST",
-      }
-    ).then(() => {
-      setLastInteractedSemesterIndex(semesterInformation.length);
-      setIsFetchAgain((previous) => !previous);
-    });
+    const newSemesterInfo = {
+      course_codes: [],
+      id: null,
+      semester_number: semesterInformation.length,
+      total_units: 0,
+    };
+    const newSemesterInfoArray = [...semesterInformation, newSemesterInfo];
+    setSemesterInformation(newSemesterInfoArray);
+    setIsModified(true);
   };
 
   const deleteLastSemester = () => {
     if (semesterInformation.length === 0) {
       return;
     }
-
-    const lastSemesterId =
-      semesterInformation[semesterInformation.length - 1]["id"];
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${lastSemesterId}`,
-      {
-        method: "DELETE",
-      }
-    ).then(() => {
-      setLastInteractedSemesterIndex(semesterInformation.length - 2);
-      setIsFetchAgain((previous) => !previous);
-    });
+    const newSemesterInfoArray = semesterInformation.slice(0, -1);
+    setLastInteractedSemesterIndex(newSemesterInfoArray.length - 1);
+    setSemesterInformation(newSemesterInfoArray);
+    setIsModified(true);
   };
 
   return (

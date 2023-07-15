@@ -22,8 +22,7 @@ function getCourseListFromNUSMod(shareLink) {
 
 export default function ImportCourses({
   semesterInformation,
-  updateSemester,
-  setLastInteractedSemesterIndex,
+  updateCoursesInSemester,
 }) {
   const [responseMessage, setResponseMessage] = useState("");
   const [selectedSemester, setSelectedSemester] = useState({});
@@ -32,10 +31,8 @@ export default function ImportCourses({
     event.preventDefault();
     try {
       const courseList = getCourseListFromNUSMod(event.target.shareLink.value);
-      selectedSemester["course_codes"] = courseList;
-      updateSemester(selectedSemester);
+      updateCoursesInSemester(courseList, selectedSemester);
       setResponseMessage("Succesfully imported courses!");
-      setLastInteractedSemesterIndex(selectedSemester["semester_number"] - 1);
     } catch (TypeError) {
       setResponseMessage("Please input a valid NUSMods sharing link");
     }

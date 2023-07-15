@@ -157,9 +157,9 @@ class PersonalStudyPlan(db.Model):
                 + f'last updated at {self.date_updated}>')
 
     def toJSON(self):
-        semester_ids = {}
+        semester_info_list = [None for i in range(len(self.semesters))]
         for semester in self.semesters:
-            semester_ids[semester.semester_number] = semester.id
+            semester_info_list[semester.semester_number - 1] = semester.toJSON()
 
         return {
             "id": self.id,
@@ -167,11 +167,17 @@ class PersonalStudyPlan(db.Model):
             "title": self.title,
             "creator_id": self.creator_id,
             "creator_name": User.query.get(self.creator_id).name,
-            "semester_ids": semester_ids,
+            "semester_info_list": semester_info_list,
             "is_published": self.published_version is not None,
             "published_version_id": (self.published_version.id 
                                      if self.published_version is not None else None)
         }
+
+    def get_semester_list_in_order(self):
+        semester_list = [None for i in range(len(self.semesters))]
+        for semester in self.semesters:
+            semester_list[semester.semester_number - 1] = semester
+        return semester_list
 
 class PublishedStudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

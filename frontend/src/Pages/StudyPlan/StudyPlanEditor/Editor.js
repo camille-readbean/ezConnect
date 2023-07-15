@@ -8,12 +8,13 @@ import SemesterMenu from "./SemesterMenu";
 import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
 
-function Editor({ studyPlanId }) {
+export default function Editor({ studyPlanId }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [isShowPublisher, setIsShowPublisher] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [semesterInformation, setSemesterInformation] = useState([]);
+  const [isModified, setIsModified] = useState(false);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
   const [isShowExportSemester, setIsShowExportSemester] = useState(false);
   const [exportSemesterInfo, setExportSemesterInfo] = useState({});
@@ -29,47 +30,12 @@ function Editor({ studyPlanId }) {
         setStudyPlanInformation(data);
         setTitle(data["title"]);
         setIsPublished(data["is_published"]);
-
-        // get semester information
-        const semesterIds = data["semester_ids"];
-        const fetchSemesterInfoPromises = Object.values(semesterIds).map(
-          (semesterId) =>
-            fetch(
-              `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${semesterId}`
-            )
-              .then((res) => res.json())
-              .catch((err) => console.error(err))
-        );
-
-        Promise.all(fetchSemesterInfoPromises)
-          .then((semesterInfo) => {
-            setSemesterInformation(semesterInfo);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        setSemesterInformation(data["semester_info_list"]);
       })
       .catch((err) => {
         console.error(err);
       });
   }, [studyPlanId, isFetchAgain]);
-
-  const updateTitle = (event) => {
-    const newTitle = event.target.value;
-    setTitle(newTitle);
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanInformation["id"]}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: newTitle,
-        }),
-      }
-    );
-  };
 
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
@@ -84,50 +50,89 @@ function Editor({ studyPlanId }) {
       destCourses.splice(destination.index, 0, removed);
       sourceSemester["course_codes"] = sourceCourses;
       destSemester["course_codes"] = destCourses;
-      updateSemester(sourceSemester);
-      updateSemester(destSemester);
       const updatedSemesterInformation = [...semesterInformation];
       updatedSemesterInformation[source.droppableId] = sourceSemester;
       updatedSemesterInformation[destination.droppableId] = destSemester;
       setSemesterInformation(updatedSemesterInformation);
+      setIsModified(true);
     } else {
       const semester = semesterInformation[source.droppableId];
       const courses = [...semester["course_codes"]];
       const [removed] = courses.splice(source.index, 1);
       courses.splice(destination.index, 0, removed);
       const updatedSemester = { ...semester, course_codes: courses };
-      updateSemester(updatedSemester);
       const updatedSemesterInformation = [...semesterInformation];
       updatedSemesterInformation[source.droppableId] = updatedSemester;
       setSemesterInformation(updatedSemesterInformation);
+      setIsModified(true);
     }
-  };
-
-  const updateSemester = (updatedSemester) => {
-    const semesterId = updatedSemester["id"];
-    const newCourses = updatedSemester["course_codes"];
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/study_plan_semester/${semesterId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          course_codes: newCourses,
-        }),
-      }
-    ).then((res) => {
-      setIsFetchAgain((previous) => !previous);
-    });
   };
 
   const deleteCourse = (semester, courseIndex) => {
     const courses = semester["course_codes"];
     courses.splice(courseIndex, 1);
     setLastInteractedSemesterIndex(semester["semester_number"] - 1);
-    updateSemester(semester);
+    const updatedSemesterInformation = [...semesterInformation];
+    updatedSemesterInformation[semester["semester_number"] - 1] = semester;
+    setSemesterInformation(updatedSemesterInformation);
+    setIsModified(true);
   };
+
+  const updateCoursesInSemester = (courseArray, semester) => {
+    semester["course_codes"] = courseArray;
+    const updatedSemesterInformation = [...semesterInformation];
+    updatedSemesterInformation[semester["semester_number"] - 1] = semester;
+    setLastInteractedSemesterIndex(semester["semester_number"] - 1);
+    setSemesterInformation(updatedSemesterInformation);
+    setIsModified(true);
+  };
+
+  const updateStudyPlan = (fetchAgain) => {
+    const requestBody = {
+      title: title,
+      semester_info_list: semesterInformation,
+    };
+
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    ).then(() => {
+      fetchAgain && setIsFetchAgain((previous) => !previous);
+    });
+  };
+
+  useEffect(() => {
+    const handler = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    if (isModified) {
+      window.addEventListener("beforeunload", handler);
+      return () => {
+        window.removeEventListener("beforeunload", handler);
+      };
+    }
+    return () => {};
+  }, [isModified]);
+
+  useEffect(() => {
+    const autosave = setInterval(() => {
+      console.log("checking if modified");
+      if (isModified) {
+        setIsModified(false);
+        console.log("updating study plan");
+        updateStudyPlan(false);
+      }
+    }, 5000);
+    return () => clearInterval(autosave);
+  });
 
   return (
     <div className="px-8">
@@ -147,25 +152,42 @@ function Editor({ studyPlanId }) {
           setIsShowExportSemester={setIsShowExportSemester}
         />
       )}
-      <div className="flex items-center">
+      <div className="flex items-center gap-1">
         <input
           type="text"
           value={title}
-          onChange={updateTitle}
+          onChange={(event) => {
+            setTitle(event.target.value);
+            setIsModified(true);
+          }}
           className="w-full text-2xl font-semibold px-1 my-2"
         />
+        <button
+          onClick={() => {
+            updateStudyPlan(true);
+            setIsModified(false);
+          }}
+          className="bg-sky-200 rounded-md px-2 py-1 hover:bg-sky-300 transition"
+        >
+          {isModified ? <>Save</> : <>Saved</>}
+        </button>
         <EditorMenu
           title={title}
-          studyPlanId={studyPlanId}
-          setIsFetchAgain={setIsFetchAgain}
+          setSemesterInformation={setSemesterInformation}
+          setIsModified={setIsModified}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
           setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
         />
       </div>
+      <p className="text-sm px-2 pb-2">
+        Your study plan is autosaved every few seconds. Click on the save button
+        to ensure that your study plan is saved and calculate the total number
+        of units per semester.
+      </p>
       <CourseSelector
         semesterInformation={semesterInformation}
-        updateSemester={updateSemester}
+        updateCoursesInSemester={updateCoursesInSemester}
         lastInteractedSemesterIndex={lastInteractedSemesterIndex}
       />
       <div id="studyPlan" className="px-3 mb-3">
@@ -191,10 +213,7 @@ function Editor({ studyPlanId }) {
                       setIsShowExportSemester={setIsShowExportSemester}
                       setExportSemesterInfo={setExportSemesterInfo}
                       semesterInfo={semester}
-                      updateSemester={updateSemester}
-                      setLastInteractedSemesterIndex={
-                        setLastInteractedSemesterIndex
-                      }
+                      updateCoursesInSemester={updateCoursesInSemester}
                     />
                   </div>
                   <div>
@@ -260,11 +279,8 @@ function Editor({ studyPlanId }) {
       </div>
       <ImportCourses
         semesterInformation={semesterInformation}
-        updateSemester={updateSemester}
-        setLastInteractedSemesterIndex={setLastInteractedSemesterIndex}
+        updateCoursesInSemester={updateCoursesInSemester}
       />
     </div>
   );
 }
-
-export default Editor;

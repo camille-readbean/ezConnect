@@ -29,7 +29,7 @@ const filterCourseOptions = (inputValue) => {
 const addCourse = (
   course,
   semesterInformation,
-  updateSemester,
+  updateCoursesInSemester,
   lastInteractedSemesterIndex
 ) => {
   if (
@@ -43,14 +43,14 @@ const addCourse = (
   }
   const newCourseCode = course["course_code"];
   const semester = semesterInformation[lastInteractedSemesterIndex];
-  const semesterCourses = semester["course_codes"];
-  semesterCourses.push(newCourseCode);
-  updateSemester(semester);
+  const newCourseCodeList = semester["course_codes"];
+  newCourseCodeList.push(newCourseCode);
+  updateCoursesInSemester(newCourseCodeList, semester);
 };
 
 function CourseSelector({
   semesterInformation,
-  updateSemester,
+  updateCoursesInSemester,
   lastInteractedSemesterIndex,
 }) {
   const [searchResults, setSearchResults] = useState([]);
@@ -76,7 +76,7 @@ function CourseSelector({
         addCourse(
           course,
           semesterInformation,
-          updateSemester,
+          updateCoursesInSemester,
           lastInteractedSemesterIndex
         )
       }

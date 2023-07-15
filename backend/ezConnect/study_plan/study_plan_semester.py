@@ -14,16 +14,9 @@ def get_all_semesters(study_plan_id):
         abort(404, f"Study plan with id {study_plan_id} not found")
     
     study_plan_info = study_plan.toJSON()
-    semester_ids = study_plan_info["semester_ids"] 
-    # dictionary (key, value) = (semester_number, semester_id)
+    semester_info_list = study_plan_info["semester_info_list"]
 
-    semester_info = [None] * len(semester_ids)
-    for semester_number in semester_ids:
-        semester_id = str(semester_ids[semester_number])
-        info = get_a_semester(semester_id)[0]
-        semester_info[semester_number - 1] = info
-
-    return {"semester_info_list": semester_info}, 200
+    return {"semester_info_list": semester_info_list}, 200
 
 
 # Create a new semester in an existing study plan
