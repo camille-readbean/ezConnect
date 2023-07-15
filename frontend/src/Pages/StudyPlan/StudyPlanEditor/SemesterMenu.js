@@ -1,16 +1,11 @@
 import { Menu } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-function clearSemester(semesterInfo, updateSemester) {
-  semesterInfo["course_codes"] = [];
-  updateSemester(semesterInfo);
-}
-
 export default function SemesterMenu({
   setIsShowExportSemester,
   setExportSemesterInfo,
   semesterInfo,
-  updateSemester,
+  updateCoursesInSemester,
 }) {
   return (
     <Menu as="div" className="relative">
@@ -25,7 +20,7 @@ export default function SemesterMenu({
                 className={`${
                   active ? "bg-sky-500 text-white" : "text-gray-900"
                 } rounded-md px-2 py-1 w-full`}
-                onClick={() => clearSemester(semesterInfo, updateSemester)}
+                onClick={() => updateCoursesInSemester([], semesterInfo)}
               >
                 Clear semester
               </button>

@@ -3,7 +3,7 @@ from conftest import uuid1
 
 # variables to be used for multiple test cases
 study_plan_id = None
-semesters_info = None
+semesters_info_list = None
 
 # get personal study plans from valid user
 def test_0053_get_personal_study_plan(client):
@@ -24,11 +24,12 @@ def test_0054_read_semester_info_from_a_valid_study_plan(client):
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
-    global semesters_info
     semesters_info = json.loads(response.data)
-    assert len(semesters_info) == 8
+    global semesters_info_list
+    semesters_info_list = semesters_info["semester_info_list"]
+    assert len(semesters_info_list) == 8
     
-    semester = semesters_info['3']
+    semester = semesters_info_list[2]
     assert semester['id'] != None
     assert semester['semester_number'] == 3
     assert semester['total_units'] == 0
@@ -44,7 +45,7 @@ def test_0055_read_semester_info_from_a_invalid_study_plan(client):
 
 # update courses in a valid study plan semester
 def test_0056_update_courses_in_valid_study_plan_semester(client):
-    semester1_id = semesters_info['1']['id']
+    semester1_id = semesters_info_list[0]['id']
 
     new_course_codes = ['CS1101S', 'CS1231S', 'MA2001', 'MA1521']
 
@@ -87,7 +88,7 @@ def test_0057_update_courses_in_invalid_study_plan_semester(client):
 
 # update courses with no information passes in for a valid study plan semester
 def test_0058_update_courses_with_invalid_request_body(client):
-    semester1_id = semesters_info['1']['id']
+    semester1_id = semesters_info_list[0]['id']
     response = client.put(
         f'/api/study_plan_semester/{semester1_id}',
         json={}
@@ -98,7 +99,7 @@ def test_0058_update_courses_with_invalid_request_body(client):
 
 # read information from a valid semster
 def test_0059_get_information_from_valid_semester(client):
-    semester1_id = semesters_info['1']['id']
+    semester1_id = semesters_info_list[0]['id']
     response = client.get(f'/api/study_plan_semester/{semester1_id}')
     assert response.status_code == 200
 
@@ -133,9 +134,9 @@ def test_0061_update_courses_in_multiple_valid_study_plan_semester(client):
         ['CS3230']
     ]
     
-    for i in range(1, 9):
-        semester_id = semesters_info[str(i)]['id']
-        course_code = course_codes[i - 1]
+    for i in range(0, 8):
+        semester_id = semesters_info_list[i]['id']
+        course_code = course_codes[i]
         response = client.put(
             f'/api/study_plan_semester/{semester_id}',
             json={
@@ -154,7 +155,7 @@ def test_0061_update_courses_in_multiple_valid_study_plan_semester(client):
 
 # delete semester in the middle of the study plan
 def test_0062_delete_semester(client):
-    semester4_id = semesters_info['4']['id']
+    semester4_id = semesters_info_list[3]['id']
     response = client.delete(f'/api/study_plan_semester/{semester4_id}')
     assert response.status_code == 204
 
@@ -164,9 +165,10 @@ def test_0063_read_semester_info_from_a_valid_study_plan_after_semester_deletion
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
-    global semesters_info
     semesters_info = json.loads(response.data)
-    assert len(semesters_info) == 7
+    global semesters_info_list
+    semesters_info_list = semesters_info["semester_info_list"]
+    assert len(semesters_info_list) == 7
 
     course_codes = [
         ['CS1101S', 'CS1231S', 'MA2001', 'IS1108'],
@@ -178,12 +180,12 @@ def test_0063_read_semester_info_from_a_valid_study_plan_after_semester_deletion
         ['CS3230']
     ]
     
-    for i in range(1, 8):
-        semester = semesters_info[str(i)]
+    for i in range(0, 7):
+        semester = semesters_info_list[i]
         assert semester['id'] != None
-        assert semester['semester_number'] == i
+        assert semester['semester_number'] == i + 1
 
-        course_code = course_codes[i - 1]
+        course_code = course_codes[i]
         assert semester['total_units'] == 4 * len(course_code)
 
         semester_course_codes = semester['course_codes']
@@ -211,9 +213,10 @@ def test_0066_read_semester_info_from_a_valid_study_plan_after_semester_creation
     response = client.get(f'/api/studyplan/semester/{study_plan_id}')
     assert response.status_code == 200
 
-    global semesters_info
     semesters_info = json.loads(response.data)
-    assert len(semesters_info) == 8
+    global semesters_info_list
+    semesters_info_list = semesters_info["semester_info_list"]
+    assert len(semesters_info_list) == 8
 
     course_codes = [
         ['CS1101S', 'CS1231S', 'MA2001', 'IS1108'],
@@ -226,12 +229,12 @@ def test_0066_read_semester_info_from_a_valid_study_plan_after_semester_creation
         []
     ]
     
-    for i in range(1, 9):
-        semester = semesters_info[str(i)]
+    for i in range(0, 8):
+        semester = semesters_info_list[i]
         assert semester['id'] != None
-        assert semester['semester_number'] == i
+        assert semester['semester_number'] == i + 1
 
-        course_code = course_codes[i - 1]
+        course_code = course_codes[i]
         assert semester['total_units'] == 4 * len(course_code)
 
         semester_course_codes = semester['course_codes']

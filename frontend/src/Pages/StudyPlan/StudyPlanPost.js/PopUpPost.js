@@ -8,9 +8,8 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 import { IconContext } from "react-icons";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { Menu } from "@headlessui/react";
 import Tags from "./Tags";
+import Preview from "./Preview";
 
 function PopUpPost({
   studyPlanInformation,
@@ -133,22 +132,16 @@ function PopUpPost({
   };
 
   return (
-    <div className="fixed inset-0 z-10 p-3 flex items-center justify-center bg-gray-500 bg-opacity-75">
-      <div className="relative p-5 bg-white rounded-md shadow-md min-w-min w-full sm:max-w-3xl">
+    <div className="fixed inset-0 z-10 p-3 pt-14 flex items-center justify-center bg-gray-500 bg-opacity-75 max-h-screen">
+      <div className="relative p-5 bg-white rounded-md shadow-md min-w-min w-full sm:max-w-3xl max-h-full overflow-y-scroll">
         <RxCross2
           className="absolute right-2 top-2 hover:cursor-pointer"
           onClick={() => setIsOpenPopUp(false)}
         />
 
-        <div className="flex gap-5 mb-3 flex-col sm:flex-row">
-          <img
-            src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8"
-            alt="study-plan-img"
-            className="w-full sm:w-2/5 h-fit rounded-lg shadow-sm mb-2"
-          />
-
+        <div className="flex gap-5 mb-3 flex-col">
           <div id="studyPlanInformation" className="flex-grow">
-            <h1 className="text-lg font-semibold">{title}</h1>
+            <h1 className="text-xl font-semibold">{title}</h1>
 
             {academicPlanInformation != null ? (
               <Tags academicPlanInformation={academicPlanInformation} />
@@ -205,32 +198,16 @@ function PopUpPost({
                   onClick={favouriteStudyPlan}
                 />
               )}
-
-              {/* <BsThreeDotsVertical className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition" /> */}
-              <Menu as="div" className="relative">
-                <Menu.Button className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition">
-                  <BsThreeDotsVertical />
-                </Menu.Button>
-                <Menu.Items className="absolute right-0 bg-slate-50 mt-1 rounded-md shadow-sm min-w-max">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? "bg-sky-500 text-white" : "text-gray-900"
-                        } transition rounded-md px-2 py-1`}
-                        onClick={() => console.log("download")}
-                      >
-                        Download
-                      </button>
-                    )}
-                  </Menu.Item>
-                </Menu.Items>
-              </Menu>
             </div>
 
-            <h6 className="font-medium">Description</h6>
+            <h6 className="font-semibold">Description</h6>
             <p className="bg-slate-50 rounded-md p-2">{description}</p>
           </div>
+          <Preview
+            semesterInformationArray={
+              studyPlanInformation["semester_info_list"]
+            }
+          />
         </div>
       </div>
     </div>

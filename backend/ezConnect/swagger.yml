@@ -66,18 +66,17 @@ components:
         creator_name:
           type: string
           example: Jonathan Tan
-        semester_ids:
-          type: object
-          example: {
-            "1": "abc11111-1234-1234-1234-1234abcdef00",
-            "2": "def22222-1234-1234-1234-1234abcdef00",
-            "3": "abc33333-1234-1234-1234-1234abcdef00",
-            "4": "def44444-1234-1234-1234-1234abcdef00",
-            "5": "abc55555-1234-1234-1234-1234abcdef00",
-            "6": "def66666-1234-1234-1234-1234abcdef00",
-            "7": "abc77777-1234-1234-1234-1234abcdef00",
-            "8": "def88888-1234-1234-1234-1234abcdef00"
-          }
+        is_published:
+          type: boolean
+          example: true
+        published_version_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234abcdef00
+        semester_info_list:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanSemesterInformation"
     PublishedStudyPlan:
       type: object
       properties:
@@ -102,18 +101,10 @@ components:
         creator_name:
           type: string
           example: Jonathan Tan
-        semester_ids:
-          type: object
-          example: {
-            "1": "abc11111-1234-1234-1234-1234abcdef00",
-            "2": "def22222-1234-1234-1234-1234abcdef00",
-            "3": "abc33333-1234-1234-1234-1234abcdef00",
-            "4": "def44444-1234-1234-1234-1234abcdef00",
-            "5": "abc55555-1234-1234-1234-1234abcdef00",
-            "6": "def66666-1234-1234-1234-1234abcdef00",
-            "7": "abc77777-1234-1234-1234-1234abcdef00",
-            "8": "def88888-1234-1234-1234-1234abcdef00"
-          }
+        semester_info_list:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanSemesterInformation"
         academic_plan:
           $ref: "#/components/schemas/AcademicPlan"
     PublishedStudyPlanWithLikedFavourited:
@@ -146,18 +137,10 @@ components:
         is_liked_by:
           type: boolean
           example: true
-        semester_ids:
-          type: object
-          example: {
-            "1": "abc11111-1234-1234-1234-1234abcdef00",
-            "2": "def22222-1234-1234-1234-1234abcdef00",
-            "3": "abc33333-1234-1234-1234-1234abcdef00",
-            "4": "def44444-1234-1234-1234-1234abcdef00",
-            "5": "abc55555-1234-1234-1234-1234abcdef00",
-            "6": "def66666-1234-1234-1234-1234abcdef00",
-            "7": "abc77777-1234-1234-1234-1234abcdef00",
-            "8": "def88888-1234-1234-1234-1234abcdef00"
-          }
+        semester_info_list:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanSemesterInformation"
     StudyPlanSemesterInformation:
       type: object
       properties:
@@ -768,12 +751,12 @@ paths:
 
   /studyplan:
     post:
-      operationId: "ezConnect.study_plan.studyplan.create_study_plan"
+      operationId: ezConnect.study_plan.studyplan.create_study_plan
       tags:
         - Study Plan
-      summary: "Create a study plans"
+      summary: Create a study plans
       requestBody:
-        description: "Study plan to create"
+        description: Creator ID of user that study plan belongs to
         required: true
         content:
           application/json:
@@ -803,10 +786,10 @@ paths:
     
   /studyplan/{study_plan_id}:
     delete:
-      operationId: "ezConnect.study_plan.studyplan.delete_study_plan"
+      operationId: ezConnect.study_plan.studyplan.delete_study_plan
       tags:
         - Study Plan
-      summary: "Delete an existing study plan"
+      summary: Delete an existing study plan
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       responses:
@@ -817,10 +800,10 @@ paths:
 
   /studyplan/user_personal/{user_id}:
     get:
-      operationId: "ezConnect.study_plan.studyplan.get_personal_study_plans"
+      operationId: ezConnect.study_plan.studyplan.get_personal_study_plans
       tags:
         - Study Plan
-      summary: "Read a collection of personal study plans"
+      summary: Read a collection of personal study plans
       parameters:
         - $ref: "#/components/parameters/user_id"
       responses:
@@ -840,10 +823,10 @@ paths:
 
   /studyplan/personal/{study_plan_id}:
     get:
-      operationId: "ezConnect.study_plan.studyplan.get_a_personal_study_plan"
+      operationId: ezConnect.study_plan.studyplan.get_a_personal_study_plan
       tags:
         - Study Plan
-      summary: "Read a particular personal study plan"
+      summary: Read a particular personal study plan
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       responses:
@@ -856,14 +839,14 @@ paths:
         '404':
           description: Study plan does not exist
     put:
-      operationId: "ezConnect.study_plan.studyplan.update_personal_study_plan_title"
+      operationId: ezConnect.study_plan.studyplan.update_personal_study_plan
       tags:
         - Study Plan
-      summary: "Update the title of an existing personal study plan"
+      summary: Update an existing personal study plan
       parameters:
         - $ref: "#/components/parameters/study_plan_id"
       requestBody:
-        description: "Title to update the study plan with"
+        description: New study plan information
         required: true
         content:
           application/json:
@@ -872,23 +855,20 @@ paths:
               properties:
                 title:
                   type: string
-                  example: "Chemistry major with minor in nutrition"
-              required:
-                - title
+                  example: Computer Science Major with a minor in Mathematics
+                semester_info_list:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/StudyPlanSemesterInformation"
       responses:
         '200':
-          description: Updated an existing personal study plan with its new title
+          description: Successfully updated a personal study Plan
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Study plan <Chemistry major with minor in nutrition> updated
+                $ref: "#/components/schemas/PersonalStudyPlan"
         '404':
-          description: Study plan does not exist
-
+          description: Study plan or course does not exist
 
   /studyplan/personal/{study_plan_id}/validate:
     get:

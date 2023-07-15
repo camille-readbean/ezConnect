@@ -1,6 +1,6 @@
 from flask import abort
 from datetime import datetime
-from ezConnect.models import User, PersonalStudyPlan, PublishedStudyPlan, db
+from ezConnect.models import User, PersonalStudyPlan, PublishedStudyPlan, StudyPlanSemester, Course, db
 from .study_plan_semester import create_semester
 
 # Create a new study plan
@@ -31,20 +31,61 @@ def get_a_personal_study_plan(study_plan_id):
 
 
 # Update an existing personal study plan
-def update_personal_study_plan_title(study_plan_id, body):
+def update_personal_study_plan(study_plan_id, body):
     study_plan = PersonalStudyPlan.query.get(study_plan_id)
     if not study_plan:
         abort(404, f"Study plan with id {study_plan_id} not found")
-
+    
     title = body.get('title', None)
-    if title is None:
-        abort(400, "No information was passed in")
-
-    study_plan.title = title
-    study_plan.date_updated = datetime.utcnow()
+    if title is not None:
+        study_plan.title = title
+        study_plan.date_updated = datetime.utcnow()
+    
+    semester_info_list = body.get('semester_info_list', None)
+    if semester_info_list is not None:
+        num_of_new_semesters = len(semester_info_list)
+        curr_semester_list = study_plan.get_semester_list_in_order()
+        num_of_curr_semesters = len(curr_semester_list)
+        
+        # delete extra semesters
+        if num_of_curr_semesters > num_of_new_semesters:
+            for i in range(num_of_new_semesters, num_of_curr_semesters):
+                semester = curr_semester_list[i]
+                db.session.delete(semester)
+        
+        # create new semesters
+        elif num_of_curr_semesters < num_of_new_semesters:
+            for i in range(num_of_curr_semesters, num_of_new_semesters):
+                new_semester = StudyPlanSemester(
+                    semester_number = i + 1,
+                    personal_study_plan_id = study_plan_id
+                )
+                db.session.add(new_semester)
+                curr_semester_list.append(new_semester)
+        
+        # update semesters
+        for index, semester_info_dictionary in enumerate(semester_info_list):
+            # update course list
+            new_course_code_list = semester_info_dictionary["course_codes"]
+            semester = curr_semester_list[index]
+            semester.courses = []
+            for course_code in new_course_code_list:
+                course = Course.query.get(course_code)
+                if not course:
+                    abort(404, f"Course with course code <{course_code}> not found")
+                semester.courses.append(course)
+            
+            # update total number of units
+            course_list = semester.courses # list of Course objects
+            course_units_list = list(map(lambda course: course.number_of_units, course_list))
+            sum_of_units = sum(course_units_list)
+            semester.total_units = sum_of_units
+        
     db.session.commit()
+    study_plan.date_updated = datetime.utcnow()
+    
+    return study_plan.toJSON(), 200
 
-    return {"message": f"Study plan <{study_plan.title}> updated"}, 200
 
 # Delete an existing study plan
 # Corresponding published study plan will also be deleted if applicable
