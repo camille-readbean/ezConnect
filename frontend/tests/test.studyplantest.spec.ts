@@ -4,11 +4,13 @@ test('test', async ({ page }) => {
   await page.goto('http://localhost:3000/');
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('button', { name: 'MS logo Sign in' }).click();
+  // Need to let it wait, probably being defeated by anti bot mechanism
+  // Find a way to manually wait for us to input?
   await page.goto('https://login.microsoftonline.com/5ba5ef5e-3109-4e77-85bd-cfeb0d347e82/oauth2/v2.0/authorize?client_id=31e1fcdd-460b-4509-af8b-64fdbd68440a&redirect_uri=https%3a%2f%2fezconnecttesting.b2clogin.com%2fezconnecttesting.onmicrosoft.com%2foauth2%2fauthresp&response_type=code&scope=openid+profile+email&response_mode=form_post&nonce=Cdyqm89mFz1%2b%2bFgEMiML%2bQ%3d%3d&ui_locales=en-US&state=StateProperties%3deyJTSUQiOiJ4LW1zLWNwaW0tcmM6MWUyYzhhZWYtZTE4NS00MWQwLTgzOWUtY2FkM2I2N2NiYmMxIiwiVElEIjoiNjk2NDJiNmMtYjRkZC00NTUzLThhNDMtZmIyYzZmZGUwNDE4IiwiVE9JRCI6ImUwMzA1ZTNmLTJiOGEtNDQxNS1hMWU4LTBmYjQ3Y2U4NzBhNyJ9');
   await page.getByPlaceholder('Email, phone, or Skype').click();
   await page.getByPlaceholder('Email, phone, or Skype').fill('E0958769@u.nus.edu');
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByPlaceholder('Password').fill(`${PASSWORD}`);
+  await page.getByPlaceholder('Password').fill(`${process.env.NUS_PASSWORD}`);
   await page.getByPlaceholder('Password').click();
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: 'No' }).click();
