@@ -11,7 +11,7 @@
         repo: https://{{ git_username }}:{{ git_pat }}@github.com/camille-readbean/ezConnect.git
         dest: /home/azureuser/ezConnect
         update: yes
-        version: prepms2
+        version: release-ms3
         force: yes
 
     - name: Update and upgrade apt packages
