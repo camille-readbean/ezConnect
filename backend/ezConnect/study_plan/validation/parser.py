@@ -135,7 +135,7 @@ def check_courses_prereqs(semesters):
                     print(f'cache hitted {token} {cached_result}')
                     result = cached_result[1] if cached_result[0] < current_semester_index else False
                 else: 
-                    latest_sem_before_number = current_semester_index if current_semester_index > 1 else 1
+                    latest_sem_before_number = current_semester_index if current_semester_index > 0 else 0
                     result = token in [course for semester in semesters[:latest_sem_before_number] for course in semester]
                     course_sem_index = [semesters.index(s) for s in semesters if token in s][-1] if result else float('inf')
                     prereq = __get_prereq_rule(token)

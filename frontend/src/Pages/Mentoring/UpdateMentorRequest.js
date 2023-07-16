@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { secureApiRequest } from "../../ApiRequest";
 import Unauthenticated from "../../Components/Unauthenticated";
+import { Breadcrumbs, Link, Typography } from '@mui/material';
 
 function UpdateMentorRequest() {
   const [responseMessage, setResponseMessage] = useState("");
@@ -132,6 +133,19 @@ function UpdateMentorRequest() {
             >
               Submit
             </button>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link underline="always" color="inherit" href="/homepage">
+                Home
+              </Link>
+              <Link
+                underline="always"
+                color="inherit"
+                href="/mentoring"
+              >
+                Mentoring
+              </Link>
+              <Typography color="text.primary">Update mentor request</Typography>
+            </Breadcrumbs>
           </form>
 
           {responseMessage && <p className="text-gray-600">{responseMessage}</p>}

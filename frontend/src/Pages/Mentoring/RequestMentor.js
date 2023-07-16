@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { secureApiRequest } from "../../ApiRequest";
 import Unauthenticated from "../../Components/Unauthenticated";
+import { Breadcrumbs, Link, Typography } from '@mui/material';
 
 // Request a mentor, aka applying to a mentor posting
 function RequestMentee() {
@@ -56,7 +57,7 @@ function RequestMentee() {
           <h1 className="text-lg font-bold text-center">Request to be {currentPost.name}'s' mentee</h1>
           <center className='text-slate-500 py-2'>
           We will send them an email informing them of your request once you submit the request<br/>
-          When a mentee acepts, they can give you their contact details so you can communicate <br/>
+          When the mentor acepts, they can give you their contact details so you can communicate <br/>
           in real life
           </center>
           <hr className="my-3"></hr>
@@ -85,6 +86,19 @@ function RequestMentee() {
             >
               Request to be their mentee
             </button>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link underline="always" color="inherit" href="/homepage">
+                Home
+              </Link>
+              <Link
+                underline="always"
+                color="inherit"
+                href="/mentoring"
+              >
+                Mentoring
+              </Link>
+              <Typography color="text.primary">Request a mentor</Typography>
+            </Breadcrumbs>
           </form>
 
           {responseMessage && <p className="text-gray-600">{responseMessage}</p>}

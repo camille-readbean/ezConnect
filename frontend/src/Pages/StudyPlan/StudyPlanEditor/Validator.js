@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { MdOutlineCelebration } from "react-icons/md"
-import { Box, TextField, Button, Stack, Alert, AlertTitle, Grid } from "@mui/material";
-import SelectTags from "./SelectTags";
+import { Button, Alert, AlertTitle, Grid } from "@mui/material";
 import { secureApiRequest } from "../../../ApiRequest";
 
 function Validator({
@@ -18,34 +17,6 @@ function Validator({
   const [requestSent, setRequestSent] = useState(false);
   const [failedCourses, setFailedCourses] = useState([]);
   
-
-//   useEffect(() => {
-//     if (!isPublished) {
-//       fetch(
-//         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
-//       )
-//         .then((res) => res.json())
-//         .then((data) => {
-//           setTitle(data["title"]);
-//         })
-//         .catch((err) => {
-//           console.error(err);
-//         });
-//     } else {
-//       fetch(
-//         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanInformation["published_version_id"]}`
-//       )
-//         .then((res) => res.json())
-//         .then((data) => {
-//           setTitle(data["title"]);
-//           setDescription(data["description"]);
-//           setAcademicPlanInformation(data["academic_plan"]);
-//         })
-//         .catch((err) => {
-//           console.error(err);
-//         });
-//     }
-//   }, [studyPlanId, isPublished]);
 
   const validateStudyPlan = () => {
     setRequestSent(true);
@@ -66,16 +37,7 @@ function Validator({
     }).catch(
         error => setDescription("Network error" + error)
     );
-    // console.log(resp)
-    // setDescription(resp);
-    // console.log(description)
   };
-
-//   function displayResult() {
-//     return (
-
-//     )
-//   }
 
 
   return (
@@ -118,7 +80,6 @@ function Validator({
                     )
                 )}
                 </p>
-                {/* <p>{description}</p> */}
                 </>
             )}
         </Grid>

@@ -4,6 +4,7 @@ import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/
 import { secureApiRequest } from "../../ApiRequest";
 import CourseSelector from './CourseSelector';
 import Unauthenticated from "../../Components/Unauthenticated";
+import { Breadcrumbs, Link, Typography } from '@mui/material';
 
 function CreateMentorPosting() {
   const [responseMessage, setResponseMessage] = useState("");
@@ -89,9 +90,24 @@ function CreateMentorPosting() {
             <button
               type="submit"
               className="w-full my-2 bg-blue-500 px-2 py-1 rounded-lg text-white shadow-md"
+              tabIndex="3"
             >
               Submit
             </button>
+
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link underline="always" color="inherit" href="/homepage">
+                Home
+              </Link>
+              <Link
+                underline="always"
+                color="inherit"
+                href="/mentoring"
+              >
+                Mentoring
+              </Link>
+              <Typography color="text.primary">Create mentor postings</Typography>
+            </Breadcrumbs>
           </form>
 
           {responseMessage && <p className="text-gray-600">{responseMessage}</p>}

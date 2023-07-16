@@ -29,7 +29,7 @@ function Navigation(props) {
 
   return (
     <>
-      {showLoginModal && <LoginModal setLoginModal={setLoginModal} />}
+      {showLoginModal && <LoginModal setLoginModal={setLoginModal} showLoginModal={showLoginModal} />}
       <nav
         id="navbar"
         className="bg-sky-500 text-white fixed w-full z-30 top-0 p-3 shadow-md"
@@ -91,7 +91,7 @@ function Navigation(props) {
           <Link to="/homepage" className="navBarLink pt-1">
             Home
           </Link>
-          <Link to="/mentormenteematcher" className="navBarLink">
+          <Link to="/mentoring" className="navBarLink">
             Mentoring
           </Link>
           <div className="flex flex-col group">
