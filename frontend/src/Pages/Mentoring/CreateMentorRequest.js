@@ -43,8 +43,8 @@ function CreateMentorRequest() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 items-center justify-center flex">
-      <section className="w-96 p-6 shadow-lg bg-white rounded-md">
+    <div className="flex h-screen bg-gray-100 items-center justify-center">
+      <section className="w-full sm:max-w-lg p-6 m-5 shadow-lg bg-white rounded-md">
         <UnauthenticatedTemplate>
           <Unauthenticated />
         </UnauthenticatedTemplate>
