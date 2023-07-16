@@ -201,8 +201,8 @@ function MentoringMainPage() {
     <>
       <AuthenticatedTemplate>
         <Container>
-          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}}>
-            <h1 className='text-2xl'>Pending / Accepted mentor-mentee matches</h1>
+          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}} className="bg-slate-50 rounded-md my-2">
+            <h1 className='text-2xl font-semibold'>Pending / Accepted mentor-mentee matches</h1>
             <Tabs value={matchesTabValue} onChange={handleChangeMatchesTabValue} centered variant="fullWidth">
               <Tab label="Matches as mentor" id='full-width-user-matches-tab-0'/>
               <Tab label="Matches as mentee" id='full-width-user-matches-tab-1'/>
@@ -263,8 +263,8 @@ function MentoringMainPage() {
           
           <hr className='divide-y-4'></hr>
 
-          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}}>
-            <h1 className='text-2xl mr-4 c-1/10'>Your mentoring posts / requests</h1>
+          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}} className="bg-slate-50 rounded-md my-2">
+            <h1 className='text-2xl mr-4 c-1/10 font-semibold'>Your mentoring posts / requests</h1>
             <Tabs value={mentoringPostsValue} onChange={handleChangeMentoringPostsTabValue} centered variant="fullWidth">
               <Tab label="Posts as mentor" id='full-width-user-posts-tab-0'/>
               <Tab label="Requests for mentor" id='full-width-user-posts-tab-1'/>
@@ -329,8 +329,8 @@ function MentoringMainPage() {
             </div> 
           </Box>
 
-          <Box sx={{ bgcolor: '#eff2ef', minHeight: 10 + 'em', padding: 10 + 'px'}}>
-            <h2 className='text-2xl mr-4 c-1/10'>Find mentors or mentees</h2>
+          <Box sx={{ minHeight: 10 + 'em', padding: 10 + 'px'}} className="bg-slate-50 rounded-md my-2">
+            <h2 className='text-2xl mr-4 c-1/10 font-semibold'>Find mentors or mentees</h2>
             <p className='text-slate-500 py-2'>Posts in the community</p>
             <Select
               options={searchResults}

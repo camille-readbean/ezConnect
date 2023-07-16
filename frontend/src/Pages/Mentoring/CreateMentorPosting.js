@@ -43,8 +43,8 @@ function CreateMentorPosting() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 items-center justify-center flex">
-      <section className="w-96 p-6 shadow-lg bg-white rounded-md">
+    <div className="flex h-full bg-gray-100 items-center justify-center">
+      <section className="w-full sm:max-w-lg p-6 m-5 shadow-lg bg-white rounded-md">
         <UnauthenticatedTemplate>
           <Unauthenticated />
         </UnauthenticatedTemplate>
@@ -53,8 +53,7 @@ function CreateMentorPosting() {
           <center className='text-slate-500 py-2'>
             This lets people know your interest in mentoring a particular subject <br/>
             Only your name is shared, your email is not revealed till you accept a mentee <br/>
-            When a mentee acepts, they can give you their contact details so you can communicate <br/>
-            in real life
+            When a mentee acepts, they can give you their contact details so you can communicate in real life
           </center>
           <hr className="my-3"></hr>
 

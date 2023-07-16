@@ -38,10 +38,9 @@ function AboutUs() {
           </p>
           <p>
             Users can find students who are actively looking for a match. Each
-            posts showcases the name of post, description, type of request,
-            role, module and cost. Using the search and filter features, users
-            can find a student who meets their requirements or make a post
-            looking for one.
+            posts showcases the name of post, description, type of request and
+            course. Using the search feature, users can find a student who meets
+            their requirements or make a post looking for one.
           </p>
           <Link to="/mentoring" className="bluebutton">
             Find a match
@@ -54,9 +53,10 @@ function AboutUs() {
           <h1 className="text-2xl font-bold">Study Plan</h1>
           <p>
             Share your study plans with one another. Share your experience going
-            through your study plan and review other's study plans. Benefit from
-            one another by consulting other's study plans or working on other's
-            feedback.
+            through your study plan to let others learn from you! Reference
+            study plans when building your own study plan! Check if your study
+            plan meets prequisites! Import courses from NUSMods and export a
+            semester to NUSMods!
           </p>
           <Link to="/studyplan" className="bluebutton">
             Look at study plans
