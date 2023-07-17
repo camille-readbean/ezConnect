@@ -5,9 +5,6 @@ CREATE TABLE alembic_version (
     CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
 );
 
-INFO  [alembic.runtime.migration] Running upgrade  -> 22be9cc508e8, empty message
--- Running upgrade  -> 22be9cc508e8
-
 CREATE TABLE course (
     course_code VARCHAR(12) NOT NULL,
     course_name VARCHAR(100),
@@ -135,9 +132,6 @@ CREATE TABLE semester_course (
 
 INSERT INTO alembic_version (version_num) VALUES ('22be9cc508e8') RETURNING alembic_version.version_num;
 
-INFO  [alembic.runtime.migration] Running upgrade 22be9cc508e8 -> 0f60b0932ff1, empty message
--- Running upgrade 22be9cc508e8 -> 0f60b0932ff1
-
 CREATE TABLE personal_study_plan (
     id UUID NOT NULL,
     date_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -194,9 +188,6 @@ DROP TABLE study_plan;
 
 UPDATE alembic_version SET version_num='0f60b0932ff1' WHERE alembic_version.version_num = '22be9cc508e8';
 
-INFO  [alembic.runtime.migration] Running upgrade 0f60b0932ff1 -> 5d9bb93bb669, empty message
--- Running upgrade 0f60b0932ff1 -> 5d9bb93bb669
-
 CREATE TABLE viewed_study_plan (
     user_id UUID NOT NULL,
     published_study_plan_id UUID NOT NULL,
@@ -214,9 +205,6 @@ ALTER TABLE liked_study_plan ADD COLUMN date_liked TIMESTAMP WITHOUT TIME ZONE N
 ALTER TABLE liked_study_plan ADD CONSTRAINT unique_user_liked_study_plan UNIQUE (user_id, published_study_plan_id);
 
 UPDATE alembic_version SET version_num='5d9bb93bb669' WHERE alembic_version.version_num = '0f60b0932ff1';
-
-INFO  [alembic.runtime.migration] Running upgrade 5d9bb93bb669 -> 9d4370465dbd, empty message
--- Running upgrade 5d9bb93bb669 -> 9d4370465dbd
 
 CREATE TABLE academic_plan (
     id UUID NOT NULL,
@@ -246,9 +234,6 @@ CREATE TABLE special_programmes_academic_plan (
 
 UPDATE alembic_version SET version_num='9d4370465dbd' WHERE alembic_version.version_num = '5d9bb93bb669';
 
-INFO  [alembic.runtime.migration] Running upgrade 9d4370465dbd -> f0c3451c1967, empty message
--- Running upgrade 9d4370465dbd -> f0c3451c1967
-
 ALTER TABLE prerequisites ADD COLUMN prerequisite_str TEXT;
 
 ALTER TABLE prerequisites ALTER COLUMN course_code TYPE VARCHAR(12);
@@ -259,11 +244,13 @@ ALTER TABLE prerequisites DROP COLUMN prerequisite_code;
 
 UPDATE alembic_version SET version_num='f0c3451c1967' WHERE alembic_version.version_num = '9d4370465dbd';
 
-INFO  [alembic.runtime.migration] Running upgrade f0c3451c1967 -> e534acc545c3, empty message
--- Running upgrade f0c3451c1967 -> e534acc545c3
-
 ALTER TABLE prerequisites ALTER COLUMN course_code SET NOT NULL;
 
 UPDATE alembic_version SET version_num='e534acc545c3' WHERE alembic_version.version_num = 'f0c3451c1967';
 
 COMMIT;
+
+COPY programme FROM '/pre_data/programmes.csv' DELIMITER ',' CSV HEADER;
+COPY degree FROM '/pre_data/degrees.csv' DELIMITER ',' CSV HEADER;
+COPY course FROM '/pre_data/courses.csv' DELIMITER ',' CSV HEADER;
+COPY prerequisites FROM '/pre_data/prerequisites.csv' DELIMITER ',' CSV HEADER;
