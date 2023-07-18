@@ -94,9 +94,7 @@ def delete_study_plan(study_plan_id):
 
     if personal_study_plan:
         if personal_study_plan.published_version is not None:
-            published_study_plan = personal_study_plan.published_version
-            db.session.delete(published_study_plan)
-            db.session.commit()
+            delete_study_plan(personal_study_plan.published_version.id)
         db.session.delete(personal_study_plan)
         db.session.commit()
     

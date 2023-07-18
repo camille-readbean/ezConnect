@@ -1,5 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AiFillDelete } from "react-icons/ai";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 
 function PersonalStudyPlanList({
   personalStudyPlans,
@@ -7,6 +16,9 @@ function PersonalStudyPlanList({
   createNewStudyPlan,
   deleteStudyPlan,
 }) {
+  const [isDeleteComfirmationBoxOpen, setIsDeleteComfirmationBoxOpen] =
+    useState(false);
+
   const makeCard = (studyPlanInformation) => {
     const title = studyPlanInformation["title"];
     const dateUpdated = studyPlanInformation["date_updated"];
@@ -14,23 +26,55 @@ function PersonalStudyPlanList({
 
     // TODO: improve styling
     return (
-      <div className="group relative bg-white rounded-lg w-64 min-w-[256px] h-44 p-3 m-2 shadow-md overflow-hidden">
-        <Link
-          to={`/studyplan/editor/${id}`}
-          className="font-semibold whitespace-normal break-words"
+      <>
+        <Dialog
+          open={isDeleteComfirmationBoxOpen}
+          onClose={() => setIsDeleteComfirmationBoxOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-          {title}
-        </Link>
-        <div className="flex justify-between items-center">
-          <p className="text-sm italic whitespace-normal break-words">
-            Last updated: {dateUpdated}
-          </p>
-          <AiFillDelete
-            className="hidden cursor-pointer group-hover:block hover:bg-slate-200 p-1 h-6 w-6 rounded-md transition"
-            onClick={() => deleteStudyPlan(id)}
-          />
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to delete your study plan?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Deleting your study plan would also remove its published version
+              (if any).
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsDeleteComfirmationBoxOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                deleteStudyPlan(id);
+                setIsDeleteComfirmationBoxOpen(false);
+              }}
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <div className="group relative bg-white rounded-lg w-64 min-w-[256px] h-44 p-3 m-2 shadow-md overflow-hidden">
+          <Link
+            to={`/studyplan/editor/${id}`}
+            className="font-semibold whitespace-normal break-words"
+          >
+            {title}
+          </Link>
+          <div className="flex justify-between items-center">
+            <p className="text-sm italic whitespace-normal break-words">
+              Last updated: {dateUpdated}
+            </p>
+            <AiFillDelete
+              className="hidden cursor-pointer group-hover:block hover:bg-slate-200 p-1 h-6 w-6 rounded-md transition"
+              onClick={() => setIsDeleteComfirmationBoxOpen(true)}
+            />
+          </div>
         </div>
-      </div>
+      </>
     );
   };
 
