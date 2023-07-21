@@ -201,6 +201,7 @@ export default function Editor({ studyPlanId, instance }) {
         </button>
         <EditorMenu
           title={title}
+          studyPlanId={studyPlanId}
           setSemesterInformation={setSemesterInformation}
           setIsModified={setIsModified}
           isPublished={isPublished}

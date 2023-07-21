@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiFillDelete } from "react-icons/ai";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+import DeleteComfirmationBox from "./DeleteComfirmationBox";
 
 function PersonalStudyPlanList({
   personalStudyPlans,
@@ -19,6 +12,7 @@ function PersonalStudyPlanList({
   const navigate = useNavigate();
   const [isDeleteComfirmationBoxOpen, setIsDeleteComfirmationBoxOpen] =
     useState(false);
+  const [deleteStudyPlanId, setDeleteStudyPlanId] = useState("");
 
   const makeCard = (studyPlanInformation) => {
     const title = studyPlanInformation["title"];
@@ -28,36 +22,12 @@ function PersonalStudyPlanList({
     // TODO: improve styling
     return (
       <>
-        <Dialog
-          open={isDeleteComfirmationBoxOpen}
-          onClose={() => setIsDeleteComfirmationBoxOpen(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Are you sure you want to delete your study plan?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Deleting your study plan would also remove its published version
-              (if any).
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsDeleteComfirmationBoxOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                deleteStudyPlan(id);
-                setIsDeleteComfirmationBoxOpen(false);
-              }}
-              autoFocus
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <DeleteComfirmationBox
+          studyPlanId={deleteStudyPlanId}
+          deleteStudyPlan={deleteStudyPlan}
+          isDeleteComfirmationBoxOpen={isDeleteComfirmationBoxOpen}
+          setIsDeleteComfirmationBoxOpen={setIsDeleteComfirmationBoxOpen}
+        />
         <div
           onClick={() => navigate(`/studyplan/editor/${id}`)}
           className="group relative bg-white rounded-lg w-64 min-w-[256px] h-44 p-3 m-2 shadow-md overflow-hidden hover:cursor-pointer"
@@ -71,6 +41,7 @@ function PersonalStudyPlanList({
               className="hidden cursor-pointer group-hover:block hover:bg-slate-200 p-1 h-6 w-6 rounded-md transition"
               onClick={(event) => {
                 event.stopPropagation();
+                setDeleteStudyPlanId(id);
                 setIsDeleteComfirmationBoxOpen(true);
               }}
             />
