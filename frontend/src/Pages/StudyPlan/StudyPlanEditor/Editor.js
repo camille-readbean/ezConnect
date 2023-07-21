@@ -43,7 +43,7 @@ export default function Editor({ studyPlanId, instance }) {
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
     const { source, destination } = result;
-    setLastInteractedSemesterIndex(destination.droppableId);
+    setLastInteractedSemesterIndex(parseInt(destination.droppableId));
     if (source.droppableId !== destination.droppableId) {
       const sourceSemester = semesterInformation[source.droppableId];
       const destSemester = semesterInformation[destination.droppableId];
@@ -191,7 +191,11 @@ export default function Editor({ studyPlanId, instance }) {
             updateStudyPlan(true);
             setIsModified(false);
           }}
-          className="bg-sky-200 rounded-md px-2 py-1 hover:bg-sky-300 transition"
+          className={`${
+            isModified
+              ? `bg-red-300 hover:bg-red-400`
+              : `bg-green-300 hover:bg-green-400`
+          } rounded-md px-2 py-1 transition`}
         >
           {isModified ? <>Save</> : <>Saved</>}
         </button>
@@ -199,6 +203,7 @@ export default function Editor({ studyPlanId, instance }) {
           title={title}
           setSemesterInformation={setSemesterInformation}
           setIsModified={setIsModified}
+          isPublished={isPublished}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
           setIsShowValidator={setIsShowValidator}

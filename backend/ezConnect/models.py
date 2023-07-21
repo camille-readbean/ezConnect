@@ -139,7 +139,7 @@ class User(db.Model):
 class PersonalStudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
-    title = Column(String(150), default="Blank study plan")
+    title = Column(String(150), default="My study plan")
     creator_id = Column(
         UUID(as_uuid=True), 
         db.ForeignKey('users.azure_ad_oid'), 
@@ -186,7 +186,7 @@ class PersonalStudyPlan(db.Model):
 class PublishedStudyPlan(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     date_updated = Column(DateTime, nullable=False, default=datetime.utcnow)
-    title = Column(String(150), nullable=False, default="Blank study plan")
+    title = Column(String(150), nullable=False, default="My study plan")
     description = Column(Text, nullable=False, default="")
     num_of_likes = Column(
         Integer, 
@@ -199,7 +199,11 @@ class PublishedStudyPlan(db.Model):
         db.ForeignKey('users.azure_ad_oid'), 
         nullable=False
     )
-    semesters = db.relationship('StudyPlanSemester', backref='published_study_plan')
+    semesters = db.relationship(
+        'StudyPlanSemester', 
+        backref='published_study_plan', 
+        order_by='StudyPlanSemester.semester_number'
+    )
     personal_study_plan_id = Column(
         UUID(as_uuid=True), 
         db.ForeignKey('personal_study_plan.id'), 

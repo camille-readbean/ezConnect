@@ -2,6 +2,7 @@ import { Menu } from "@headlessui/react";
 import { BiSearch, BiChevronDown } from "react-icons/bi";
 import { BsFilter } from "react-icons/bs";
 import { useState } from "react";
+import Tooltip from "@mui/material/Tooltip";
 import SelectTags from "../StudyPlanEditor/SelectTags";
 
 function StudyPlanSearchBar({
@@ -91,11 +92,15 @@ function StudyPlanSearchBar({
         </button>
       </form>
 
-      <div className="relative hover:cursor-pointer">
-        <BsFilter
-          className="w-8 h-8 min-w-max min-h-max hover:bg-slate-200 rounded-md transition"
-          onClick={() => setIsFilterTabOpen((previous) => !previous)}
-        />
+      <div className="relative">
+        <Tooltip title="Filter" arrow>
+          <div>
+            <BsFilter
+              className="w-8 h-8 min-w-max min-h-max hover:bg-slate-200 hover:cursor-pointer rounded-md transition"
+              onClick={() => setIsFilterTabOpen((previous) => !previous)}
+            />
+          </div>
+        </Tooltip>
         {isFilterTabOpen ? (
           <div className="bg-slate-50 absolute right-0 w-96 rounded-md shadow-md p-3">
             <div className="flex items-center gap-2">

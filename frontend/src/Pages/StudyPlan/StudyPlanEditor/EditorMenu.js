@@ -18,20 +18,23 @@ function EditorOptions({
   title,
   setSemesterInformation,
   setIsModified,
+  isPublished,
   setIsShowPublisher,
   setIsShowValidator,
   semesterInformation,
   setLastInteractedSemesterIndex,
 }) {
   const addSemester = () => {
+    const semesterNumber = semesterInformation.length + 1;
     const newSemesterInfo = {
       course_codes: [],
       id: null,
-      semester_number: semesterInformation.length,
+      semester_number: semesterNumber,
       total_units: 0,
     };
     const newSemesterInfoArray = [...semesterInformation, newSemesterInfo];
     setSemesterInformation(newSemesterInfoArray);
+    setLastInteractedSemesterIndex(semesterNumber - 1);
     setIsModified(true);
   };
 
@@ -47,7 +50,7 @@ function EditorOptions({
 
   return (
     <Menu as="div" className="relative z-10">
-      <Menu.Button className="flex items-center justify-center py-1 rounded-md hover:bg-slate-200 transition h-8 w-8">
+      <Menu.Button className="flex items-center justify-center py-1 rounded-md bg-sky-200 hover:bg-sky-300 transition h-8 w-8">
         <BsThreeDotsVertical />
       </Menu.Button>
       <Menu.Items className="absolute right-0 bg-white rounded-md shadow-md">
@@ -98,7 +101,7 @@ function EditorOptions({
                 } rounded-md px-2 py-1 w-full`}
                 onClick={() => setIsShowPublisher(true)}
               >
-                Publish
+                {isPublished ? <>Update/unpublish</> : <>Publish</>}
               </button>
             )}
           </Menu.Item>

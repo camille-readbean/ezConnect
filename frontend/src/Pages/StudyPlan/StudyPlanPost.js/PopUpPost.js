@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
+import Tooltip from "@mui/material/Tooltip";
 import {
   AiFillHeart,
   AiOutlineHeart,
@@ -153,25 +154,29 @@ function PopUpPost({
               <p>Created by: {creatorName}</p>
 
               {isLikedBy ? (
-                <div
-                  className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                  onClick={unlikeStudyPlan}
-                >
-                  <IconContext.Provider value={{ color: "PaleVioletRed" }}>
-                    <AiFillHeart className="mr-1 h-5 w-fit" />
-                  </IconContext.Provider>
-                  <p className="font-medium">{numOfLikes}</p>
-                </div>
+                <Tooltip title="Unlike" arrow>
+                  <div
+                    className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                    onClick={unlikeStudyPlan}
+                  >
+                    <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+                      <AiFillHeart className="mr-1 h-5 w-fit" />
+                    </IconContext.Provider>
+                    <p className="font-medium">{numOfLikes}</p>
+                  </div>
+                </Tooltip>
               ) : (
-                <div
-                  className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                  onClick={likeStudyPlan}
-                >
-                  <IconContext.Provider value={{ color: "PaleVioletRed" }}>
-                    <AiOutlineHeart className="mr-1 h-5 w-fit" />
-                  </IconContext.Provider>
-                  <p className="font-medium">{numOfLikes}</p>
-                </div>
+                <Tooltip title="Like" arrow>
+                  <div
+                    className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                    onClick={likeStudyPlan}
+                  >
+                    <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+                      <AiOutlineHeart className="mr-1 h-5 w-fit" />
+                    </IconContext.Provider>
+                    <p className="font-medium">{numOfLikes}</p>
+                  </div>
+                </Tooltip>
               )}
             </div>
 
@@ -186,17 +191,25 @@ function PopUpPost({
               </button>
 
               {isFavouritedBy ? (
-                <IconContext.Provider value={{ color: "gold" }}>
-                  <AiFillStar
-                    className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                    onClick={unfavouriteStudyPlan}
-                  />
-                </IconContext.Provider>
+                <Tooltip title="Unfavourite" arrow>
+                  <div>
+                    <IconContext.Provider value={{ color: "gold" }}>
+                      <AiFillStar
+                        className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                        onClick={unfavouriteStudyPlan}
+                      />
+                    </IconContext.Provider>
+                  </div>
+                </Tooltip>
               ) : (
-                <AiOutlineStar
-                  className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                  onClick={favouriteStudyPlan}
-                />
+                <Tooltip title="Favourite" arrow>
+                  <div>
+                    <AiOutlineStar
+                      className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                      onClick={favouriteStudyPlan}
+                    />
+                  </div>
+                </Tooltip>
               )}
             </div>
 
