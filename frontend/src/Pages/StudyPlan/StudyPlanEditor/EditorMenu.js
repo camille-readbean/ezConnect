@@ -24,9 +24,9 @@ function EditorOptions({
   setIsModified,
   isPublished,
   setIsShowPublisher,
-  setIsShowValidator,
+  isShowValidator, setIsShowValidator,
   semesterInformation,
-  setLastInteractedSemesterIndex,
+  setLastInteractedSemesterIndex
 }) {
   const navigate = useNavigate();
   const [isDeleteComfirmationBoxOpen, setIsDeleteComfirmationBoxOpen] =

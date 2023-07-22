@@ -11,7 +11,7 @@
         repo: https://{{ git_username }}:{{ git_pat }}@github.com/camille-readbean/ezConnect.git
         dest: /home/azureuser/ezConnect
         update: yes
-        version: prepms2
+        version: release-ms3
         force: yes
 
     - name: Update and upgrade apt packages
@@ -72,7 +72,7 @@
     - name: Change to frontend directory and build
       # become: true
       # shell: cd ezConnect/frontend/; curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs && npm install && npm run build; cd ..; 
-      shell: cd ezConnect/frontend/; npm install; npm run build; cd ..; 
+      shell: cd ezConnect/frontend/; npm install; npm run build --max-old-space-size=800; cd ..; 
 
     - name: Build and start services
       become: true

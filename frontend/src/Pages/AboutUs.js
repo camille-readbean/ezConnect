@@ -1,12 +1,19 @@
 import { Link } from "react-router-dom";
 import { FaSlideshare } from "react-icons/fa";
 import { FcPlanner } from "react-icons/fc";
+import { MdPermIdentity } from "react-icons/md";
 
-function AboutUs() {
+function AboutUs({showLoginModal, setLoginModal}) {
   const handleFindOutMoreButtonClick = () => {
     const section = document.getElementById("MMMIntroduction");
     section.scrollIntoView({ behavior: "smooth" });
   };
+
+  // const [showLogin, setShowLogin] = useState(false);
+  const handleClickSignUp = () => {
+    console.log('Sign up button pressed')
+    setLoginModal(!showLoginModal);
+  }
 
   return (
     <>
@@ -63,6 +70,25 @@ function AboutUs() {
           </Link>
         </div>
         <FcPlanner className="w-40 h-40" />
+      </section>
+
+      <section id="AccountIntro" className="aboutussection">
+        <div className="aboutusdescription">
+          <h1 className="text-2xl font-bold">Sign up!</h1>
+          <p>
+            Creating an account is easy. We use your NUS's Microsoft account to authenticate
+             and verify everyone on the platform is an NUS student.
+          </p>
+          <p>
+            There is no password to remember, just use your NUS Microsoft account for logging and sign up. <br />
+            You will be prompted to create to create an account after logging for the first time.
+          </p>
+          <Link onClick={handleClickSignUp} className="bluebutton">
+            Sign Up
+          </Link>
+        </div>
+        {/* <MdPermIdentity className="w-40 h-40" /> */}
+        {/* <img src={'nus1-logo.png'} style={{ height: '5em', 'padding-right': '12px'}} alt='MS logo'/> */}
       </section>
     </>
   );
