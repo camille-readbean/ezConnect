@@ -76,6 +76,10 @@ export default function Editor({ studyPlanId, instance }) {
         return;
       }
 
+      setErrorMessage("");
+      // check course availability in semester
+      checkCourseAvailability(removed, destSemester["semester_number"]);
+
       // update course codes
       destCourses.splice(destination.index, 0, removed);
       sourceSemester["course_codes"] = sourceCourses;
@@ -90,9 +94,7 @@ export default function Editor({ studyPlanId, instance }) {
       updatedSemesterInformation[source.droppableId] = sourceSemester;
       updatedSemesterInformation[destination.droppableId] = destSemester;
       setSemesterInformation(updatedSemesterInformation);
-
       setIsModified(true);
-      setErrorMessage("");
     } else {
       const semester = semesterInformation[source.droppableId];
       const courses = [...semester["course_codes"]];
@@ -119,7 +121,13 @@ export default function Editor({ studyPlanId, instance }) {
   };
 
   const updateCoursesInSemester = (courseArray, semester) => {
-    semester["course_codes"] = courseArray;
+    semester["course_codes"] = courseArray; // update course codes
+
+    // check courses availability
+    courseArray.forEach((courseCode) => {
+      checkCourseAvailability(courseCode, semester["semester_number"]);
+    });
+
     semester["total_units"] = calculateTotalUnits(courseArray);
     const updatedSemesterInformation = [...semesterInformation];
     updatedSemesterInformation[semester["semester_number"] - 1] = semester;
@@ -174,6 +182,32 @@ export default function Editor({ studyPlanId, instance }) {
     }, 5000);
     return () => clearInterval(autosave);
   });
+
+  // function to check if course in available in the selected semester
+  // if not available, warning message will be set
+  // users are still allowed to add the course into the study plan
+  const checkCourseAvailability = (courseCode, semesterNumber) => {
+    const semesterNo = ((semesterNumber + 1) % 2) + 1; // either 1 or 2
+    if (semesterNo === 1) {
+      const isOfferedInSem1 = /true/i.test(
+        courseDictionary[courseCode]["is_offered_in_sem1"]
+      );
+      if (!isOfferedInSem1) {
+        setErrorMessage(
+          "Warning: course is not available in semester 1 (according to NUSMods)"
+        );
+      }
+    } else {
+      const isOfferedInSem2 = /true/i.test(
+        courseDictionary[courseCode]["is_offered_in_sem2"]
+      );
+      if (!isOfferedInSem2) {
+        setErrorMessage(
+          "Warning: course is not available in semester 2 (according to NUSMods)"
+        );
+      }
+    }
+  };
 
   return (
     <div className="px-8">
