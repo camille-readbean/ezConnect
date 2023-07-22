@@ -263,6 +263,9 @@ export default function Editor({ studyPlanId, instance }) {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             className="flex flex-col bg-sky-100 p-3 min-h-[285px] rounded-md"
+                            onClick={() =>
+                              setLastInteractedSemesterIndex(index)
+                            }
                           >
                             {courseCodeList.map((course, index) => {
                               return (

@@ -17,7 +17,7 @@ function makeCard(
 
   return (
     <div
-      className="w-72 bg-white px-3 py-4 shadow-md rounded-md hover:cursor-pointer"
+      className="w-72 min-w-[288px] min-h-[220px] bg-white px-3 py-4 shadow-md rounded-md hover:cursor-pointer"
       onClick={() => {
         setStudyPlanInformation(studyPlan);
         setIsOpenPopUp(true);
@@ -63,8 +63,8 @@ function filterStudyPlan(studyPlan, searchValue) {
 export default function StudyPlanList({
   studyPlans,
   azure_ad_oid,
-  setIsFetchAgain,
   searchValue,
+  setIsFetchAgain,
 }) {
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
   const [studyPlanInformation, setStudyPlanInformation] = useState({});
@@ -79,18 +79,17 @@ export default function StudyPlanList({
           setIsFetchAgain={setIsFetchAgain}
         />
       )}
-      <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg min-h-[256px]">
-        {studyPlans
-          .filter((studyPlan) => filterStudyPlan(studyPlan, searchValue))
-          .map((studyPlan) =>
-            makeCard(
-              studyPlan,
-              setIsOpenPopUp,
-              setStudyPlanInformation,
-              azure_ad_oid
-            )
-          )}
-      </div>
+
+      {studyPlans
+        .filter((studyPlan) => filterStudyPlan(studyPlan, searchValue))
+        .map((studyPlan) =>
+          makeCard(
+            studyPlan,
+            setIsOpenPopUp,
+            setStudyPlanInformation,
+            azure_ad_oid
+          )
+        )}
     </>
   );
 }

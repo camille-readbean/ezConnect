@@ -29,7 +29,12 @@ function Navigation(props) {
 
   return (
     <>
-      {showLoginModal && <LoginModal setLoginModal={setLoginModal} showLoginModal={showLoginModal} />}
+      {showLoginModal && (
+        <LoginModal
+          setLoginModal={setLoginModal}
+          showLoginModal={showLoginModal}
+        />
+      )}
       <nav
         id="navbar"
         className="bg-sky-500 text-white fixed w-full z-30 top-0 p-3 shadow-md"
@@ -53,17 +58,9 @@ function Navigation(props) {
             <Link to="/mentoring" className="navBarLink">
               Mentoring
             </Link>
-            <div className="group relative">
-              <Link to="/studyplan" className="navBarLink">
-                Study Plan
-              </Link>
-              <Link
-                to="/studyplan/favourites"
-                className="absolute top-full left-0 bg-slate-100 hover:bg-sky-100 rounded-md py-1 px-4 shadow-sm text-black invisible group-hover:visible transition"
-              >
-                Favourites
-              </Link>
-            </div>
+            <Link to="/studyplan" className="navBarLink">
+              Study Plan
+            </Link>
             <AuthenticatedTemplate>
               <Link onClick={handleLogoutRedirect} className="navBarLink">
                 Logout
@@ -94,17 +91,9 @@ function Navigation(props) {
           <Link to="/mentoring" className="navBarLink">
             Mentoring
           </Link>
-          <div className="flex flex-col group">
-            <Link to="/studyplan" className="navBarLink">
-              Study Plan
-            </Link>
-            <Link
-              to="/studyplan/favourites"
-              className="navBarLink ml-4 max-h-0 invisible group-hover:max-h-10 group-hover:visible overflow-hidden transition-all duration-500 ease-in-out"
-            >
-              Favourites
-            </Link>
-          </div>
+          <Link to="/studyplan" className="navBarLink">
+            Study Plan
+          </Link>
           <AuthenticatedTemplate>
             <Link onClick={handleLogoutRedirect} className="navBarLink">
               Logout

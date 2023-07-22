@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import StudyPlanList from "./StudyPlanList";
 import StudyPlanSearchBar from "./StudyPlanSearchBar";
 
-function StudyPlanGallery({ azure_ad_oid }) {
+function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
   const [studyPlans, setStudyPlans] = useState([]);
   const [filteredStudyPlans, setFilteredStudyPlans] = useState([]);
-  const [isFetchAgain, setIsFetchAgain] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   // Ordering Choices: mostRecent, mostLikes, relevancy, trending
   const [orderingChoice, setOrderingChoice] = useState("mostRecent");
@@ -28,7 +27,7 @@ function StudyPlanGallery({ azure_ad_oid }) {
         setStudyPlans(data["published_study_plans"]);
         setFilteredStudyPlans(data["published_study_plans"]);
       });
-  }, [isFetchAgain, orderingChoice]);
+  }, [azure_ad_oid, orderingChoice, isFetchAgain]);
 
   // Filter study plans
   useEffect(() => {
@@ -141,12 +140,14 @@ function StudyPlanGallery({ azure_ad_oid }) {
         />
 
         {filteredStudyPlans.length > 0 ? (
-          <StudyPlanList
-            studyPlans={filteredStudyPlans}
-            azure_ad_oid={azure_ad_oid}
-            setIsFetchAgain={setIsFetchAgain}
-            searchValue={searchValue}
-          />
+          <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg min-h-[256px]">
+            <StudyPlanList
+              studyPlans={filteredStudyPlans}
+              azure_ad_oid={azure_ad_oid}
+              searchValue={searchValue}
+              setIsFetchAgain={setIsFetchAgain}
+            />
+          </div>
         ) : (
           <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full">
             <p>There are no study plans found...</p>

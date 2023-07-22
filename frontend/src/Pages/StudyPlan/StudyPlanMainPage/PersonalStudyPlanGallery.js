@@ -9,8 +9,12 @@ const getPersonalStudyPlans = async (userId) => {
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/user_personal/${userId}`
     );
     const data = await res.json();
-    if (data.detail && data.detail.includes("User") && data.detail.includes("not found"))
-      throw new Error('User not found');
+    if (
+      data.detail &&
+      data.detail.includes("User") &&
+      data.detail.includes("not found")
+    )
+      throw new Error("User not found");
     const result = data["personal_study_plan_data"];
     return result;
   } catch (error) {
@@ -18,7 +22,7 @@ const getPersonalStudyPlans = async (userId) => {
   }
 };
 
-function PersonalStudyPlanGallery({ azure_ad_oid }) {
+function PersonalStudyPlanGallery({ azure_ad_oid, setIsFetchAgain }) {
   const navigate = useNavigate();
   const [personalStudyPlans, setPersonalStudyPlans] = useState([]);
 
@@ -43,10 +47,8 @@ function PersonalStudyPlanGallery({ azure_ad_oid }) {
     const fetchStudyPlans = async () => {
       try {
         const plans = await getPersonalStudyPlans(azure_ad_oid);
-        if (plans != null)
-          setPersonalStudyPlans(plans);
-        else console.log("Error")
-        // setPersonalStudyPlans(plans);
+        if (plans != null) setPersonalStudyPlans(plans);
+        else console.log("Error");
       } catch (error) {
         console.error(error);
       }
@@ -64,6 +66,7 @@ function PersonalStudyPlanGallery({ azure_ad_oid }) {
       );
       const plans = await getPersonalStudyPlans(azure_ad_oid);
       setPersonalStudyPlans(plans);
+      setIsFetchAgain((previous) => !previous);
     } catch (error) {
       console.error(error);
     }

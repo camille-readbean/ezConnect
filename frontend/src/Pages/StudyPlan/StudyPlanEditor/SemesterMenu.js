@@ -38,7 +38,7 @@ export default function SemesterMenu({
                   setIsShowExportSemester(true);
                 }}
               >
-                Export semester
+                Export semester <br /> to NUSMods
               </button>
             )}
           </Menu.Item>

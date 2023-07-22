@@ -16,7 +16,6 @@ import UpdateMentorRequest from './Pages/Mentoring/UpdateMentorRequest';
 import RequestMentor from './Pages/Mentoring/RequestMentor';
 import RequestMentee from './Pages/Mentoring/RequestMentee';
 import AcceptMatch from './Pages/Mentoring/AcceptMatch';
-import FavouritedStudyPlanPage from './Pages/StudyPlan/PersonalTabs/FavouritedStudyPlanPage';
 import NotFound from './Pages/404';
 
 const Pages = () => {
@@ -50,7 +49,6 @@ const Pages = () => {
           <Route path="/mentoring/matches/accept" element={<AcceptMatch/>} />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
           <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
-          <Route path="/studyplan/favourites" element={<FavouritedStudyPlanPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </body>

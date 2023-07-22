@@ -134,7 +134,7 @@ function Homepage() {
       .then((data) => {
         setStudyPlanList(data["published_study_plans"].slice(0, 8));
       });
-  }, [isFetchStudyPlansAgain]);
+  }, [azure_ad_oid, isFetchStudyPlansAgain]);
 
   return (
     <>
@@ -423,12 +423,14 @@ function Homepage() {
           </h1>
           <div className="container m-auto p-5 bg-slate-50 rounded-md">
             {studyPlanList.length > 0 ? (
-              <StudyPlanList
-                studyPlans={studyPlanList}
-                azure_ad_oid={azure_ad_oid}
-                setIsFetchAgain={setIsFetchStudyPlansAgain}
-                searchValue=""
-              />
+              <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg min-h-[256px]">
+                <StudyPlanList
+                  studyPlans={studyPlanList}
+                  azure_ad_oid={azure_ad_oid}
+                  setIsFetchAgain={setIsFetchStudyPlansAgain}
+                  searchValue=""
+                />
+              </div>
             ) : (
               <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full">
                 <p>There are no study plans found...</p>
