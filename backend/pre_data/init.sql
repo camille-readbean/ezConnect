@@ -5,8 +5,6 @@ CREATE TABLE alembic_version (
     CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
 );
 
--- Running upgrade  -> 22be9cc508e8
-
 CREATE TABLE course (
     course_code VARCHAR(12) NOT NULL,
     course_name VARCHAR(100),
@@ -134,8 +132,125 @@ CREATE TABLE semester_course (
 
 INSERT INTO alembic_version (version_num) VALUES ('22be9cc508e8') RETURNING alembic_version.version_num;
 
+CREATE TABLE personal_study_plan (
+    id UUID NOT NULL,
+    date_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    title VARCHAR(150),
+    creator_id UUID NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(creator_id) REFERENCES users (azure_ad_oid)
+);
+
+CREATE TABLE published_study_plan (
+    id UUID NOT NULL,
+    date_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    num_of_likes INTEGER NOT NULL,
+    creator_id UUID NOT NULL,
+    personal_study_plan_id UUID NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(creator_id) REFERENCES users (azure_ad_oid),
+    FOREIGN KEY(personal_study_plan_id) REFERENCES personal_study_plan (id)
+);
+
+CREATE TABLE favorited_study_plan (
+    user_id UUID NOT NULL,
+    published_study_plan_id UUID NOT NULL,
+    FOREIGN KEY(published_study_plan_id) REFERENCES published_study_plan (id),
+    FOREIGN KEY(user_id) REFERENCES users (azure_ad_oid)
+);
+
+CREATE TABLE liked_study_plan (
+    user_id UUID NOT NULL,
+    published_study_plan_id UUID NOT NULL,
+    FOREIGN KEY(published_study_plan_id) REFERENCES published_study_plan (id),
+    FOREIGN KEY(user_id) REFERENCES users (azure_ad_oid)
+);
+
+ALTER TABLE study_plan_semester ADD COLUMN personal_study_plan_id UUID;
+
+ALTER TABLE study_plan_semester ADD COLUMN published_study_plan_id UUID;
+
+ALTER TABLE study_plan_semester DROP CONSTRAINT semesters_in_study_plan_unique;
+
+ALTER TABLE study_plan_semester ADD CONSTRAINT semesters_in_published_study_plan_unique UNIQUE (published_study_plan_id, semester_number);
+
+ALTER TABLE study_plan_semester DROP CONSTRAINT study_plan_semester_study_plan_id_fkey;
+
+ALTER TABLE study_plan_semester ADD CONSTRAINT published_study_plan_semester FOREIGN KEY(published_study_plan_id) REFERENCES published_study_plan (id);
+
+ALTER TABLE study_plan_semester ADD CONSTRAINT personal_study_plan_semester FOREIGN KEY(personal_study_plan_id) REFERENCES personal_study_plan (id);
+
+ALTER TABLE study_plan_semester DROP COLUMN study_plan_id;
+
+DROP TABLE study_plan;
+
+UPDATE alembic_version SET version_num='0f60b0932ff1' WHERE alembic_version.version_num = '22be9cc508e8';
+
+CREATE TABLE viewed_study_plan (
+    user_id UUID NOT NULL,
+    published_study_plan_id UUID NOT NULL,
+    date_viewed TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    FOREIGN KEY(published_study_plan_id) REFERENCES published_study_plan (id),
+    FOREIGN KEY(user_id) REFERENCES users (azure_ad_oid)
+);
+
+ALTER TABLE favorited_study_plan ADD COLUMN date_favourited TIMESTAMP WITHOUT TIME ZONE NOT NULL;
+
+ALTER TABLE favorited_study_plan ADD CONSTRAINT unique_user_favourited_study_plan UNIQUE (user_id, published_study_plan_id);
+
+ALTER TABLE liked_study_plan ADD COLUMN date_liked TIMESTAMP WITHOUT TIME ZONE NOT NULL;
+
+ALTER TABLE liked_study_plan ADD CONSTRAINT unique_user_liked_study_plan UNIQUE (user_id, published_study_plan_id);
+
+UPDATE alembic_version SET version_num='5d9bb93bb669' WHERE alembic_version.version_num = '0f60b0932ff1';
+
+CREATE TABLE academic_plan (
+    id UUID NOT NULL,
+    published_study_plan_id UUID NOT NULL,
+    first_degree_id UUID NOT NULL,
+    second_degree_id UUID,
+    second_major VARCHAR(150),
+    PRIMARY KEY (id),
+    FOREIGN KEY(first_degree_id) REFERENCES degree (id),
+    FOREIGN KEY(published_study_plan_id) REFERENCES published_study_plan (id),
+    FOREIGN KEY(second_degree_id) REFERENCES degree (id)
+);
+
+CREATE TABLE minor_academic_plan (
+    minor_id UUID,
+    academic_plan_id UUID,
+    FOREIGN KEY(academic_plan_id) REFERENCES academic_plan (id),
+    FOREIGN KEY(minor_id) REFERENCES programme (id)
+);
+
+CREATE TABLE special_programmes_academic_plan (
+    special_programme_id UUID,
+    academic_plan_id UUID,
+    FOREIGN KEY(academic_plan_id) REFERENCES academic_plan (id),
+    FOREIGN KEY(special_programme_id) REFERENCES programme (id)
+);
+
+UPDATE alembic_version SET version_num='9d4370465dbd' WHERE alembic_version.version_num = '5d9bb93bb669';
+
+ALTER TABLE prerequisites ADD COLUMN prerequisite_str TEXT;
+
+ALTER TABLE prerequisites ALTER COLUMN course_code TYPE VARCHAR(12);
+
+ALTER TABLE prerequisites DROP CONSTRAINT prerequisites_prerequisite_code_fkey;
+
+ALTER TABLE prerequisites DROP COLUMN prerequisite_code;
+
+UPDATE alembic_version SET version_num='f0c3451c1967' WHERE alembic_version.version_num = '9d4370465dbd';
+
+ALTER TABLE prerequisites ALTER COLUMN course_code SET NOT NULL;
+
+UPDATE alembic_version SET version_num='e534acc545c3' WHERE alembic_version.version_num = 'f0c3451c1967';
+
 COMMIT;
 
 COPY programme FROM '/pre_data/programmes.csv' DELIMITER ',' CSV HEADER;
 COPY degree FROM '/pre_data/degrees.csv' DELIMITER ',' CSV HEADER;
 COPY course FROM '/pre_data/courses.csv' DELIMITER ',' CSV HEADER;
+COPY prerequisites FROM '/pre_data/prerequisites.csv' DELIMITER ',' CSV HEADER;
