@@ -8,12 +8,26 @@ import SemesterMenu from "./SemesterMenu";
 import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
 import Validator from "./Validator";
+import courseDictionary from "../../../courseDictionary.json";
+
+function calculateTotalUnits(courseList) {
+  let totalUnits = 0;
+  courseList.forEach((courseCode) => {
+    totalUnits += parseFloat(courseDictionary[courseCode]["number_of_units"]);
+  });
+  return totalUnits;
+}
 
 export default function Editor({ studyPlanId, instance }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [isShowPublisher, setIsShowPublisher] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+  // semesterInformation is an array of information on semesters
+  // each semester contains id, semester_number, total_units, course_codes and upcoming course_info_list
+  // use course_info list
+  // but adding courses through course selector got none of these information on number of units etc.
+  // remember to JSON the data obtained from the dictionary
   const [semesterInformation, setSemesterInformation] = useState([]);
   const [isModified, setIsModified] = useState(false);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
@@ -62,13 +76,21 @@ export default function Editor({ studyPlanId, instance }) {
         return;
       }
 
+      // update course codes
       destCourses.splice(destination.index, 0, removed);
       sourceSemester["course_codes"] = sourceCourses;
       destSemester["course_codes"] = destCourses;
+
+      // update number of units
+      sourceSemester["total_units"] = calculateTotalUnits(sourceCourses);
+      destSemester["total_units"] = calculateTotalUnits(destCourses);
+
+      // update semester information
       const updatedSemesterInformation = [...semesterInformation];
       updatedSemesterInformation[source.droppableId] = sourceSemester;
       updatedSemesterInformation[destination.droppableId] = destSemester;
       setSemesterInformation(updatedSemesterInformation);
+
       setIsModified(true);
       setErrorMessage("");
     } else {
@@ -88,6 +110,7 @@ export default function Editor({ studyPlanId, instance }) {
   const deleteCourse = (semester, courseIndex) => {
     const courses = semester["course_codes"];
     courses.splice(courseIndex, 1);
+    semester["total_units"] = calculateTotalUnits(courses);
     setLastInteractedSemesterIndex(semester["semester_number"] - 1);
     const updatedSemesterInformation = [...semesterInformation];
     updatedSemesterInformation[semester["semester_number"] - 1] = semester;
@@ -97,6 +120,7 @@ export default function Editor({ studyPlanId, instance }) {
 
   const updateCoursesInSemester = (courseArray, semester) => {
     semester["course_codes"] = courseArray;
+    semester["total_units"] = calculateTotalUnits(courseArray);
     const updatedSemesterInformation = [...semesterInformation];
     updatedSemesterInformation[semester["semester_number"] - 1] = semester;
     setLastInteractedSemesterIndex(semester["semester_number"] - 1);
@@ -227,6 +251,7 @@ export default function Editor({ studyPlanId, instance }) {
       <ImportCourses
         semesterInformation={semesterInformation}
         updateCoursesInSemester={updateCoursesInSemester}
+        updateStudyPlan={updateStudyPlan}
       />
       <p className="text-sm text-red-500 px-4 pb-2">{errorMessage}</p>
       <div id="studyPlan" className="px-3 mb-3">
