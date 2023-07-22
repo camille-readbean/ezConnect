@@ -8,6 +8,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
   const [searchValue, setSearchValue] = useState("");
   // Ordering Choices: mostRecent, mostLikes, relevancy, trending
   const [orderingChoice, setOrderingChoice] = useState("mostRecent");
+  const [isLoading, setIsLoading] = useState(false);
 
   const defaultFilterRequest = {
     first_degree: null,
@@ -19,6 +20,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
   const [filterRequest, setFilterRequest] = useState(defaultFilterRequest);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish?user_id=${azure_ad_oid}&ordering=${orderingChoice}`
     )
@@ -26,6 +28,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
       .then((data) => {
         setStudyPlans(data["published_study_plans"]);
         setFilteredStudyPlans(data["published_study_plans"]);
+        setIsLoading(false);
       });
   }, [azure_ad_oid, orderingChoice, isFetchAgain]);
 
@@ -139,7 +142,11 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
           setFilterRequest={setFilterRequest}
         />
 
-        {filteredStudyPlans.length > 0 ? (
+        {isLoading ? (
+          <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full rounded-lg">
+            <p className="text-lg m-2">Loading published study plans...</p>
+          </div>
+        ) : filteredStudyPlans.length > 0 ? (
           <div className="flex flex-wrap gap-3 p-4 bg-white rounded-lg min-h-[256px]">
             <StudyPlanList
               studyPlans={filteredStudyPlans}

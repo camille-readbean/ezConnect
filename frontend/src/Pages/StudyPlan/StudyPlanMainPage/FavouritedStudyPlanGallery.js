@@ -7,14 +7,17 @@ export default function FavouritedStudyPlanGallery({
   setIsFetchAgain,
 }) {
   const [favouritedStudyPlans, setFavouritedStudyPlans] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/favourite/${azure_ad_oid}`
     )
       .then((res) => res.json())
       .then((data) => {
         setFavouritedStudyPlans(data["favourited_study_plans"]);
+        setIsLoading(false);
       })
       .catch((err) => console.error(err));
   }, [azure_ad_oid, isFetchAgain]);
@@ -25,7 +28,11 @@ export default function FavouritedStudyPlanGallery({
         <h1 className="text-2xl font-semibold py-3">Favourited Study Plans</h1>
 
         <div className="flex gap-3 p-4 bg-white rounded-lg overflow-x-auto">
-          {favouritedStudyPlans.length > 0 ? (
+          {isLoading ? (
+            <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full rounded-lg">
+              <p className="text-lg m-2">Loading favourited study plans...</p>
+            </div>
+          ) : favouritedStudyPlans.length > 0 ? (
             <StudyPlanList
               studyPlans={favouritedStudyPlans}
               azure_ad_oid={azure_ad_oid}
