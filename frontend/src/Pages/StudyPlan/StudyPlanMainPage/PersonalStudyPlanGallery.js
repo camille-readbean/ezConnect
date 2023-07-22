@@ -3,18 +3,22 @@ import { useNavigate } from "react-router-dom";
 import PersonalStudyPlanList from "./PersonalStudyPlanList";
 import EmptyPersonalStudyPlan from "./EmptyPersonalStudyPlan";
 
-const getPersonalStudyPlans = async (userId) => {
+const getPersonalStudyPlans = async (userId, navigate) => {
   try {
     const res = await fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/user_personal/${userId}`
     );
     const data = await res.json();
     if (data.detail && data.detail.includes("User") && data.detail.includes("not found"))
-      throw new Error('User not found');
+      throw Error('User not found');
     const result = data["personal_study_plan_data"];
     return result;
   } catch (error) {
     console.error(error);
+    if (error.message === "User not found") {
+      console.log("User not found, redirecting to create account");
+      navigate('/user/create-account');
+    }
   }
 };
 
@@ -42,17 +46,34 @@ function PersonalStudyPlanGallery({ azure_ad_oid }) {
   useEffect(() => {
     const fetchStudyPlans = async () => {
       try {
-        const plans = await getPersonalStudyPlans(azure_ad_oid);
-        if (plans != null)
-          setPersonalStudyPlans(plans);
-        else console.log("Error")
+        // const plans = await getPersonalStudyPlans(azure_ad_oid, navigate);
+        // if (plans != null)
+        //   setPersonalStudyPlans(plans);
+        // else console.log("Error 11111")
         // setPersonalStudyPlans(plans);
+
+        await getPersonalStudyPlans(azure_ad_oid, navigate)
+          .then(
+            (plans) => {
+              if (plans != null) {
+                setPersonalStudyPlans(plans);
+              }
+              console.log('plans: ' + plans);
+            }
+          ).catch(
+            (error) => {if (error === 'User not found' ) {
+              console.log('User not found');
+              navigate('/user/create-account');
+            } else {
+              console.log('Error caught in ' + error);
+            }}
+          )
       } catch (error) {
         console.error(error);
       }
     };
     fetchStudyPlans();
-  }, [azure_ad_oid]);
+  }, [azure_ad_oid, navigate]);
 
   const deleteStudyPlan = async (studyPlanId) => {
     try {

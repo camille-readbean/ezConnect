@@ -11,7 +11,9 @@ import LoginModal from "./LoginModal";
 function Navigation(props) {
   // const isLoggedIn = props.isLoggedIn;
 
-  const [showLoginModal, setLoginModal] = useState(false);
+  // const [showLoginModal, setLoginModal] = useState(false);
+  const showLoginModal = props.showLoginModal;
+  const setLoginModal = props.setLoginModal;
   const [isShowingNavbar, setShowNavbar] = useState(false);
 
   const { instance } = useMsal();

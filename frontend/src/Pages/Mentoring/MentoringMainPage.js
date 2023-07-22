@@ -90,6 +90,10 @@ function MentoringMainPage() {
           setMentorMatches(matchesData.mentor_matches);
         } else if (matchesData.error) {
           console.log(matchesData.error);
+          if (matchesData.error.includes("User not found")) {
+            console.log("User not found, redirecting to create account");
+            navigate('/user/create-account');
+          }
         } else if (matchesData.detail) {
           console.log(matchesData.detail);
         }

@@ -1,6 +1,7 @@
 // import { useEffect, useState } from "react";
 import { MsalProvider } from '@azure/msal-react';
 import { Route, Routes } from "react-router-dom";
+import { useState } from 'react';
 import LoginPage from "./Pages/LoginPage";
 import AboutUs from "./Pages/AboutUs";
 import Homepage from "./Pages/Homepage";
@@ -20,16 +21,17 @@ import AcceptMatch from './Pages/Mentoring/AcceptMatch';
 import FavouritedStudyPlanPage from './Pages/StudyPlan/PersonalTabs/FavouritedStudyPlanPage';
 
 const Pages = () => {
+  const [showLoginModal, setLoginModal] = useState(false);
   return (
     <>
       <header>
-        <Navigation/>
+        <Navigation showLoginModal={showLoginModal} setLoginModal={setLoginModal}/>
       </header>
       <body>
         <Routes>
           <Route
             path="/"
-            element={<AboutUs />}
+            element={<AboutUs showLoginModal={showLoginModal} setLoginModal={setLoginModal}/>}
           />
           <Route
             path="/homepage"
