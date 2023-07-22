@@ -3,9 +3,11 @@ import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
+import { useState } from "react";
 import StudyPlanBanner from "./StudyPlanBanner";
 import PersonalStudyPlanGallery from "./PersonalStudyPlanGallery";
 import StudyPlanGallery from "./StudyPlanGallary";
+import FavouritedStudyPlanGallery from "./FavouritedStudyPlanGallery";
 import Unauthenticated from "../../../Components/Unauthenticated";
 
 function StudyPlanMainPage() {
@@ -17,13 +19,27 @@ function StudyPlanMainPage() {
     azure_ad_oid = activeAccount.idTokenClaims["oid"];
   }
 
+  const [isFetchAgain, setIsFetchAgain] = useState(false);
+
   return (
     <>
       <StudyPlanBanner />
 
       <AuthenticatedTemplate>
-        <PersonalStudyPlanGallery azure_ad_oid={azure_ad_oid} />
-        <StudyPlanGallery azure_ad_oid={azure_ad_oid} />
+        <PersonalStudyPlanGallery
+          azure_ad_oid={azure_ad_oid}
+          setIsFetchAgain={setIsFetchAgain}
+        />
+        <FavouritedStudyPlanGallery
+          azure_ad_oid={azure_ad_oid}
+          isFetchAgain={isFetchAgain}
+          setIsFetchAgain={setIsFetchAgain}
+        />
+        <StudyPlanGallery
+          azure_ad_oid={azure_ad_oid}
+          isFetchAgain={isFetchAgain}
+          setIsFetchAgain={setIsFetchAgain}
+        />
       </AuthenticatedTemplate>
 
       <UnauthenticatedTemplate>

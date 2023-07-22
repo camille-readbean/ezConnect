@@ -91,7 +91,7 @@ function AcceptMatch() {
           <h1 className="text-lg font-bold text-center">Accept being {acceptRole === 'mentor' ? currentPost.mentee_name : currentPost.mentor_name}'s' {acceptRole}</h1>
           <center className='text-slate-500 py-2'>
           We will send them an email informing them of your request once you submit the request<br/>
-          When a mentee acepts, they can give you their contact details so you can communicate <br/>
+          When a mentee accepts, they can give you their contact details so you can communicate <br/>
           in real life
           </center>
           <hr className="my-3"></hr>

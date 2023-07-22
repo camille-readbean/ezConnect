@@ -1,6 +1,6 @@
-// import { useEffect, useState } from "react";
 import { MsalProvider } from '@azure/msal-react';
 import { Route, Routes } from "react-router-dom";
+import { useState } from 'react';
 import LoginPage from "./Pages/LoginPage";
 import AboutUs from "./Pages/AboutUs";
 import Homepage from "./Pages/Homepage";
@@ -17,19 +17,20 @@ import UpdateMentorRequest from './Pages/Mentoring/UpdateMentorRequest';
 import RequestMentor from './Pages/Mentoring/RequestMentor';
 import RequestMentee from './Pages/Mentoring/RequestMentee';
 import AcceptMatch from './Pages/Mentoring/AcceptMatch';
-import FavouritedStudyPlanPage from './Pages/StudyPlan/PersonalTabs/FavouritedStudyPlanPage';
+import NotFound from './Pages/404';
 
 const Pages = () => {
+  const [showLoginModal, setLoginModal] = useState(false);
   return (
     <>
       <header>
-        <Navigation/>
+        <Navigation showLoginModal={showLoginModal} setLoginModal={setLoginModal}/>
       </header>
       <body>
         <Routes>
           <Route
             path="/"
-            element={<AboutUs />}
+            element={<AboutUs showLoginModal={showLoginModal} setLoginModal={setLoginModal}/>}
           />
           <Route
             path="/homepage"
@@ -50,7 +51,7 @@ const Pages = () => {
           <Route path="/mentoring/matches/accept" element={<AcceptMatch/>} />
           <Route path="/studyplan" element={<StudyPlanMainPage />} />
           <Route path="/studyplan/editor/:studyPlanId" element={<StudyPlanEditor />} />
-          <Route path="/studyplan/favourites" element={<FavouritedStudyPlanPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </body>
       <footer>

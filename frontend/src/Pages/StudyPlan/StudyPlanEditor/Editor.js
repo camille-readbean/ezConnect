@@ -8,12 +8,26 @@ import SemesterMenu from "./SemesterMenu";
 import ExportCourses from "./ExportCourses";
 import { RxCross2 } from "react-icons/rx";
 import Validator from "./Validator";
+import courseDictionary from "../../../courseDictionary.json";
+
+function calculateTotalUnits(courseList) {
+  let totalUnits = 0;
+  courseList.forEach((courseCode) => {
+    totalUnits += parseFloat(courseDictionary[courseCode]["number_of_units"]);
+  });
+  return totalUnits;
+}
 
 export default function Editor({ studyPlanId, instance }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
   const [isShowPublisher, setIsShowPublisher] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+  // semesterInformation is an array of information on semesters
+  // each semester contains id, semester_number, total_units, course_codes and upcoming course_info_list
+  // use course_info list
+  // but adding courses through course selector got none of these information on number of units etc.
+  // remember to JSON the data obtained from the dictionary
   const [semesterInformation, setSemesterInformation] = useState([]);
   const [isModified, setIsModified] = useState(false);
   const [isFetchAgain, setIsFetchAgain] = useState(true);
@@ -43,7 +57,7 @@ export default function Editor({ studyPlanId, instance }) {
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
     const { source, destination } = result;
-    setLastInteractedSemesterIndex(destination.droppableId);
+    setLastInteractedSemesterIndex(parseInt(destination.droppableId));
     if (source.droppableId !== destination.droppableId) {
       const sourceSemester = semesterInformation[source.droppableId];
       const destSemester = semesterInformation[destination.droppableId];
@@ -62,15 +76,25 @@ export default function Editor({ studyPlanId, instance }) {
         return;
       }
 
+      setErrorMessage("");
+      // check course availability in semester
+      checkCourseAvailability(removed, destSemester["semester_number"]);
+
+      // update course codes
       destCourses.splice(destination.index, 0, removed);
       sourceSemester["course_codes"] = sourceCourses;
       destSemester["course_codes"] = destCourses;
+
+      // update number of units
+      sourceSemester["total_units"] = calculateTotalUnits(sourceCourses);
+      destSemester["total_units"] = calculateTotalUnits(destCourses);
+
+      // update semester information
       const updatedSemesterInformation = [...semesterInformation];
       updatedSemesterInformation[source.droppableId] = sourceSemester;
       updatedSemesterInformation[destination.droppableId] = destSemester;
       setSemesterInformation(updatedSemesterInformation);
       setIsModified(true);
-      setErrorMessage("");
     } else {
       const semester = semesterInformation[source.droppableId];
       const courses = [...semester["course_codes"]];
@@ -88,6 +112,7 @@ export default function Editor({ studyPlanId, instance }) {
   const deleteCourse = (semester, courseIndex) => {
     const courses = semester["course_codes"];
     courses.splice(courseIndex, 1);
+    semester["total_units"] = calculateTotalUnits(courses);
     setLastInteractedSemesterIndex(semester["semester_number"] - 1);
     const updatedSemesterInformation = [...semesterInformation];
     updatedSemesterInformation[semester["semester_number"] - 1] = semester;
@@ -96,7 +121,14 @@ export default function Editor({ studyPlanId, instance }) {
   };
 
   const updateCoursesInSemester = (courseArray, semester) => {
-    semester["course_codes"] = courseArray;
+    semester["course_codes"] = courseArray; // update course codes
+
+    // check courses availability
+    courseArray.forEach((courseCode) => {
+      checkCourseAvailability(courseCode, semester["semester_number"]);
+    });
+
+    semester["total_units"] = calculateTotalUnits(courseArray);
     const updatedSemesterInformation = [...semesterInformation];
     updatedSemesterInformation[semester["semester_number"] - 1] = semester;
     setLastInteractedSemesterIndex(semester["semester_number"] - 1);
@@ -151,6 +183,32 @@ export default function Editor({ studyPlanId, instance }) {
     return () => clearInterval(autosave);
   });
 
+  // function to check if course in available in the selected semester
+  // if not available, warning message will be set
+  // users are still allowed to add the course into the study plan
+  const checkCourseAvailability = (courseCode, semesterNumber) => {
+    const semesterNo = ((semesterNumber + 1) % 2) + 1; // either 1 or 2
+    if (semesterNo === 1) {
+      const isOfferedInSem1 = /true/i.test(
+        courseDictionary[courseCode]["is_offered_in_sem1"]
+      );
+      if (!isOfferedInSem1) {
+        setErrorMessage(
+          "Warning: course is not available in semester 1 (according to NUSMods)"
+        );
+      }
+    } else {
+      const isOfferedInSem2 = /true/i.test(
+        courseDictionary[courseCode]["is_offered_in_sem2"]
+      );
+      if (!isOfferedInSem2) {
+        setErrorMessage(
+          "Warning: course is not available in semester 2 (according to NUSMods)"
+        );
+      }
+    }
+  };
+
   return (
     <div className="px-8">
       {isShowPublisher && (
@@ -172,8 +230,11 @@ export default function Editor({ studyPlanId, instance }) {
       {isShowValidator && (
         <Validator
           studyPlanId={studyPlanId}
+          isShowValidator={isShowValidator}
           setIsShowValidator={setIsShowValidator}
           instance={instance}
+          updateStudyPlan={updateStudyPlan}
+          setIsModified={setIsModified}
         />
       )}
       <div className="flex items-center gap-1">
@@ -191,14 +252,20 @@ export default function Editor({ studyPlanId, instance }) {
             updateStudyPlan(true);
             setIsModified(false);
           }}
-          className="bg-sky-200 rounded-md px-2 py-1 hover:bg-sky-300 transition"
+          className={`${
+            isModified
+              ? `bg-red-300 hover:bg-red-400`
+              : `bg-green-300 hover:bg-green-400`
+          } rounded-md px-2 py-1 transition`}
         >
           {isModified ? <>Save</> : <>Saved</>}
         </button>
         <EditorMenu
           title={title}
+          studyPlanId={studyPlanId}
           setSemesterInformation={setSemesterInformation}
           setIsModified={setIsModified}
+          isPublished={isPublished}
           setIsShowPublisher={setIsShowPublisher}
           semesterInformation={semesterInformation}
           setIsShowValidator={setIsShowValidator}
@@ -221,6 +288,7 @@ export default function Editor({ studyPlanId, instance }) {
       <ImportCourses
         semesterInformation={semesterInformation}
         updateCoursesInSemester={updateCoursesInSemester}
+        updateStudyPlan={updateStudyPlan}
       />
       <p className="text-sm text-red-500 px-4 pb-2">{errorMessage}</p>
       <div id="studyPlan" className="px-3 mb-3">
@@ -257,6 +325,9 @@ export default function Editor({ studyPlanId, instance }) {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             className="flex flex-col bg-sky-100 p-3 min-h-[285px] rounded-md"
+                            onClick={() =>
+                              setLastInteractedSemesterIndex(index)
+                            }
                           >
                             {courseCodeList.map((course, index) => {
                               return (

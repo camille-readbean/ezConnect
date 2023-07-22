@@ -88,6 +88,7 @@ function Publisher({
       }
     ).then(() => {
       setIsPublished(true);
+      window.alert("Study Plan Published!");
       setIsFetchAgain((previous) => !previous);
     });
   };
@@ -142,11 +143,11 @@ function Publisher({
           <TextField
             required
             fullWidth
-            label="Title"
+            label="Published Title"
             variant="outlined"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            helperText="An informative and succinct title"
+            helperText="An informative and succinct title. This title is separate from the title of your personal copy of the study plan."
             margin="dense"
           />
           <TextField

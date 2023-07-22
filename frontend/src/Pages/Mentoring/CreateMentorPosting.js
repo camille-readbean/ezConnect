@@ -53,7 +53,7 @@ function CreateMentorPosting() {
           <center className='text-slate-500 py-2'>
             This lets people know your interest in mentoring a particular subject <br/>
             Only your name is shared, your email is not revealed till you accept a mentee <br/>
-            When a mentee acepts, they can give you their contact details so you can communicate in real life
+            When a mentee accepts, they can give you their contact details so you can communicate in real life
           </center>
           <hr className="my-3"></hr>
 
@@ -65,7 +65,7 @@ function CreateMentorPosting() {
                 type="text"
                 name="title"
                 id="title"
-                placeholder="Post Ttitle"
+                placeholder="Post Title"
                 className="createaccountinputbox flex"
                 required
                 tabIndex="1"
