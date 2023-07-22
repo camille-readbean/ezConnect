@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { secureApiRequest } from "../../ApiRequest";
 import Unauthenticated from "../../Components/Unauthenticated";
-import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { Breadcrumbs, Link, Typography, Button } from '@mui/material';
 
 // Request a mentee, aka applying to a mentor request
 function RequestMentee() {
@@ -36,9 +36,17 @@ function RequestMentee() {
       .then((data) => {
           if (data.message) {
             setResponseMessage(data.message);
-            // navigate('/mentoring');  
+            navigate('/mentoring');  
           } else if (data.error) {
-            setResponseMessage(data.error);
+            if (data.error.includes('Create a mentor posting in this course first')) {
+              setResponseMessage((<Button variant="contained" color='warning' onClick={() => {
+                navigate('/mentoring/create-mentor-request')}}>
+                  Create a mentor posting in this course first ({currentPost.course})
+                </Button>)
+              )
+            } else {
+              setResponseMessage(data.error);
+            }
           } else if (data.detail) {
             setResponseMessage(data.detail);
           }
@@ -57,7 +65,7 @@ function RequestMentee() {
           <h1 className="text-lg font-bold text-center">Request to be {currentPost.name}'s' mentor</h1>
           <center className='text-slate-500 py-2'>
           We will send them an email informing them of your request once you submit the request<br/>
-          When the mentee acepts, they can give you their contact details so you can communicate <br/>
+          When the mentee accepts, they can give you their contact details so you can communicate <br/>
           in real life
           </center>
           <hr className="my-3"></hr>

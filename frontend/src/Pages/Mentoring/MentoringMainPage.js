@@ -8,10 +8,11 @@ import {
 import Unauthenticated from "../../Components/Unauthenticated";
 import { secureApiRequest } from '../../ApiRequest';
 // import CourseSelector from './CourseSelector';
-import { MdAdd } from 'react-icons/md';
-import { Container, Tabs, Tab, Box, Card, CardActions, Stack, Typography, Button } from '@mui/material'; 
+import { Container, Tabs, Tab, Box, Card, CardActions, Typography, Button, Divider } from '@mui/material'; 
 import courseOptions from "../../courses.json";
 import Select from "react-select";
+import MatchesTab from './MatchesTab';
+import UserTab from './UserTab';
 
 const filterCourseOptions = (inputValue) => {
   return courseOptions.filter(
@@ -53,16 +54,6 @@ function MentoringMainPage() {
   const [allPubMentorPostings, updateAllPubMentorPostings] = useState([]);
   const [allPubMentorRequests, updateAllPubMentorRequests] = useState([]);
 
-  // For user's match tab view
-  const [matchesTabValue, setMatchesTabValue] = useState(0);
-  const handleChangeMatchesTabValue = (event, newValue) => {
-    setMatchesTabValue(newValue);
-  };
-  // For user's post view
-  const [mentoringPostsValue, setMentoringPostsValue] = useState(0);
-  const handleChangeMentoringPostsTabValue = (event, newValue) => {
-    setMentoringPostsValue(newValue);
-  };
 
   // For mentoring gallery tab view
   const [mentoringGalleryValue, setMentorinngGalleryValue] = useState(0);
@@ -165,15 +156,6 @@ function MentoringMainPage() {
   }, [allPubMentorPostings, allPubMentorRequests, courseToFilterBy, setCourseToFilterBy]);
 
 
-
-  const onPressCreateMentorPosting = (event) => {
-    navigate('/mentoring/create-mentor-posting');
-  }
-
-  const onPressCreateMentorRequest = (event) => {
-    navigate('/mentoring/create-mentor-request');
-  }
-
   function handleButtonClick(matchId, action) {
     // Perform actions based on the matchId
     switch (action) {
@@ -201,133 +183,20 @@ function MentoringMainPage() {
     <>
       <AuthenticatedTemplate>
         <Container>
-          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}} className="bg-slate-50 rounded-md my-2">
-            <h1 className='text-2xl font-semibold'>Pending / Accepted mentor-mentee matches</h1>
-            <Tabs value={matchesTabValue} onChange={handleChangeMatchesTabValue} centered variant="fullWidth">
-              <Tab label="Matches as mentor" id='full-width-user-matches-tab-0'/>
-              <Tab label="Matches as mentee" id='full-width-user-matches-tab-1'/>
-            </Tabs>
-            <div role="tabpanel" hidden={matchesTabValue !== 0} id='full-width-user-matches-tab-0'>
-              <Box my={1} marginBottom={2}>
-                <h2 className='text-lg'>Mentoring: </h2>
-                <p className='text-slate-500'>These are your requested mentees</p>
-                {mentorMatches.length > 0 ? (
-                  mentorMatches.map((match) => (
-                    <Card key={match.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                    padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
-                      <h3>Course: {match.course_code}</h3>
-                      <h3>Status: {match.status}</h3>
-                      <p>Mentee's name: {match.mentee_name}</p>
-                      <p>Email: {match.email}</p>
-                      {match.status === 'Pending mentor' && (
-                              <Button
-                                onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
-                              >
-                                Accept
-                              </Button>
-                      )}
-                    </Card>
-                  ))
-                ) : (
-                  <p className='text-cyan-600'>Currently not matched with anyone.</p>
-                )}
-              </Box>
-            </div>
-            <div role="tabpanel" hidden={matchesTabValue !== 1} id='full-width-user-matches-tab-1'>
-              <Box my={1} marginBottom={2}>  
-                <h2 className='text-lg'>Mentee in: </h2>
-                <p className='text-slate-500'>These are your requested mentors</p>
-                {menteeMatches.length > 0 ? (
-                  menteeMatches.map((match) => (
-                    <Card key={match.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                    padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
-                      <h3>Course: {match.course_code}</h3>
-                      <h3>Status: {match.status}</h3>
-                      <p>Mentor's name: {match.mentor_name}</p>
-                      <p>Email: {match.email}</p>
-                      {match.status === 'Pending mentee' && (
-                        <Button
-                          onClick={() => handleButtonClick(match.posting_uuid, 'matchAccept')}
-                        >
-                          Accept
-                        </Button>
-                      )}
-                    </Card>
-                  ))
-                ) : (
-                  <p className='text-cyan-600'>Currently not matched with anyone.</p>
-                )}
-              </Box>
-            </div>
-          </Box>
-          
-          <hr className='divide-y-4'></hr>
+          <MatchesTab 
+            menteeMatches={menteeMatches} 
+            mentorMatches={mentorMatches} 
+            handleButtonClick={handleButtonClick}/>
 
-          <Box sx={{minHeight: 10 + 'em', padding: 10 + 'px', marginBottom: 5 + 'px'}} className="bg-slate-50 rounded-md my-2">
-            <h1 className='text-2xl mr-4 c-1/10 font-semibold'>Your mentoring posts / requests</h1>
-            <Tabs value={mentoringPostsValue} onChange={handleChangeMentoringPostsTabValue} centered variant="fullWidth">
-              <Tab label="Posts as mentor" id='full-width-user-posts-tab-0'/>
-              <Tab label="Requests for mentor" id='full-width-user-posts-tab-1'/>
-            </Tabs>
-            <div role="tabpanel" hidden={mentoringPostsValue !== 0} id='full-width-user-posts-tab-0'>
-              <Stack direction={'row'} my={1}>
-                <p className='text-slate-500 my-5'>Posts to indicate which courses you are mentoring</p>
-                <Button
-                  onClick={onPressCreateMentorPosting}>
-                  <MdAdd size={25}/> Create Posting
-                </Button>
-              </Stack>
-              <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
-              {userMentorPostings.length > 0 ? (
-                userMentorPostings.map((posting) => (
-                  <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                      padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
-                    <h3>Course: {posting.course}</h3>
-                    <h3>Title: {posting.title}</h3>
-                    <h4>Published: {posting.is_published ? 'Yes' : 'No'}</h4>
-                    <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                    <Button
-                      onClick={() => handleButtonClick(posting.posting_uuid, 'updatePosting')}
-                    >
-                      Update
-                    </Button>
-                  </Card>
-                ))
-              ) : (
-                <p className='text-cyan-600'>You do not currently have any mentor posting.</p>
-              )}
-              </Box>
-            </div>
-            <div role="tabpanel" hidden={mentoringPostsValue !== 1} id='full-width-user-posts-tab-1'>
-              <Stack direction={'row'}>
-              <p className='text-slate-500 my-5'>Posts to indicate which courses you want a mentor for</p>
-                  <Button 
-                  onClick={onPressCreateMentorRequest}>
-                    <MdAdd size={25}/> Create request
-                  </Button>
-              </Stack>
-              <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
-              {userMentorRequests.length > 0 ? (
-                userMentorRequests.map((posting) => (
-                  <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                      padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
-                    <h3>Course: {posting.course}</h3>
-                    <h3>Title: {posting.title}</h3>
-                    <h4>Published: {posting.is_published ? 'Yes' : 'No'}</h4>
-                    <p className='text-slate-500 py-2'>Description: {posting.description}</p>
-                    <Button
-                      onClick={() => handleButtonClick(posting.posting_uuid, 'updateRequest')}
-                    >
-                      Update
-                    </Button>
-                  </Card>
-                ))
-              ) : (
-                <p className='text-cyan-600'>You do not currently have any mentor requests.</p>
-              )}
-              </Box>    
-            </div> 
-          </Box>
+          <Divider />
+
+          <UserTab 
+            navigate={navigate}
+            userMentorPostings={userMentorPostings}
+            userMentorRequests={userMentorRequests}
+            handleButtonClick={handleButtonClick}/>
+
+          <Divider />
 
           <Box sx={{ minHeight: 10 + 'em', padding: 10 + 'px'}} className="bg-slate-50 rounded-md my-2">
             <h2 className='text-2xl mr-4 c-1/10 font-semibold'>Find mentors or mentees</h2>
@@ -357,10 +226,10 @@ function MentoringMainPage() {
                   <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
                   {filteredMentorRequests.length > 0 ? (
                     filteredMentorRequests.map((posting) => (
-                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                          padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%',  maxWidth: '30%', overflow: 'auto',
+                      flex: 'flex-grow', flexDirection: 'column', padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
                         <h3>Course: {posting.course}</h3>
-                        <h3>Ttitle: {posting.title}</h3>
+                        <h3>Title: {posting.title}</h3>
                         <p className='text-slate-500 py-2'>Description: {posting.description}</p>
                         <p>By: {posting.name}</p>
                         {posting.name !== name && (
@@ -383,10 +252,10 @@ function MentoringMainPage() {
                   <Box display='flex' gap={'14px'} flexDirection={'row'} flexWrap={'wrap'} my='2em'>
                   {filteredMentorPostings.length > 0 ? (
                     filteredMentorPostings.map((posting) => (
-                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%', 
-                          padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
+                      <Card key={posting.posting_uuid} variant="outlined" sx={{display:'inline-block', minWidth: '30%',  maxWidth: '30%', overflow: 'auto',
+                      flex: 'flex-grow', flexDirection: 'column', padding:'1em', borderBottomColor: 'gray', borderBottomWidth: 1}}>
                         <h3>Course: {posting.course}</h3>
-                        <h3>Ttitle: {posting.title}</h3>
+                        <h3>Title: {posting.title}</h3>
                         <p className='text-slate-500 py-2'>Description: {posting.description}</p>
                         <p>By: {posting.name}</p>
                         <CardActions>

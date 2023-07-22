@@ -3,13 +3,21 @@ from ezConnect.models import Course
 
 
 def tokenise_prerequisite_rule(rule_string: str) -> list[str]:
-    rule = rule_string.split('THEN')[1][1:]
+    if 'THEN' in rule_string:
+        rule = rule_string.split('THEN')[1][1:]
+    else:
+        rule = rule_string
     # print(rule)
     regex_pattern = re.compile(r'((COURSES( \([1-9]\))?)|([A-Z]+[0-9]+[A-Z]*)(?=(\:[A-F])?)|\(|\)|OR|AND)')
     # for m in re.finditer(regex_pattern, rule):
         # print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
     # print(regex_pattern.findall(rule))
     tokens = [m[0] for m in regex_pattern.findall(rule) if m]
+    
+    # Pre req rule have no opening and closing parenthesis
+    if tokens[0] != '(' and tokens[-1] != ')':
+        tokens = ['('] + tokens + [')']
+
     print(tokens)
     return tokens
     

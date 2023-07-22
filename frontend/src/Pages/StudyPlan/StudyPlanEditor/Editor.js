@@ -172,8 +172,11 @@ export default function Editor({ studyPlanId, instance }) {
       {isShowValidator && (
         <Validator
           studyPlanId={studyPlanId}
+          isShowValidator={isShowValidator}
           setIsShowValidator={setIsShowValidator}
           instance={instance}
+          updateStudyPlan={updateStudyPlan}
+          setIsModified={setIsModified}
         />
       )}
       <div className="flex items-center gap-1">

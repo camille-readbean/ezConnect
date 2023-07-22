@@ -19,9 +19,9 @@ function EditorOptions({
   setSemesterInformation,
   setIsModified,
   setIsShowPublisher,
-  setIsShowValidator,
+  isShowValidator, setIsShowValidator,
   semesterInformation,
-  setLastInteractedSemesterIndex,
+  setLastInteractedSemesterIndex
 }) {
   const addSemester = () => {
     const newSemesterInfo = {
