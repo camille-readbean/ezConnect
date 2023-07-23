@@ -277,8 +277,7 @@ export default function Editor({ studyPlanId, instance }) {
       </p>
       <p className="text-sm p-2 text-gray-600">
         Your study plan is autosaved every few seconds. Click on the save button
-        to ensure that your study plan is saved and calculate the total number
-        of units per semester.
+        to ensure that your study plan is saved.
       </p>
       <CourseSelector
         semesterInformation={semesterInformation}
