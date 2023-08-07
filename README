@@ -1,2 +1,0 @@
-Production
-`sudo docker compose -f infra/production.docker-compose.yml `
