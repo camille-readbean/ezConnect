@@ -539,7 +539,7 @@ def test_0017_get_user_matches_and_test_redacted_email_before_match(client):
                 'course_code' : 'CM1102',
                 'mentor_name' : cm1102_match.mentor_user.name,
                 'status' : 'Pending mentor',
-                'email' : 'Hidden, pending mentor acceptance'
+                'email' : 'Hidden, pending mentor  acceptance'
             }
         ]
     }
@@ -566,7 +566,7 @@ def test_0017_get_user_matches_and_test_redacted_email_before_match(client):
                 'course_code' : 'CM1102',
                 'mentee_name' : cm1102_match.mentee_user.name,
                 'status' : 'Pending mentor',
-                'email' : 'Hidden, pending mentor acceptance'
+                'email' : 'Hidden, pending mentor  acceptance'
             }
         ]
     }

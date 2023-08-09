@@ -59,7 +59,7 @@ def test_0043_get_personal_study_plan(client):
   # check information in data received
   assert personal_study_plan_data['id'] == study_plan_id
   assert personal_study_plan_data['creator_id'] == uuid1
-  assert personal_study_plan_data['title'] == 'Blank study plan'
+  assert personal_study_plan_data['title'] == 'My study plan'
   assert personal_study_plan_data['is_published'] == False
   assert len(personal_study_plan_data['semester_info_list']) == 8
   assert personal_study_plan_data['semester_info_list'][0]["course_codes"] == []
