@@ -40,7 +40,7 @@ function RequestMentee() {
           } else if (data.error) {
             if (data.error.includes('Create a mentor posting in this course first')) {
               setResponseMessage((<Button variant="contained" color='warning' onClick={() => {
-                navigate('/mentoring/create-mentor-request')}}>
+                navigate('/mentoring/create-mentor-posting')}}>
                   Create a mentor posting in this course first ({currentPost.course})
                 </Button>)
               )

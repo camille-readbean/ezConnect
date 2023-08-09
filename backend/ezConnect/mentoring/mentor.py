@@ -178,7 +178,7 @@ def request_mentor(token_info, mentor_posting_id, body):
         db.session.commit()
         accept_url = f'{FRONTEND_HOSTNAME}/mentoring/matches/accept?match={mentor_mentee_match.id}'
 
-        msg = f"<html>Hi {mentor.name}, {mentee.name} wopuld like to be your student in your mentor posting for {posting.course_code}" + \
+        msg = f"<html>Hi {mentor.name}, {mentee.name} would like to be your student in your mentor posting for {posting.course_code}" + \
             f"<center>Please visit <a href='{accept_url}'>{accept_url}</a> to accept or reject</center></html>"
         send_email(
             subject=f'[ezConnect] A student would like you to be their mentor for {posting.course_code}',

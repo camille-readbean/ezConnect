@@ -40,11 +40,11 @@ test('test', async ({ page }) => {
   await page.locator('.css-qbdosj-Input').click();
   await page.locator('#react-select-7-input').fill('cs1101s');
   await page.getByText('CS1101S Programming Methodology', { exact: true }).click();
-  await page.getByPlaceholder('Post Ttitle').click();
-  await page.getByPlaceholder('Post Ttitle').fill('H');
-  await page.getByPlaceholder('Post Ttitle').press('CapsLock');
-  await page.getByPlaceholder('Post Ttitle').fill('Hello');
-  await page.getByPlaceholder('Post Ttitle').press('Tab');
+  await page.getByPlaceholder('Post Title').click();
+  await page.getByPlaceholder('Post Title').fill('H');
+  await page.getByPlaceholder('Post Title').press('CapsLock');
+  await page.getByPlaceholder('Post Title').fill('Hello');
+  await page.getByPlaceholder('Post Title').press('Tab');
   await page.getByPlaceholder('Tell us more about yourself!').press('CapsLock');
   await page.getByPlaceholder('Tell us more about yourself!').fill('H');
   await page.getByPlaceholder('Tell us more about yourself!').press('CapsLock');
