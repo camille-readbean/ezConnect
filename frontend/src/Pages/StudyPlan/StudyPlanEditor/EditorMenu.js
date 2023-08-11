@@ -5,6 +5,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteComfirmationBox from "../StudyPlanMainPage/DeleteComfirmationBox";
 
+/**
+ * Downloads the study plan as an image.
+ *
+ * @param {String} title - The title of the study plan.
+ */
 const downloadStudyPlan = (title) => {
   const studyPlan = document.getElementById("studyPlan");
   html2canvas(studyPlan).then((canvas) => {
@@ -17,21 +22,39 @@ const downloadStudyPlan = (title) => {
   });
 };
 
-function EditorOptions({
+/**
+ * A component for displaying options for editing a study plan.
+ *
+ * @component
+ * @prop {String} title - The title of the study plan.
+ * @prop {String} studyPlanId - The ID of the study plan.
+ * @prop {Function} setSemesterInformation - Function to update semester information.
+ * @prop {Function} setIsModified - Function to set the modification status of the study plan.
+ * @prop {Boolean} isPublished - Indicates whether the study plan is published.
+ * @prop {Function} setIsShowPublisher - Function to control the visibility of the publisher dialog.
+ * @prop {Boolean} isShowValidator - Indicates whether the validator is shown.
+ * @prop {Function} setIsShowValidator - Function to control the visibility of the validator.
+ * @prop {Array} semesterInformation - Information about the semesters.
+ * @prop {Function} setLastInteractedSemesterIndex - Function to set the index of the last interacted semester.
+ * @returns {JSX.Element} The editor options component.
+ */
+export default function EditorOptions({
   title,
   studyPlanId,
   setSemesterInformation,
   setIsModified,
   isPublished,
   setIsShowPublisher,
-  isShowValidator, setIsShowValidator,
+  isShowValidator,
+  setIsShowValidator,
   semesterInformation,
-  setLastInteractedSemesterIndex
+  setLastInteractedSemesterIndex,
 }) {
   const navigate = useNavigate();
   const [isDeleteComfirmationBoxOpen, setIsDeleteComfirmationBoxOpen] =
     useState(false);
 
+  /** Adds a new semester to the study plan. */
   const addSemester = () => {
     const semesterNumber = semesterInformation.length + 1;
     const newSemesterInfo = {
@@ -46,7 +69,9 @@ function EditorOptions({
     setIsModified(true);
   };
 
+  /** Deletes the last semester from the study plan. */
   const deleteLastSemester = () => {
+    // check if there are any semesters to delete
     if (semesterInformation.length === 0) {
       return;
     }
@@ -56,6 +81,11 @@ function EditorOptions({
     setIsModified(true);
   };
 
+  /**
+   * Deletes the study plan.
+   *
+   * @param {String} studyPlanId - The ID of the study plan.
+   */
   const deleteStudyPlan = (studyPlanId) => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`,
@@ -161,5 +191,3 @@ function EditorOptions({
     </>
   );
 }
-
-export default EditorOptions;

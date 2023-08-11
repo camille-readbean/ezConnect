@@ -7,6 +7,16 @@ import {
   DialogActions,
 } from "@mui/material";
 
+/**
+ * A confirmation dialog box for deleting a study plan.
+ *
+ * @component
+ * @prop {String} studyPlanId - The UUID of the study plan to be deleted.
+ * @prop {Function} deleteStudyPlan - The function to call to delete the study plan.
+ * @prop {Boolean} isDeleteComfirmationBoxOpen - Indicates whether the delete confirmation box is open.
+ * @prop {Function} setIsDeleteComfirmationBoxOpen - Function to control the open state of the delete confirmation box.
+ * @returns {JSX.Element} The rendered delete confirmation dialog box component.
+ */
 export default function DeleteComfirmationBox({
   studyPlanId,
   deleteStudyPlan,

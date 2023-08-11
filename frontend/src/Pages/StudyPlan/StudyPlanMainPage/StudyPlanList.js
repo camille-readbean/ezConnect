@@ -4,6 +4,15 @@ import { IconContext } from "react-icons";
 import PopUpPost from "../StudyPlanPost.js/PopUpPost";
 import Tags from "../StudyPlanPost.js/Tags";
 
+/**
+ * A function to generate a card component for displaying study plan information.
+ *
+ * @param {Object} studyPlan - The study plan data.
+ * @param {Function} setIsOpenPopUp - The function to control the visibility of the pop-up.
+ * @param {Function} setStudyPlanInformation - The function to set the study plan information in the pop-up.
+ * @param {String} azure_ad_oid - The ID of the user.
+ * @returns {JSX.Element} The card component displaying study plan information.
+ */
 function makeCard(
   studyPlan,
   setIsOpenPopUp,
@@ -19,9 +28,11 @@ function makeCard(
     <div
       className="w-72 min-w-[288px] min-h-[220px] bg-white px-3 py-4 shadow-md rounded-md hover:cursor-pointer"
       onClick={() => {
+        // set pop-up information and open pop-up
         setStudyPlanInformation(studyPlan);
         setIsOpenPopUp(true);
 
+        // record view in database
         const requestBody = {
           user_id: azure_ad_oid,
           published_study_plan_id: studyPlan["id"],
@@ -55,11 +66,28 @@ function makeCard(
   );
 }
 
+/**
+ * Function to use to filter study plans based on search value.
+ * Checks if search value is in the study plan title.
+ *
+ * @param {Object} studyPlan - The study plan data.
+ * @param {String} searchValue - The search value to filter study plans.
+ * @returns {Boolean} True if the study plan title contains the search value, false otherwise.
+ */
 function filterStudyPlan(studyPlan, searchValue) {
   const title = studyPlan["title"].toLowerCase();
   return title.includes(searchValue.toLowerCase());
 }
 
+/**
+ * A component that displays a list of study plans.
+ *
+ * @param {Object[]} studyPlans - Array of study plan objects which contains information of the study plans
+ * @param {String} azure_ad_oid - The ID of the user.
+ * @param {String} searchValue - The search value to filter study plans.
+ * @param {Function} setIsFetchAgain - The function to trigger fetching study plans.
+ * @returns {JSX.Element} The study plan list component.
+ */
 export default function StudyPlanList({
   studyPlans,
   azure_ad_oid,
@@ -67,6 +95,7 @@ export default function StudyPlanList({
   setIsFetchAgain,
 }) {
   const [isOpenPopUp, setIsOpenPopUp] = useState(false);
+  // studyPlanInformation is the information of a study plan which is used for the pop up post
   const [studyPlanInformation, setStudyPlanInformation] = useState({});
 
   return (

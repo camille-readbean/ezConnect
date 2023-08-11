@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import StudyPlanList from "./StudyPlanList";
 import StudyPlanSearchBar from "./StudyPlanSearchBar";
 
+/**
+ * A component that displays a gallery of published study plans.
+ *
+ * @component
+ * @prop {String} azure_ad_oid - The ID of the user.
+ * @prop {Boolean} isFetchAgain - Indicates whether to fetch the published study plan data again.
+ * @prop {Function} setIsFetchAgain - Function to trigger the fetching of data by controlling the fetch state.
+ * @returns {JSX.Element} The rendered study plan gallery component.
+ */
 function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
+  // separate studyPlans and filteredStudyPlans to not need to fetch data again when filter is changed
   const [studyPlans, setStudyPlans] = useState([]);
   const [filteredStudyPlans, setFilteredStudyPlans] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -18,6 +28,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
   };
   const [filterRequest, setFilterRequest] = useState(defaultFilterRequest);
 
+  // Fetch published study plans
   useEffect(() => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish?user_id=${azure_ad_oid}&ordering=${orderingChoice}`
@@ -31,9 +42,9 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
 
   // Filter study plans
   useEffect(() => {
-    console.log(filterRequest);
     let filteredStudyPlans = studyPlans;
 
+    // check matching first degree
     if (filterRequest.first_degree != null) {
       filteredStudyPlans = filteredStudyPlans.filter((studyPlan) =>
         studyPlan.academic_plan == null
@@ -43,6 +54,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
       );
     }
 
+    // check matching second degree
     if (filterRequest.second_degree != null) {
       filteredStudyPlans = filteredStudyPlans.filter((studyPlan) =>
         studyPlan.academic_plan == null ||
@@ -53,6 +65,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
       );
     }
 
+    // check matching second major
     if (filterRequest.second_major != null) {
       filteredStudyPlans = filteredStudyPlans.filter((studyPlan) =>
         studyPlan.academic_plan == null ||
@@ -64,6 +77,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
       );
     }
 
+    // check matching minors
     if (filterRequest.minors != null && filterRequest.minors !== []) {
       filteredStudyPlans = filteredStudyPlans.filter((studyPlan) => {
         if (
@@ -90,6 +104,7 @@ function StudyPlanGallery({ azure_ad_oid, isFetchAgain, setIsFetchAgain }) {
       });
     }
 
+    // check matching special programmes
     if (
       filterRequest.special_programmes != null &&
       filterRequest.special_programmes !== []

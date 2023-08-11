@@ -1,5 +1,11 @@
+/**
+ * A component that displays courses in the study plan.
+ *
+ * @component
+ * @prop {Object[]} semesterInformationArray - An array in which each 
+ * element contains information on a semester in the study plan.
+ */
 export default function Preview({ semesterInformationArray }) {
-
   return (
     <div
       id="studyPlanPreview"

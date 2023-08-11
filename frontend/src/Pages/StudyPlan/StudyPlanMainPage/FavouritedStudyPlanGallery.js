@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import StudyPlanList from "./StudyPlanList";
 
+/**
+ * A component that displays a gallery of favourited study plans.
+ *
+ * @component
+ * @prop {String} azure_ad_oid - The ID of the user.
+ * @prop {Boolean} isFetchAgain - Indicates whether to fetch the favourited study plan data again.
+ * @prop {Function} setIsFetchAgain - Function to trigger the fetching of data by controlling the fetch state.
+ * @returns {JSX.Element} The rendered favourited study plan gallery component.
+ */
 export default function FavouritedStudyPlanGallery({
   azure_ad_oid,
   isFetchAgain,
@@ -8,6 +17,7 @@ export default function FavouritedStudyPlanGallery({
 }) {
   const [favouritedStudyPlans, setFavouritedStudyPlans] = useState([]);
 
+  // fetch favourited study plan data of the user
   useEffect(() => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/favourite/${azure_ad_oid}`

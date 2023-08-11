@@ -3,6 +3,13 @@ import { useNavigate } from "react-router-dom";
 import PersonalStudyPlanList from "./PersonalStudyPlanList";
 import EmptyPersonalStudyPlan from "./EmptyPersonalStudyPlan";
 
+/**
+ * Retrieves personal study plans for a given user.
+ *
+ * @async
+ * @param {String} userId - The ID of the user for whom to fetch personal study plans.
+ * @param {Function} navigate - Function to navigate to a specific route.
+ */
 const getPersonalStudyPlans = async (userId, navigate) => {
   try {
     const res = await fetch(
@@ -26,38 +33,24 @@ const getPersonalStudyPlans = async (userId, navigate) => {
   }
 };
 
+/**
+ * A component that displays a gallery of personal study plans.
+ *
+ * @component
+ * @prop {String} azure_ad_oid - The ID of the user.
+ * @prop {Function} setIsFetchAgain - Function to trigger the fetching of data by controlling the fetch state.
+ * @returns {JSX.Element} The rendered personal study plan gallery component.
+ */
 function PersonalStudyPlanGallery({ azure_ad_oid, setIsFetchAgain }) {
   const navigate = useNavigate();
   const [personalStudyPlans, setPersonalStudyPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const createNewStudyPlan = (userId) => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        creator_id: userId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => res["study_plan_id"])
-      .then((studyPlanId) => {
-        navigate(`/studyplan/editor/${studyPlanId}`);
-      });
-  };
-
+  // fetch personal study plans
   useEffect(() => {
     const fetchStudyPlans = async () => {
       setIsLoading(true);
       try {
-        // const plans = await getPersonalStudyPlans(azure_ad_oid, navigate);
-        // if (plans != null)
-        //   setPersonalStudyPlans(plans);
-        // else console.log("Error 11111")
-        // setPersonalStudyPlans(plans);
-
         await getPersonalStudyPlans(azure_ad_oid, navigate)
           .then((plans) => {
             if (plans != null) {
@@ -82,14 +75,44 @@ function PersonalStudyPlanGallery({ azure_ad_oid, setIsFetchAgain }) {
     fetchStudyPlans();
   }, [azure_ad_oid, navigate]);
 
+  /**
+   * Creates new personal study plan for a given user.
+   *
+   * @param {String} userId - The ID of the user.
+   */
+  const createNewStudyPlan = (userId) => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/studyplan`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        creator_id: userId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => res["study_plan_id"])
+      .then((studyPlanId) => {
+        // redirect user to the new personal study plan
+        navigate(`/studyplan/editor/${studyPlanId}`);
+      });
+  };
+
+  /**
+   * Function to delete a personal study plan.
+   *
+   * @param {String} studyPlanId - The ID of the study plan to delete.
+   */
   const deleteStudyPlan = async (studyPlanId) => {
     try {
+      // delete study plan from database
       await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanId}`,
         {
           method: "DELETE",
         }
       );
+      // get updated information and re-render study plan gallery
       const plans = await getPersonalStudyPlans(azure_ad_oid);
       setPersonalStudyPlans(plans);
       setIsFetchAgain((previous) => !previous);

@@ -1,6 +1,11 @@
 import studyPlanBackgroundImage from "./study_plan_banner_background.jpg";
 
-function StudyPlanBanner() {
+/**
+ * A component that displays the study plan banner.
+ *
+ * @returns {JSX.Element} The rendered favourited study plan banner component.
+ */
+export default function StudyPlanBanner() {
   return (
     <div
       className="bg-cover bg-center"
@@ -18,5 +23,3 @@ function StudyPlanBanner() {
     </div>
   );
 }
-
-export default StudyPlanBanner;

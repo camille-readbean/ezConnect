@@ -3,7 +3,19 @@ import { RxCross2 } from "react-icons/rx";
 import { Box, TextField, Button, Stack } from "@mui/material";
 import SelectTags from "./SelectTags";
 
-function Publisher({
+/**
+ * A component that allows users to publish, update or unpublish a study plan.
+ *
+ * @component
+ * @prop {String} studyPlanId - The ID of the study plan.
+ * @prop {Object} studyPlanInformation - Information about the study plan.
+ * @prop {Function} setIsShowPublisher - Function to control the visibility of the publisher.
+ * @prop {Boolean} isPublished - Indicates if the study plan is published.
+ * @prop {Function} setIsPublished - Function to update the published status.
+ * @prop {Function} setIsFetchAgain - Function to trigger a data fetch.
+ * @returns {JSX.Element} The publisher component.
+ */
+export default function Publisher({
   studyPlanId,
   studyPlanInformation,
   setIsShowPublisher,
@@ -25,8 +37,10 @@ function Publisher({
     defaultAcademicPlanInformation
   );
 
+  // Fetch data based on study plan publication status
   useEffect(() => {
     if (!isPublished) {
+      // Fetch personal study plan data
       fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
       )
@@ -38,6 +52,7 @@ function Publisher({
           console.error(err);
         });
     } else {
+      // Fetch published study plan data
       fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/publish/${studyPlanInformation["published_version_id"]}`
       )
@@ -53,6 +68,11 @@ function Publisher({
     }
   }, [studyPlanId]);
 
+  /**
+   * Function to prepare academic plan data for request body
+   *
+   * @param {Object} academicPlanInformation - The academic plan information to be used in the request body.
+   */
   const getAcademicPlanRequestBody = (academicPlanInformation) => {
     return {
       first_degree_id: academicPlanInformation["first_degree"].id,
@@ -70,6 +90,7 @@ function Publisher({
     };
   };
 
+  /** Function to publish a study plan */
   const publishStudyPlan = () => {
     const requestBody = {
       title: title,
@@ -93,6 +114,7 @@ function Publisher({
     });
   };
 
+  /** Function to update a published study plan */
   const updatePublishedStudyPlan = () => {
     const requestBody = {
       title: title,
@@ -116,6 +138,7 @@ function Publisher({
     });
   };
 
+  /** Function to unpublish a study plan */
   const unpublishStudyPlan = () => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/${studyPlanInformation["published_version_id"]}`,
@@ -207,5 +230,3 @@ function Publisher({
     </div>
   );
 }
-
-export default Publisher;
