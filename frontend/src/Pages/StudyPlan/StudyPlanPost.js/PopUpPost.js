@@ -176,7 +176,6 @@ function PopUpPost({
                 <div
                   className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
                   onClick={
-                    //! not sure if this is valid code
                     isLikedBy ? unlikeStudyPlan : likeStudyPlan
                   }
                 >

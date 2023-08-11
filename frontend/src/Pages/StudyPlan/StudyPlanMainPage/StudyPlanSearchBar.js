@@ -83,7 +83,6 @@ export default function StudyPlanSearchBar({
           </div>
         </Menu.Items>
       </Menu>
-      //! change to automatically render when search input changes
       <div className="flex-grow flex gap-1 items-center bg-white p-1 pl-2 rounded-md border-2 border-slate-200 shadow-sm">
         <input
           type="search"
