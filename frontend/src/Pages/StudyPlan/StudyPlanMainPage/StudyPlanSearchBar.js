@@ -5,7 +5,17 @@ import { useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
 import SelectTags from "../StudyPlanEditor/SelectTags";
 
-function StudyPlanSearchBar({
+/**
+ * A component that displays a search and filter bar for study plans.
+ *
+ * @component
+ * @prop {Function} setSearchValue - The function to set the search value.
+ * @prop {Function} setOrderingChoice - The function to set the ordering choice.
+ * @prop {Object} filterRequest - The filter request to filter the study plans by.
+ * @prop {Function} setFilterRequest - The function to set the filter request.
+ * @returns {JSX.Element} The study plan search bar component.
+ */
+export default function StudyPlanSearchBar({
   setSearchValue,
   setOrderingChoice,
   filterRequest,
@@ -73,25 +83,16 @@ function StudyPlanSearchBar({
           </div>
         </Menu.Items>
       </Menu>
-
-      <form
-        className="flex-grow flex gap-1 items-center bg-white p-1 pl-2 rounded-md border-2 border-slate-200 shadow-sm"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setSearchValue(event.target.searchInput.value);
-        }}
-      >
+      <div className="flex-grow flex gap-1 items-center bg-white p-1 pl-2 rounded-md border-2 border-slate-200 shadow-sm">
         <input
           type="search"
           name="searchInput"
           placeholder="Search for a study plan"
           className="border-0 outline-0 flex-grow"
+          onChange={(event) => setSearchValue(event.target.value)}
         />
-        <button>
-          <BiSearch className="w-6 h-6" />
-        </button>
-      </form>
-
+        <BiSearch className="w-6 h-6" />
+      </div>
       <div className="relative">
         <Tooltip title="Filter" arrow>
           <div>
@@ -101,7 +102,7 @@ function StudyPlanSearchBar({
             />
           </div>
         </Tooltip>
-        {isFilterTabOpen ? (
+        {isFilterTabOpen && (
           <div className="bg-slate-50 absolute right-0 w-96 rounded-md shadow-md p-3">
             <div className="flex items-center gap-2">
               <h6 className="font-semibold">Filter by Tags</h6>
@@ -115,12 +116,8 @@ function StudyPlanSearchBar({
               isPublisher={false}
             />
           </div>
-        ) : (
-          <></>
         )}
       </div>
     </div>
   );
 }
-
-export default StudyPlanSearchBar;

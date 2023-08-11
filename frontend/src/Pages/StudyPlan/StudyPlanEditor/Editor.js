@@ -10,6 +10,12 @@ import { RxCross2 } from "react-icons/rx";
 import Validator from "./Validator";
 import courseDictionary from "../../../courseDictionary.json";
 
+/**
+ * Function to calculate total units for a list of course objects.
+ *
+ * @param {Object[]} courseList - An array containing course objects.
+ * @returns {Number} The number of units for the courseList.
+ */
 function calculateTotalUnits(courseList) {
   let totalUnits = 0;
   courseList.forEach((courseCode) => {
@@ -18,6 +24,14 @@ function calculateTotalUnits(courseList) {
   return totalUnits;
 }
 
+/**
+ * A component for editing study plans.
+ *
+ * @component
+ * @prop {String} studyPlanId - The ID of the study plan.
+ * @prop {Object} instance - The MSAL instance for authentication.
+ * @returns {JSX.Element} The editor component.
+ */
 export default function Editor({ studyPlanId, instance }) {
   const [studyPlanInformation, setStudyPlanInformation] = useState(() => {});
   const [title, setTitle] = useState("");
@@ -38,6 +52,7 @@ export default function Editor({ studyPlanId, instance }) {
     useState(0);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Fetch study plan information from the database
   useEffect(() => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/personal/${studyPlanId}`
@@ -54,6 +69,13 @@ export default function Editor({ studyPlanId, instance }) {
       });
   }, [studyPlanId, isFetchAgain]);
 
+  /**
+   * Handler for drag-and-drop interactions for drag end.
+   *
+   * @param {Object} result - The result of the drag-and-drop action.
+   * @param {Array} semesterInformation - Array of semester information.
+   * @param {Function} setSemesterInformation - Function to update semester information.
+   */
   const onDragEnd = (result, semesterInformation, setSemesterInformation) => {
     if (!result.destination) return;
     const { source, destination } = result;
@@ -109,6 +131,13 @@ export default function Editor({ studyPlanId, instance }) {
     }
   };
 
+  /**
+   * Function to delete course from a semester
+   *
+   * @param {Object} semester - The semester to delete the course from.
+   * @param {Integer} courseIndex - the index of the course to delete in the course list of the semester.
+   * @param {Function} setSemesterInformation - Function to update semester information.
+   */
   const deleteCourse = (semester, courseIndex) => {
     const courses = semester["course_codes"];
     courses.splice(courseIndex, 1);
@@ -120,6 +149,12 @@ export default function Editor({ studyPlanId, instance }) {
     setIsModified(true);
   };
 
+  /**
+   * Update courses in a semester and update the study plan.
+   *
+   * @param {Array} courseArray - Array of course codes to update in the semester.
+   * @param {Object} semester - Semester information object.
+   */
   const updateCoursesInSemester = (courseArray, semester) => {
     semester["course_codes"] = courseArray; // update course codes
 
@@ -136,6 +171,11 @@ export default function Editor({ studyPlanId, instance }) {
     setIsModified(true);
   };
 
+  /**
+   * Update the study plan on the database.
+   *
+   * @param {Boolean} fetchAgain - Indicates whether to fetch study plan information again.
+   */
   const updateStudyPlan = (fetchAgain) => {
     const requestBody = {
       title: title,
@@ -156,6 +196,7 @@ export default function Editor({ studyPlanId, instance }) {
     });
   };
 
+  // Add an event listener to prompt before leaving if the study plan is modified
   useEffect(() => {
     const handler = (event) => {
       event.preventDefault();
@@ -171,6 +212,7 @@ export default function Editor({ studyPlanId, instance }) {
     return () => {};
   }, [isModified]);
 
+  // Autosave the study plan periodically
   useEffect(() => {
     const autosave = setInterval(() => {
       console.log("checking if modified");
@@ -183,9 +225,14 @@ export default function Editor({ studyPlanId, instance }) {
     return () => clearInterval(autosave);
   });
 
-  // function to check if course in available in the selected semester
-  // if not available, warning message will be set
-  // users are still allowed to add the course into the study plan
+  /**
+   * Check course availability in the selected semester.
+   * Set warning message if course is unavailable.
+   * Users are still allowed to add the course into the study plan
+   *
+   * @param {string} courseCode - The code of the course to check.
+   * @param {number} semesterNumber - The semester number.
+   */
   const checkCourseAvailability = (courseCode, semesterNumber) => {
     const semesterNo = ((semesterNumber + 1) % 2) + 1; // either 1 or 2
     if (semesterNo === 1) {

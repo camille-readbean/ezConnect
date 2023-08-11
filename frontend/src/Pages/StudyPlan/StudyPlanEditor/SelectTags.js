@@ -2,20 +2,36 @@ import Select from "react-select";
 import programmesOptions from "../../../programmes.json";
 import degreesOptions from "../../../degrees.json";
 
-function SelectTags({
+/**
+ * A component that provides a form to select tags for the study plan.
+ * Tags information are stored in the academic plan of the study plan.
+ *
+ * @component
+ * @prop {Object} academicPlanInformation - The academic plan information.
+ * @prop {Function} setAcademicPlanInformation - Function to update academic plan information.
+ * @prop {Boolean} isPublisher - Indicates if the component is placed in the Publisher component
+ * @returns {JSX.Element} The select tags component.
+ */
+export default function SelectTags({
   academicPlanInformation,
   setAcademicPlanInformation,
   isPublisher,
 }) {
+  // get minors from programmesOptions
   const minorOptions = programmesOptions.filter((programme) =>
     programme.title.toLowerCase().includes("minor")
   );
 
+  // get special programmes from programmesOptions
   const specialProgrammeOptions = programmesOptions.filter(
     (programme) => !programme.title.toLowerCase().includes("minor")
   );
 
-  // Methods to update academic plan
+  /**
+   * Function to update the first degree in the academic plan information.
+   *
+   * @param {Object} degree - The degree to be changed to.
+   */
   const updateFirstDegree = (degree) => {
     setAcademicPlanInformation({
       ...academicPlanInformation,
@@ -23,6 +39,11 @@ function SelectTags({
     });
   };
 
+  /**
+   * Function to update the second degree in the academic plan information.
+   *
+   * @param {Object} degree - The degree to be changed to.
+   */
   const updateSecondDegree = (degree) => {
     setAcademicPlanInformation({
       ...academicPlanInformation,
@@ -30,6 +51,11 @@ function SelectTags({
     });
   };
 
+  /**
+   * Function to update the second major in the academic plan information.
+   *
+   * @param {String} major - The major to be changed to.
+   */
   const updateSecondMajor = (major) => {
     setAcademicPlanInformation({
       ...academicPlanInformation,
@@ -37,6 +63,11 @@ function SelectTags({
     });
   };
 
+  /**
+   * Function to update the minors in the academic plan information.
+   *
+   * @param {Object[]} minorsArray - The array of minors to be changed to.
+   */
   const updateMinors = (minorsArray) => {
     setAcademicPlanInformation({
       ...academicPlanInformation,
@@ -44,6 +75,11 @@ function SelectTags({
     });
   };
 
+  /**
+   * Function to update the special programmes in the academic plan information.
+   *
+   * @param {Object[]} specialProgrammeArray - The array of special programmes to be changed to.
+   */
   const updateSpecialProgramme = (specialProgrammeArray) => {
     setAcademicPlanInformation({
       ...academicPlanInformation,
@@ -136,5 +172,3 @@ function SelectTags({
     </>
   );
 }
-
-export default SelectTags;

@@ -10,7 +10,14 @@ import StudyPlanGallery from "./StudyPlanGallary";
 import FavouritedStudyPlanGallery from "./FavouritedStudyPlanGallery";
 import Unauthenticated from "../../../Components/Unauthenticated";
 
-function StudyPlanMainPage() {
+/**
+ * Displays the study plan main page.
+ * Authenticated users are shown their personal, favorited, and general study plan galleries.
+ * Unauthenticated users are shown an unauthenticated message.
+ *
+ * @component
+ */
+export default function StudyPlanMainPage() {
   // obtain user_id of current user
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
@@ -48,5 +55,3 @@ function StudyPlanMainPage() {
     </>
   );
 }
-
-export default StudyPlanMainPage;

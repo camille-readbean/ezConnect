@@ -1,3 +1,11 @@
+/**
+ * A component displayed when a user has no personal study plans.
+ *
+ * @component
+ * @prop {String} azure_ad_oid - The ID of the user.
+ * @prop {Function} createNewStudyPlan - Function to create a new study plan for the user.
+ * @returns {JSX.Element} The rendered component indicating the absence of a personal study plan.
+ */
 function EmptyPersonalStudyPlan({ azure_ad_oid, createNewStudyPlan }) {
   return (
     <div className="bg-white shadow-md flex flex-col items-center justify-center h-64 w-full rounded-lg">

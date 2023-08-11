@@ -12,6 +12,18 @@ import { IconContext } from "react-icons";
 import Tags from "./Tags";
 import Preview from "./Preview";
 
+/**
+ * A component that displays published study plan information as a pop up post.
+ *
+ * @component
+ * @prop {Object} studyPlanInformation - An object which 
+ * contains the study plan information.
+ * @prop {Function} setIsOpenPopUp - Function to set state of 
+ * whether the pop up post is open or not.
+ * @prop {String} azure_ad_oid - The user id of the active user.
+ * @prop {Function} setIsFetchAgain - Function to call to change 
+ * state to trigger re-rendering of another component.
+ */
 function PopUpPost({
   studyPlanInformation,
   setIsOpenPopUp,
@@ -34,6 +46,7 @@ function PopUpPost({
   const academicPlanInformation = studyPlanInformation["academic_plan"];
   const navigate = useNavigate();
 
+  /** Function to create a copy of a published study plan */
   const makeACopy = () => {
     const requestBody = {
       published_study_plan_id: studyPlanInformation["id"],
@@ -58,6 +71,7 @@ function PopUpPost({
       });
   };
 
+  /** Function to favourite a study plan */
   const favouriteStudyPlan = () => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/favourite/${azure_ad_oid}`,
@@ -72,6 +86,7 @@ function PopUpPost({
       }
     )
       .then(() => {
+        // re-render page to change colour of the star icon
         setIsFavouritedBy(true);
         setIsFetchAgain((previous) => !previous);
       })
@@ -80,12 +95,14 @@ function PopUpPost({
       });
   };
 
+  /** Function to unfavourite a study plan */
   const unfavouriteStudyPlan = () => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/favourite/${azure_ad_oid}?published_study_plan_id=${studyPlanInformation["id"]}`,
       { method: "DELETE" }
     )
       .then(() => {
+        // re-render page to change colour of the star icon
         setIsFavouritedBy(false);
         setIsFetchAgain((previous) => !previous);
       })
@@ -94,6 +111,7 @@ function PopUpPost({
       });
   };
 
+  /** Function to like a study plan */
   const likeStudyPlan = () => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/like/${azure_ad_oid}`,
@@ -108,6 +126,7 @@ function PopUpPost({
       }
     )
       .then(() => {
+        // re-render page to change colour of the heart icon and number of likes
         setIsLikedBy(true);
         setNumOfLikes((previous) => previous + 1);
         setIsFetchAgain((previous) => !previous);
@@ -117,12 +136,14 @@ function PopUpPost({
       });
   };
 
+  /** Function to unlike a study plan */
   const unlikeStudyPlan = () => {
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/studyplan/like/${azure_ad_oid}?published_study_plan_id=${studyPlanInformation["id"]}`,
       { method: "DELETE" }
     )
       .then(() => {
+        // re-render page to change colour of the heart icon and number of likes
         setIsLikedBy(false);
         setNumOfLikes((previous) => previous - 1);
         setIsFetchAgain((previous) => !previous);
@@ -144,40 +165,30 @@ function PopUpPost({
           <div id="studyPlanInformation" className="flex-grow">
             <h1 className="text-xl font-semibold">{title}</h1>
 
-            {academicPlanInformation != null ? (
+            {academicPlanInformation != null && (
               <Tags academicPlanInformation={academicPlanInformation} />
-            ) : (
-              <></>
             )}
 
             <div className="flex justify-between items-center">
               <p>Created by: {creatorName}</p>
 
-              {isLikedBy ? (
-                <Tooltip title="Unlike" arrow>
-                  <div
-                    className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                    onClick={unlikeStudyPlan}
-                  >
-                    <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+              <Tooltip title={isLikedBy ? "Unlike" : "Like"} arrow>
+                <div
+                  className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                  onClick={
+                    isLikedBy ? unlikeStudyPlan : likeStudyPlan
+                  }
+                >
+                  <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+                    {isLikedBy ? (
                       <AiFillHeart className="mr-1 h-5 w-fit" />
-                    </IconContext.Provider>
-                    <p className="font-medium">{numOfLikes}</p>
-                  </div>
-                </Tooltip>
-              ) : (
-                <Tooltip title="Like" arrow>
-                  <div
-                    className="flex items-center p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                    onClick={likeStudyPlan}
-                  >
-                    <IconContext.Provider value={{ color: "PaleVioletRed" }}>
+                    ) : (
                       <AiOutlineHeart className="mr-1 h-5 w-fit" />
-                    </IconContext.Provider>
-                    <p className="font-medium">{numOfLikes}</p>
-                  </div>
-                </Tooltip>
-              )}
+                    )}
+                  </IconContext.Provider>
+                  <p className="font-medium">{numOfLikes}</p>
+                </div>
+              </Tooltip>
             </div>
 
             <p className="text-sm italic">Last updated: {dateUpdated}</p>
@@ -190,32 +201,32 @@ function PopUpPost({
                 Make a copy
               </button>
 
-              {isFavouritedBy ? (
-                <Tooltip title="Unfavourite" arrow>
-                  <div>
-                    <IconContext.Provider value={{ color: "gold" }}>
+              <Tooltip
+                title={isFavouritedBy ? "Unfavourite" : "Favourite"}
+                arrow
+              >
+                <div>
+                  <IconContext.Provider value={{ color: "gold" }}>
+                    {isFavouritedBy ? (
                       <AiFillStar
                         className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
                         onClick={unfavouriteStudyPlan}
                       />
-                    </IconContext.Provider>
-                  </div>
-                </Tooltip>
-              ) : (
-                <Tooltip title="Favourite" arrow>
-                  <div>
-                    <AiOutlineStar
-                      className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
-                      onClick={favouriteStudyPlan}
-                    />
-                  </div>
-                </Tooltip>
-              )}
+                    ) : (
+                      <AiOutlineStar
+                        className="h-8 w-auto p-1 rounded-md hover:bg-slate-200 hover:cursor-pointer transition"
+                        onClick={favouriteStudyPlan}
+                      />
+                    )}
+                  </IconContext.Provider>
+                </div>
+              </Tooltip>
             </div>
 
             <h6 className="font-semibold">Description</h6>
             <p className="bg-slate-50 rounded-md p-2">{description}</p>
           </div>
+
           <Preview
             semesterInformationArray={
               studyPlanInformation["semester_info_list"]

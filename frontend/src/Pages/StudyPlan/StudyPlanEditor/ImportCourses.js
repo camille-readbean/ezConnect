@@ -20,6 +20,14 @@ function getCourseListFromNUSMod(shareLink) {
   return courseList.filter((courseCode) => courseCode in courseDictionary);
 }
 
+/**
+ * A component for importing courses from NUSMods timetable sharing link.
+ *
+ * @component
+ * @prop {Array} semesterInformation - Information about semesters.
+ * @prop {Function} updateCoursesInSemester - Function to update courses in a semester.
+ * @returns {JSX.Element} The import courses component.
+ */
 export default function ImportCourses({
   semesterInformation,
   updateCoursesInSemester,
@@ -27,6 +35,11 @@ export default function ImportCourses({
   const [responseMessage, setResponseMessage] = useState("");
   const [selectedSemester, setSelectedSemester] = useState({});
 
+  /**
+   * Updates the course list based on the imported NUSMods timetable sharing link.
+   *
+   * @param {Event} event - The form submission event.
+   */
   const updateCourseList = (event) => {
     event.preventDefault();
     try {

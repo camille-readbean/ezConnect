@@ -3,7 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { AiFillDelete } from "react-icons/ai";
 import DeleteComfirmationBox from "./DeleteComfirmationBox";
 
-function PersonalStudyPlanList({
+/**
+ * A component that displays a list of personal study plans.
+ *
+ * @component
+ * @prop {Array} personalStudyPlans - An array which each element
+ * is an object containing information on a personal study plan.
+ * @prop {String} azure_ad_oid - The ID of the user.
+ * @prop {Function} createNewStudyPlan - Function to create a new study plan for the user.
+ * @prop {Function} deleteStudyPlan - Function to delete a study plan.
+ * @returns {JSX.Element} The rendered personal study plan list component.
+ */
+export default function PersonalStudyPlanList({
   personalStudyPlans,
   azure_ad_oid,
   createNewStudyPlan,
@@ -14,7 +25,14 @@ function PersonalStudyPlanList({
     useState(false);
   const [deleteStudyPlanId, setDeleteStudyPlanId] = useState("");
 
+  /**
+   * Create a study plan card.
+   *
+   * @param {Object} studyPlanInformation - Information about a study plan.
+   * @returns {JSX.Element} The rendered study plan card component.
+   */
   const makeCard = (studyPlanInformation) => {
+    // get neccessary information about the study plan
     const title = studyPlanInformation["title"];
     const dateUpdated = studyPlanInformation["date_updated"];
     const id = studyPlanInformation["id"];
@@ -73,5 +91,3 @@ function PersonalStudyPlanList({
     </div>
   );
 }
-
-export default PersonalStudyPlanList;

@@ -1,6 +1,17 @@
 import { Menu } from "@headlessui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
+/**
+ * A component that provides a context menu for interacting with a study plan semester.
+ * It allows users to clear the semester's courses or export the semester to NUSMods.
+ *
+ * @component
+ * @prop {Function} setIsShowExportSemester - Function to set visibility of export modal.
+ * @prop {Function} setExportSemesterInfo - Function to set information of the semester to export.
+ * @prop {Object} semesterInfo - Information about the semester.
+ * @prop {Function} updateCoursesInSemester - Function to update courses in a semester.
+ * @returns {JSX.Element} The semester menu component.
+ */
 export default function SemesterMenu({
   setIsShowExportSemester,
   setExportSemesterInfo,
